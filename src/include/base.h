@@ -29,7 +29,7 @@ class ObjectBase {
 		//! A constructor.
 		ObjectBase(){};
 		//! A destructor.
-		~ObjectBase(){};
+		virtual ~ObjectBase(){};
 		//! Set numeric number for object's name.
 		template <class T>
 		void set_name(T val){name = std::to_string(val);};
@@ -62,7 +62,7 @@ class ObjectBase {
 		//! Get object's group.
 		std::array<int, 8> get_group() const {return group;};
 		
-	private:
+	protected:
 		int id{-1};//!< Object's id.
 		std::array<int, 8> group{-1, -1, -1, -1, -1, -1, -1, -1};//!< Object's group array.
 		std::string name{"This is a base object!"};//!< Object's name.

@@ -11,7 +11,17 @@
 #include "base.h"
 
 namespace cafea {
-	
+
+/**
+ *  Coordinate system enum.
+ */
+enum struct CoordinateSystem {
+	CARTESIAN,
+	CYLINDRICAL,
+	SPHERICAL,
+	UNKNOWN,
+};
+
 /**
  *  Node object definition.
  */
@@ -25,7 +35,7 @@ class Node: public ObjectBase {
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		Node(int id):id(id), csys(0){assert(id>0);};
+		Node(int id):id(id), csys(0), name("Node"){assert(id>0);};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
 		 *  \param [in] id an integer must bigger than zero.
@@ -38,7 +48,9 @@ class Node: public ObjectBase {
 		 *  |Cylindrical|1       |
 		 *  |Spherical  |2       |
 		 */
-		Node(int id, int csys):id(id), csys(csys){assert(id>0&&csys>=0);};
+		Node(int id, int csys):id(id), csys(csys), name("Node"){
+			assert(id>0&&csys>=0);
+		};
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -48,7 +60,7 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Default coordinate system Cartesian.
 		 */
-		Node(int id, REAL8 x, REAL8 y, REAL8 z):id(id), csys(0){
+		Node(int id, REAL8 x, REAL8 y, REAL8 z):id(id), csys(0), name("Node"){
 			assert(id>0&&csys>=0);
 			xyz << x, y, z;
 		}
@@ -60,7 +72,8 @@ class Node: public ObjectBase {
 		 *  \param [in] u2 value of axis-2.
 		 *  \param [in] u3 value of axis-3.
 		 */
-		Node(int id, int csys, REAL8 u1, REAL8 u2, REAL8 u3):id(id), csys(csys){
+		Node(int id, int csys, 
+			REAL8 u1, REAL8 u2, REAL8 u3):id(id), csys(csys), name("Node"){
 			assert(id>0&&csys>=0);
 			xyz << u1, u2, u3;
 		};
@@ -76,7 +89,9 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Euler angle must in degrees.
 		 */
-		Node(int id, REAL8 x, REAL8 y, REAL8 z, REAL8 rotx, REAL8 roty, REAL8 rotz):id(id), csys(0){
+		Node(int id, 
+			REAL8 x, REAL8 y, REAL8 z, 
+			REAL8 rotx, REAL8 roty, REAL8 rotz):id(id), csys(0), name("Node"){
 			assert(id>0&&csys>=0);
 			xyz << x, y, z;
 			angle << rotx, roty, rotz;
@@ -101,10 +116,14 @@ class Node: public ObjectBase {
 		//! Clear dofs vector.
 		void clear_dofs() const {dofs.clear();};
 		
-		//! Get coordinate system
+		//! Get coordinate system.
 		int get_csys() const {return csys;};
-		//! Set coordinate system
+		//! Get coordinate system.
+		CoordinateSystem get_csys() const {return csys_val;};
+		//! Set coordinate system.
 		void set_csys(int i) {csys = i;};
+		//! Set coordinate system.
+		void set_csys(CoordinateSystem ct){csys_val = ct;};
 		
 		//! Get xyz values.
 		Eigen::Vector3d get_xyz() const {return xyz;};
@@ -157,6 +176,8 @@ class Node: public ObjectBase {
 		std::vector<int> dofs;//!< Storage of Degree of freedoms.
 		Eigen::MatrixXd mode_shape;//!< Storage of mode shape.
 		Eigen::VectorXd range;//!< Storage of time- or frequency- domain range.
+		
+		CoordinateSystem csys_val;//!< Coordinate system enum.
 		
 		using REAL8 = double;//!< ISO_C_Binding Doube == Real(kind=8)
 		//! C++11's trick for template aliase.

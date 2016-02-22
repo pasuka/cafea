@@ -13,6 +13,18 @@
 namespace cafea {
 
 /**
+ *  Enum of element types.
+ */
+enum struct ElementType {
+	PIPE16, PIPE18,
+	BEAM188, BEAM189, B31, B32,
+	SOLID185, SOLID186, C3D4, C3D8, C3D20,
+	SHELL181, SHELL281, S3R, S4R, S8R, S9R,
+	MASS21, COMBIN14,
+	UNKNOWN,
+};
+
+/**
  * Element object definition. 
  */
 template <class T>
@@ -38,7 +50,11 @@ class Element: public ObjectBase {
 		 *  \param [in] mp number of material type.
 		 *  \param [in] nodes list of nodes id.
 		 */
-		Element(int id, int et, int mp, init_list_<int> nodes):id(id), etype(et), matl(mp){
+		Element(int id, 
+			int et, 
+			int mp, 
+			init_list_<int> nodes):id(id), etype(et), matl(mp), name("Element")
+		{
 			assert(id>0&&etype>0&&matl>0);
 			for(const auto& it: nodes)node_list.push_back(it);
 		}
@@ -93,11 +109,15 @@ class Element: public ObjectBase {
 		void set_element_order(int x){order = x;};
 		//! Set dofs of each node.
 		void set_dofs_per_node(int x){dofs_per_node = x;};
+		//! set type of element.
+		void set_element_type(ElementType et){etype_val = et;};
 		
 		//! Get material id.
 		int get_material_id() const {return matl;};
 		//! Get type of element.
 		int get_element_type() const {return etype;};
+		//! Get type of element.
+		ElementType get_element_type() const {return etype_val;};
 		//! Get id of element.
 		int get_element_id() const {return id;};
 		//! Get order of element.
@@ -116,6 +136,7 @@ class Element: public ObjectBase {
 		std::vector<int> node_list;//!< Array of node list.
 		
 		bool lump{false};//!< Lump mass matrix of element.
+		ElementType etype_val;//!< Element type enum.
 		
 		Eigen::MatrixXd m_stif;//!< Stiffness matrix of element.
 		Eigen::MatrixXd m_mass;//!< Mass matrix of element.

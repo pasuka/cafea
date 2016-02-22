@@ -26,7 +26,10 @@ class Material: public ObjectBase {
 		 *  \param [in] mtype material type.
 		 *  \param [in] sect material's section type.
 		 */
-		Material(int id, int mtype, int sect):id(id), mtype(mtype), sect(sect){
+		Material(int id, 
+			int mtype, 
+			int sect):id(id), mtype(mtype), sect(sect), name("Material")
+		{
 			assert(id>0&&mtype>0&&sect>0);
 		};
 		/**
@@ -36,7 +39,11 @@ class Material: public ObjectBase {
 		 *  \param [in] sect material's section type.
 		 *  \param [in] val material's 1st parameter array.
 		 */
-		Material(int id, int mtype, int sect, init_list_<double> val):id(id), mtype(mtype), sect(sect){
+		Material(int id, 
+			int mtype, 
+			int sect, 
+			init_list_<double> val):id(id), mtype(mtype), sect(sect), name("Material")
+		{
 			assert(id>0&&mtype>0&&sect>0);
 			assert(val.size()<=10);
 			int i{0};
@@ -50,12 +57,12 @@ class Material: public ObjectBase {
 		 *  \param [in] val material's 1st parameter array.
 		 *  \param [in] val2 material's 2nd parameter array.
 		 */
-		Material(
-			int id, 
+		Material(int id, 
 			int mtype, 
 			int sect, 
 			init_list_<double> val, 
-			init_list_<double> val2):id(id), mtype(mtype), sect(sect){
+			init_list_<double> val2):id(id), mtype(mtype), sect(sect), name("Material")
+		{
 			assert(id>0&&mtype>0&&sect>0);
 			assert(val.size()<=10&&val2.size()<=10);
 			int i{0}, j{0};
