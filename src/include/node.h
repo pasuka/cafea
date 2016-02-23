@@ -10,8 +10,8 @@
 
 #include "base.h"
 
-namespace cafea {
-
+namespace cafea
+{
 /**
  *  Coordinate system enum.
  */
@@ -189,5 +189,14 @@ class Node: public ObjectBase {
 		matrix_<T> accel;//!< Storage of acceleration.
 		matrix_<T> stress;//!< Storage of stress.	
 };
+
+//! Coordinate transform for 2-node pipe element.
+std::tuple<double, Eigen::MatrixXd> coord_tran(const Node&, const Node&);
+//! Coordinate transform for 2-node beam element.
+std::tuple<double, Eigen::MatrixXd> coord_tran(const Node&, const Node&, const double[]);
+//! Coordinate transform for 3-node triangle element.
+std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node&, const Node&, const Node&);
+//! Coordinate transform for 4-node quadrangle element.
+std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node&, const Node&, const Node&, const Node&);
 }
 #endif

@@ -24,6 +24,8 @@ class SolutionBase {
 		SolutionBase(){};
 		//! Destructor.
 		virtual ~SolutionBase();
+		//! Initialize environment.
+		virtual void init_model() const=0;
 		//! Load input file.
 		virtual void load_file(const std::string& file_name) const=0;
 		//! Load input file.
@@ -60,6 +62,8 @@ class SolutionFrequencyResponse: public SolutionBase <FileReader, std::complex<d
 			m_matl_dict.clear();
 			m_boundary_dict.clear();
 		};
+		//! Initialize environment.
+		void init_model();
 		//! Load input file.
 		void load_file(const std::string& file_name);
 		//! Load input file.
@@ -70,6 +74,10 @@ class SolutionFrequencyResponse: public SolutionBase <FileReader, std::complex<d
 		void analyze_pattern();
 		//! Assemble global matrix.
 		void assemble_matrix();
+		//! Solve.
+		void solve();
+		//! Post process.
+		void post_process();
 	private:
 		SparseMat<double> m_global_matrix;
 	
@@ -90,6 +98,22 @@ class SolutionTimeResponse: public SolutionBase<FileReader, double> {
 			m_matl_dict.clear();
 			m_boundary_dict.clear();
 		};
+		//! Initialize environment.
+		void init_model();
+		//! Load input file.
+		void load_file(const std::string& file_name);
+		//! Load input file.
+		void load_file(const char* file_name);
+		//! Check model data.
+		void check_model();
+		//! Analyze sparse pattern.
+		void analyze_pattern();
+		//! Assemble global matrix.
+		void assemble_matrix();
+		//! Solve.
+		void solve();
+		//! Post process.
+		void post_process();
 	private:
 		SparseMat<double> m_global_matrix;
 };

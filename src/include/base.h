@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cassert>
+#include <tuple>
 #include <array>
 #include <string>
 #include <vector>
@@ -12,8 +13,8 @@
 
 #include <Eigen/Dense>
 
-namespace cafea {
-
+namespace cafea
+{
 //! Precision of machine via different types.	
 template<class T>
 constexpr T EPS() {return std::numeric_limits<T>::epsilon();};
@@ -89,5 +90,8 @@ class Timer{
 		using second_ = std::chrono::duration<double, std::ratio<1>>;
 		std::chrono::time_point<clock_> beg_;//!< Begin clock.
 };
+
+//! Gauss integrate point and weight.
+std::tuple<Eigen::VectorXd, Eigen::VectorXd> gauss_quad(int);
 }
 #endif

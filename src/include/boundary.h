@@ -6,8 +6,8 @@
 
 #include "base.h"
 
-namespace cafea {
-
+namespace cafea
+{
 /**
  *  Boundary type enum.
  */

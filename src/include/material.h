@@ -8,8 +8,8 @@
 
 #include "base.h"
 
-namespace cafea {
-
+namespace cafea
+{
 /**
  *  Material definition.
  */
@@ -66,8 +66,8 @@ class Material: public ObjectBase {
 			assert(id>0&&mtype>0&&sect>0);
 			assert(val.size()<=10&&val2.size()<=10);
 			int i{0}, j{0};
-			for(const auto&it: val)param[i++] = it;
-			for(const auto&it: val2)param2[j++] = it;
+			for(const auto& it: val)param[i++] = it;
+			for(const auto& it: val2)param2[j++] = it;
 		};
 		
 		//! Get id of material.
@@ -87,9 +87,9 @@ class Material: public ObjectBase {
 		double get_poisson_ratio() const;
 		//! Get section parameter.
 		double get_sect_var(int k) const;
-		double get_sect_var(std::string s) const;
+		double get_sect_var(const std::string& s) const;
 		//! Get variable value by name.
-		double get_var_by_name(std::string s) const;
+		double get_var_by_name(const std::string& s) const;
 		double get_var_by_name(const char* cs) const;
 		
 		//! Set id of material.
@@ -108,10 +108,10 @@ class Material: public ObjectBase {
 		void set_poisson_ratio(double y);
 		//! Set section parameter.
 		void set_sect_var(int k, double y);
-		void set_sect_var(std::string s, double y);
+		void set_sect_var(const std::string& s, double y);
 		void set_sect_var(const char* cs, double y);
 		//! Set variable value by name.
-		void set_var_by_name(std::string s, double y);
+		void set_var_by_name(const std::string& s, double y);
 		void set_var_by_name(const char* cs, double y);
 		
 	private:

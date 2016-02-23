@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <array>
+#include <tuple>
 #include <vector>
 #include <initializer_list>
 
@@ -10,8 +11,8 @@
 
 #include "base.h"
 
-namespace cafea {
-
+namespace cafea
+{
 /**
  *  Enum of element types.
  */
@@ -150,5 +151,108 @@ class Element: public ObjectBase {
 		matrix_<T> m_stress;//!< Stress of element.
 		matrix_<T> m_reaction_force;//!< Reaction force of element.
 };
+
+namespace
+{
+template <class T, class U>
+using varargout_base = std::tuple<T, T, T, U>;
+using varargout = varargout_base<Eigen::MatrixXd, Eigen::VectorXd>;
+}	
+
+namespace pipe_elem_lib
+{
+//! 2-node straight pipe element.
+varargout pipe16(const Node[2], const Material&);
+//! 2-node straight pipe element.
+varargout pipe16(const Node&, const Node&, const Material&);
+//! 2-node curved pipe element.
+varargout pipe18(const Node[3], const Material&);
+//! 2-node curved pipe element.
+varargout pipe18(const Node&, const Node&, const Node&, const Material&);
+}
+
+namespace additional_elem_lib
+{
+//! 1-node mass element.
+varargout mass21(const Node&, const Material&, const int[]);
+//! 2-node spring element.
+varargout combin14(const Node&, const Node&, const Material&, const int[]);
+//! 2-node spring element.
+varargout combin14(const Node[2], const Material&, const int[]);
+}
+
+namespace solid_elem_lib
+{
+//! 4-node tetrahedron solid element.
+varargout c3d4(const Node[4], const Material&);
+//! 4-node tetrahedron solid element.
+varargout c3d4(const Node&, const Node&, const Node&, const Node&, const Material&);
+//! 8-node hexahedron solid element.
+varargout c3d8(const Node[8], const Material&);
+//! 8-node hexahedron solid element.
+varargout c3d8(const Node[8], const Material&, const int[]);
+//! 20-node second order hexahedron solid element.
+varargout c3d20(const Node[20], const Material&);
+//! 27-node full second order hexahedron solid element.
+varargout c3d27(const Node[27], const Material&);
+}
+
+namespace shell_elem_lib
+{
+//! 3-node triangle shell element.
+varargout s3r(const Node&, const Node&, const Node&, const Material&);
+//! 3-node triangle shell element.
+varargout s3r(const Node[3], const Material&);
+//! 4-node quadrangle shell element.
+varargout s4r(const Node&, const Node&, const Node&, const Node&, const Material&);
+//! 4-node quadrangle shell element.
+varargout s4r(const Node[4], const Material&);
+//! 8-node second order quadrangle shell element.
+varargout s8r(const Node[8], const Material&);
+//! 9-node full second order quadrangle shell element.
+varargout s9r(const Node[9], const Material&);
+//! 16-node full thrid order quadrangle shell element.
+varargout s16r(const Node[16], const Material&);
+//! 25-node full fourth order quadrangle shell element.
+varargout s25r(const Node[25], const Material&);
+//! 36-node full fifth order quadrangle shell element.
+varargout s36r(const Node[36], const Material&);
+}
+
+namespace beam_elem_lib
+{
+//! 2-node straight beam element.
+varargout b31(const Node[2], const Material&, const float[]);
+//! 2-node straight beam element.
+varargout b31(const Node[3], const Material&);
+//! 2-node straight beam element.
+varargout b31(const Node&, const Node&, const Material&, const float[]);
+//! 2-node straight beam element.
+varargout b31(const Node&, const Node&, const Node&, const Material&);
+//! 2-node straight beam element.
+varargout beam188(const Node[2], const Material&, const float[]);
+//! 2-node straight beam element.
+varargout beam188(const Node[3], const Material&);
+//! 2-node straight beam element.
+varargout beam188(const Node&, const Node&, const Material&, const float[]);
+//! 2-node straight beam element.
+varargout beam188(const Node&, const Node&, const Node&, const Material&);
+//! 3-node straight beam element.
+varargout b32(const Node[3], const Material&, const float[]);
+//! 3-node straight beam element.
+varargout b32(const Node[4], const Material&);
+//! 3-node straight beam element.
+varargout b32(const Node&, const Node&, const Node&, const Material&, const float[]);
+//! 3-node straight beam element.
+varargout b32(const Node&, const Node&, const Node&, const Node&, const Material&);
+//! 3-node straight beam element.	
+varargout beam189(const Node[3], const Material&, const float[]);
+//! 3-node straight beam element.
+varargout beam189(const Node[4], const Material&);
+//! 3-node straight beam element.
+varargout beam189(const Node&, const Node&, const Node&, const Material&, const float[]);
+//! 3-node straight beam element.
+varargout beam189(const Node&, const Node&, const Node&, const Node&, const Material&);
+}
 }
 #endif
