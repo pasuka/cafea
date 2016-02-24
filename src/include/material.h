@@ -11,6 +11,28 @@
 namespace cafea
 {
 /**
+ *  Enum of section type.
+ */
+enum struct SectionType {
+	PIPE, 
+	SHELL,
+	SOLID,
+	SPRING,
+	MASS,
+	I_BEAM,//!< I-shaped beam section.
+	L_BEAM,//!< L-shaped beam section.
+	T_BEAM,//!< T-shaped beam section. 
+	Z_BEAM,//!< Z-shaped beam section.
+	RECT_BEAM,//!< Rectangle beam section.
+	CSOLID_BEAM,//!< Circular solid beam section.
+	CHAN_BEAM,//!< Channel beam section.
+	HATS_BEAM,//!< Hat-shaped beam section.
+	HREC_BEAM,//!< Hollow rectangle or box beam section.
+	CTUBE_BEAM,//!< Circular tube section.
+	UNKNOWN,
+};
+
+/**
  *  Material definition.
  */
 class Material: public ObjectBase {
@@ -76,6 +98,8 @@ class Material: public ObjectBase {
 		int get_material_type() const {return mtype;};
 		//! Get type of section.
 		int get_sect_type() const {return sect;};
+		//! Get type of section.
+		SectionType get_sect_type() const {return sect2;};
 		//! Get name of section.
 		std::string get_sect_name() const {return sect_name;};
 		
@@ -98,6 +122,8 @@ class Material: public ObjectBase {
 		void set_material_type(int new_mtype){mtype = new_mtype;};
 		//! Set type of section.
 		void set_sect_type(int new_sect){sect = new_sect;};
+		//! Set type of section.
+		void set_sect_type(SectionType new_sect){sect2 = new_sect;};
 		//! Set name of section.
 		void set_sect_name(std::string new_name){sect_name = new_name;};
 		//! Set elastic modulus.
@@ -118,6 +144,7 @@ class Material: public ObjectBase {
 		int mtype;//!< Material type.
 		int sect;//!< Section type.
 		std::string sect_name;//!< Section name.
+		SectionType sect2 = SectionType::UNKNOWN;
 		std::array<double, 10> param;//!< 1st parameter array.
 		std::array<double, 10> param2;//!< 2nd parameter array.
 		

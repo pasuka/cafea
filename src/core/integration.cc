@@ -6,7 +6,7 @@
 
 #include <Eigen/Dense>
 
-#include "main.h"
+#include "cafea.h"
 
 using std::tuple;
 using std::make_tuple;

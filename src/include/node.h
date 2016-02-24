@@ -1,6 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <cstddef>
 #include <cassert>
 #include <string>
 #include <vector>
@@ -110,9 +111,9 @@ class Node: public ObjectBase {
 		//! Inquire if this node is used in FE analysis.
 		bool is_active(){return !dofs.empty();}; 
 		//! Get dofs vector. 
-		std::vector<int> get_dofs() const {return dofs;};
+		std::vector<size_t> get_dofs() const {return dofs;};
 		//! Append dofs vector.
-		void append_dofs(int i){dofs.push_back(i);};
+		void append_dofs(size_t i){dofs.push_back(i);};
 		//! Clear dofs vector.
 		void clear_dofs() const {dofs.clear();};
 		
@@ -160,6 +161,17 @@ class Node: public ObjectBase {
 			angle << val[0], val[1], val[2];
 		};
 		//! Get Euler angle values.
+		REAL8 get_rot_x() const {return angle[0]>180.0 ? 0.0: angle[0];};
+		//! Get Euler angle values.
+		REAL8 get_rot_y() const {return angle[1]>180.0 ? 0.0: angle[1];};
+		//! Get Euler angle values.
+		REAL8 get_rot_z() const {return angle[2]>180.0 ? 0.0: angle[2];};
+		//! Get Euler angle values.
+		template <int x>
+		REAL8 get_rot() const {return angle[x]>180.0 ? 0.0: angle[x];};
+		//! Get Euler angle values.
+		REAL8 get_rot(int x) const {return angle[x]>180.0 ? 0.0: angle[x];};
+		//! Get Euler angle values.
 		Eigen::Vector3d get_angle() const {
 			if((angle>180.0).any()){
 				return Eigen::Vector3d::Zero();
@@ -173,7 +185,7 @@ class Node: public ObjectBase {
 		int csys{-1};//!< Coordinate system.
 		Eigen::Vector3d xyz(0.0, 0.0, 0.0);//!< Values of coordinate.
 		Eigen::Vector3d angle(181.0, 181.0, 181.0);//!< Euler's angle in degree.
-		std::vector<int> dofs;//!< Storage of Degree of freedoms.
+		std::vector<size_t> dofs;//!< Storage of Degree of freedoms.
 		Eigen::MatrixXd mode_shape;//!< Storage of mode shape.
 		Eigen::VectorXd range;//!< Storage of time- or frequency- domain range.
 		

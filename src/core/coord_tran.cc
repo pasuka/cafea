@@ -5,7 +5,7 @@
 
 #include <Eigen/Dense>
 
-#include "main.h"
+#include "cafea.h"
 
 using std::tuple;
 using std::make_tuple;
@@ -132,7 +132,7 @@ tuple<double, MatrixXd, MatrixXd> coord_tran(const Node& p1, const Node& p2, con
 /**
  *  \brief Coordinate transform for 4-node quadrangle element.
  */
-tuple<int, double, MatrixXd, MatrixXd> coord_tran(const Node& p1, const Node &p2, const Node &p3, const Node &p4)
+tuple<double, MatrixXd, MatrixXd> coord_tran(const Node& p1, const Node &p2, const Node &p3, const Node &p4)
 {
 	double area {0.};
 	MatrixXd tran = MatrixXd::Zero(3, 3); 

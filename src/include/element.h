@@ -2,6 +2,7 @@
 #define ELEMENT_H
 
 #include <cassert>
+#include <cstddef>
 #include <array>
 #include <tuple>
 #include <vector>
@@ -54,7 +55,7 @@ class Element: public ObjectBase {
 		Element(int id, 
 			int et, 
 			int mp, 
-			init_list_<int> nodes):id(id), etype(et), matl(mp), name("Element")
+			init_list_<size_t> nodes):id(id), etype(et), matl(mp), name("Element")
 		{
 			assert(id>0&&etype>0&&matl>0);
 			for(const auto& it: nodes)node_list.push_back(it);
@@ -87,7 +88,7 @@ class Element: public ObjectBase {
 		void post_stress();
 		
 		//! Get node list.
-		std::vector<int> get_node_list() const {return node_list;};
+		std::vector<size_t> get_node_list() const {return node_list;};
 		//! Set node list.
 		void set_node_list(const int a[], int m){
 			if(!node_list.empty())node_list.clear();
@@ -104,8 +105,6 @@ class Element: public ObjectBase {
 		void set_element_type(int x){etype = x;};
 		//! Set material id.
 		void set_material_id(int x){matl = x;};		
-		//! Set lump of mass matrix.
-		void set_lump(bool val){lump = val;};
 		//! Set order of element.
 		void set_element_order(int x){order = x;};
 		//! Set dofs of each node.
@@ -125,8 +124,8 @@ class Element: public ObjectBase {
 		int get_element_order() const {return order;};
 		//! Get dofs of each node.
 		int get_dofs_per_node() const {return dofs_per_node;};
-		//! Inquire lump mass matrix or not.
-		bool is_lump() const {return lump;};
+		//! Get extra information of element.
+		Eigen::Vector3i get_element_extra_info()const;
 		
  	private:
 		int etype{-1};//!< Type of element.
@@ -134,9 +133,8 @@ class Element: public ObjectBase {
 		int order{-1};//!< Order of element.
 		int dofs_per_node{-1};//!< Dofs for each node.
 		std::array<int, 8> keyopt{-1, -1, -1, -1, -1, -1, -1, -1};//!< Parameters of element.
-		std::vector<int> node_list;//!< Array of node list.
+		std::vector<size_t> node_list;//!< Array of node list.
 		
-		bool lump{false};//!< Lump mass matrix of element.
 		ElementType etype_val;//!< Element type enum.
 		
 		Eigen::MatrixXd m_stif;//!< Stiffness matrix of element.

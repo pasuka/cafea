@@ -78,9 +78,13 @@ class SolutionFrequencyResponse: public SolutionBase <FileReader, std::complex<d
 		void solve();
 		//! Post process.
 		void post_process();
+		//! Set mass matrix as lumped.
+		void set_lump(bool x){m_lump = x};
+		//! Get mass matrix whether lumped.
+		bool get_lump() const {return m_lump;};
 	private:
-		SparseMat<double> m_global_matrix;
-	
+		SparseMat<double> m_global_matrix;//!< Global matrix index and values.
+		bool m_lump{false};//!< Lump mass matrix.
 };
 
 /**
@@ -114,8 +118,13 @@ class SolutionTimeResponse: public SolutionBase<FileReader, double> {
 		void solve();
 		//! Post process.
 		void post_process();
+		//! Set mass matrix as lumped.
+		void set_lump(bool x){m_lump = x};
+		//! Get mass matrix whether lumped.
+		bool get_lump() const {return m_lump;};
 	private:
-		SparseMat<double> m_global_matrix;
+		SparseMat<double> m_global_matrix;//!< Global matrix index and values.
+		bool m_lump{false};//!< Lump mass matrix.
 };
 
 }
