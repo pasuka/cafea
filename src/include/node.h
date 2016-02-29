@@ -110,12 +110,18 @@ class Node: public ObjectBase {
 		};
 		//! Inquire if this node is used in FE analysis.
 		bool is_active(){return !dofs.empty();}; 
+		//! Get size of dofs vector.
+		size_t get_dofs_size() const {return dofs.size();};
 		//! Get dofs vector. 
-		std::vector<size_t> get_dofs() const {return dofs;};
+		std::vector<int> get_dofs() const {return dofs;};
+		//! Get dofs vector's data pointer.
+		int* get_dofs_ptr() {return dofs.data();};
 		//! Append dofs vector.
-		void append_dofs(size_t i){dofs.push_back(i);};
+		void append_dofs(int i){dofs.push_back(i);};
 		//! Clear dofs vector.
-		void clear_dofs() const {dofs.clear();};
+		void clear_dofs() {dofs.clear();};
+		//! Constraint dofs vector.
+		void constraint_dofs(BoundaryType bt);
 		
 		//! Get coordinate system.
 		int get_csys() const {return csys;};
@@ -185,7 +191,7 @@ class Node: public ObjectBase {
 		int csys{-1};//!< Coordinate system.
 		Eigen::Vector3d xyz(0.0, 0.0, 0.0);//!< Values of coordinate.
 		Eigen::Vector3d angle(181.0, 181.0, 181.0);//!< Euler's angle in degree.
-		std::vector<size_t> dofs;//!< Storage of Degree of freedoms.
+		std::vector<int> dofs;//!< Storage of Degree of freedoms.
 		Eigen::MatrixXd mode_shape;//!< Storage of mode shape.
 		Eigen::VectorXd range;//!< Storage of time- or frequency- domain range.
 		

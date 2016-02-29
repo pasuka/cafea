@@ -106,9 +106,9 @@ class Element: public ObjectBase {
 		//! Set material id.
 		void set_material_id(int x){matl = x;};		
 		//! Set order of element.
-		void set_element_order(int x){order = x;};
+		// void set_element_order(int x){order = x;};
 		//! Set dofs of each node.
-		void set_dofs_per_node(int x){dofs_per_node = x;};
+		// void set_dofs_per_node(int x){dofs_per_node = x;};
 		//! set type of element.
 		void set_element_type(ElementType et){etype_val = et;};
 		
@@ -121,17 +121,19 @@ class Element: public ObjectBase {
 		//! Get id of element.
 		int get_element_id() const {return id;};
 		//! Get order of element.
-		int get_element_order() const {return order;};
+		int get_element_order() const;
 		//! Get dofs of each node.
-		int get_dofs_per_node() const {return dofs_per_node;};
-		//! Get extra information of element.
-		Eigen::Vector3i get_element_extra_info()const;
+		int get_dofs_per_node() const;
+		//! Get total number of nodes.
+		size_t get_total_num_of_nodes() const {return node_list.size();};
+		//! Get active number of nodes.
+		int get_active_num_of_nodes() const;
 		
  	private:
 		int etype{-1};//!< Type of element.
 		int matl{-1};//!< Material id.
-		int order{-1};//!< Order of element.
-		int dofs_per_node{-1};//!< Dofs for each node.
+		// int order{-1};//!< Order of element.
+		// int dofs_per_node{-1};//!< Dofs for each node.
 		std::array<int, 8> keyopt{-1, -1, -1, -1, -1, -1, -1, -1};//!< Parameters of element.
 		std::vector<size_t> node_list;//!< Array of node list.
 		

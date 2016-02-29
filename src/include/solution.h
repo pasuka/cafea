@@ -2,6 +2,7 @@
 #define SOLUTION_H
 
 #include <complex>
+#include <vector>
 #include <unordered_map>
 
 #include <Eigen/Eigen>
@@ -42,7 +43,7 @@ class SolutionBase {
 		dict_<Node<ResultDataType>> m_node_dict;//!< Node dictionary.
 		dict_<Element<ResultDataType>> m_elem_dict;//!< Element dictionary.
 		dict_<Material> m_matl_dict;//!< Material dictionary.
-		dict_<Boundary> m_boundary_dict;//!< Boundary dictionary.
+		std::vector<Boundary> m_boundary_dict;//!< Boundary dictionary.
 		
 		FileReader m_file_parser;//!< Input file loader.
 };
