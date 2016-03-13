@@ -5,9 +5,11 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <iostream>
 #include <initializer_list>
 
 #include <Eigen/Dense>
+#include "cppformat/format.h"
 
 #include "base.h"
 
@@ -26,7 +28,7 @@ enum struct CoordinateSystem {
 /**
  *  Node object definition.
  */
-template <class T>
+template <class Scalar, class ResultScalar>
 class Node: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;// Inherit Base's constructors.
@@ -36,7 +38,9 @@ class Node: public ObjectBase {
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		Node(int id):id(id), csys(0), name("Node"){assert(id>0);};
+		Node(int id):id_(id), 
+			csys_(CoordinateSystem::CARTESIAN), 
+			name_(fmt::format("Node#{0}", id)){assert(id>0);};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
 		 *  \param [in] id an integer must bigger than zero.
@@ -49,9 +53,8 @@ class Node: public ObjectBase {
 		 *  |Cylindrical|1       |
 		 *  |Spherical  |2       |
 		 */
-		Node(int id, int csys):id(id), csys(csys), name("Node"){
-			assert(id>0&&csys>=0);
-		};
+		Node(int id, CoordinateSystem csys):id_(id), 
+			csys_(csys), name_(fmt::format("Node#{0}", id)) {assert(id>0&&csys>=0);};
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -61,10 +64,8 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Default coordinate system Cartesian.
 		 */
-		Node(int id, REAL8 x, REAL8 y, REAL8 z):id(id), csys(0), name("Node"){
-			assert(id>0&&csys>=0);
-			xyz << x, y, z;
-		}
+		Node(int id, Scalar x, Scalar y, Scalar z):id_(id), csys_(CoordinateSystem::CARTESIAN), 
+			name_(fmt::format("Node#{0}", id)) {assert(id>0&&csys>=0); xyz_ << x, y, z;}
 		/**
 		 *  \brief Initialize with node's id coordinate system and values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -73,11 +74,9 @@ class Node: public ObjectBase {
 		 *  \param [in] u2 value of axis-2.
 		 *  \param [in] u3 value of axis-3.
 		 */
-		Node(int id, int csys, 
-			REAL8 u1, REAL8 u2, REAL8 u3):id(id), csys(csys), name("Node"){
-			assert(id>0&&csys>=0);
-			xyz << u1, u2, u3;
-		};
+		Node(int id, int csys, Scalar u1, Scalar u2, Scalar u3):id_(id), 
+			csys_(CoordinateSystem::CARTESIAN), 
+			name_(fmt::format("Node#{0}", id)){assert(id>0&&csys>=0); xyz_ << u1, u2, u3;};
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
@@ -90,122 +89,135 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Euler angle must in degrees.
 		 */
-		Node(int id, 
-			REAL8 x, REAL8 y, REAL8 z, 
-			REAL8 rotx, REAL8 roty, REAL8 rotz):id(id), csys(0), name("Node"){
-			assert(id>0&&csys>=0);
-			xyz << x, y, z;
-			angle << rotx, roty, rotz;
+		Node(int id, Scalar x, Scalar y, Scalar z, Scalar rotx, Scalar roty, Scalar rotz):
+			id_(id), csys_(CoordinateSystem::CARTESIAN), name_(fmt::format("Node#{0}", id)){
+				assert(id>0&&csys>=0);
+				xyz_ << x, y, z;
+				angle_ << rotx, roty, rotz;
 		};
 		//! Destructor.
 		~Node(){
-			dofs.clear();
-			range.resize(0);
-			mode_shape.resize(0, 0);
-			vel.resize(0, 0);
-			disp.resize(0, 0);
-			pres.resize(0, 0);
-			accel.resize(0, 0);
-			stress.resize(0, 0);
+			dofs_.clear();
+			range_.resize(0);
+			mode_shape_.resize(0, 0);
+			vel_.resize(0, 0);
+			disp_.resize(0, 0);
+			pres_.resize(0, 0);
+			accel_.resize(0, 0);
+			stress_.resize(0, 0);
 		};
 		//! Inquire if this node is used in FE analysis.
-		bool is_active(){return !dofs.empty();}; 
+		bool is_active() const {return !dofs_.empty();}; 
 		//! Get size of dofs vector.
-		size_t get_dofs_size() const {return dofs.size();};
+		size_t get_dofs_size() const {return dofs_.size();};
 		//! Get dofs vector. 
-		std::vector<int> get_dofs() const {return dofs;};
+		std::vector<int> get_dofs() const {return dofs_;};
 		//! Get dofs vector's data pointer.
-		int* get_dofs_ptr() {return dofs.data();};
+		int* get_dofs_ptr() {return dofs_.data();};
 		//! Append dofs vector.
-		void append_dofs(int i){dofs.push_back(i);};
+		void append_dofs(int i) {dofs_.push_back(i);};
 		//! Clear dofs vector.
-		void clear_dofs() {dofs.clear();};
+		void clear_dofs() {dofs_.clear();};
 		//! Constraint dofs vector.
 		void constraint_dofs(BoundaryType bt);
 		
 		//! Get coordinate system.
-		int get_csys() const {return csys;};
-		//! Get coordinate system.
-		CoordinateSystem get_csys() const {return csys_val;};
+		CoordinateSystem get_csys() const {return csys_;};
 		//! Set coordinate system.
-		void set_csys(int i) {csys = i;};
-		//! Set coordinate system.
-		void set_csys(CoordinateSystem ct){csys_val = ct;};
+		void set_csys(CoordinateSystem ct) {csys_ = ct;};
 		
 		//! Get xyz values.
-		Eigen::Vector3d get_xyz() const {return xyz;};
+		vec3_<Scalar> get_xyz() const {return xyz_;};
 		//! Get x value.
-		REAL8 get_x() const {return xyz[0];};
+		Scalar get_x() const {return xyz_(0);};
 		//! Get y value.
-		REAL8 get_y() const {return xyz[1];};
+		Scalar get_y() const {return xyz_(1);};
 		//! Get z value.
-		REAL8 get_z() const {return xyz[2];};
+		Scalar get_z() const {return xyz_(2);};
 		
 		//! Set xyz values.
-		void set_xyz(REAL8 x, REAL8 y, REAL8 z){xyz << x, y, z;};
+		void set_xyz(Scalar x, Scalar y, Scalar z) {xyz_ << x, y, z;};
 		//! Set xyz values with 1d array.
-		void set_xyz(REAL8 val[3]){xyz << val[0], val[1], val[2];};
+		void set_xyz(Scalar val[3]) {xyz_ << val[0], val[1], val[2];};
 		//! Set xyz values with list.
-		void set_xyz(std::initializer_list<REAL8> val){
+		void set_xyz(std::initializer_list<Scalar> val){
 			assert(val.size()==3);
-			xyz << val[0], val[1], val[2];
+			xyz_ << val[0], val[1], val[2];
 		};
 		//! Set x value.
-		void set_x(REAL8 x){xyz[0] = x;};
+		void set_x(Scalar x) {xyz_(0) = x;};
 		//! Set y value.
-		void set_y(REAL8 y){xyz[1] = y;};
+		void set_y(Scalar y) {xyz_(1) = y;};
 		//! Set z value.
-		void set_z(REAL8 z){xyz[2] = z;};
+		void set_z(Scalar z) {xyz_(2) = z;};
 	
 		//! Set Euler angle values.
-		void set_angle(REAL8 r1, REAL8 r2, REAL8 r3){angle << r1, r2, r3;};
+		void set_angle(Scalar r1, Scalar r2, Scalar r3) {angle_ << r1, r2, r3;};
 		//! Set Euler angle values with 1d array.
-		void set_angle(REAL8 val[3]){angle << val[0], val[1], val[2];};
+		void set_angle(Scalar val[3]) {angle_ << val[0], val[1], val[2];};
 		//! Set Euler angle values with list.
-		void set_angle(std::initializer_list<REAL8> val){
+		void set_angle(std::initializer_list<Scalar> val){
 			assert(val.size()==3);
-			angle << val[0], val[1], val[2];
+			angle_ << val[0], val[1], val[2];
 		};
 		//! Get Euler angle values.
-		REAL8 get_rot_x() const {return angle[0]>180.0 ? 0.0: angle[0];};
+		Scalar get_rot_x() const {return angle_(0)>Scalar(180) ? Scalar(0): angle_(0);};
 		//! Get Euler angle values.
-		REAL8 get_rot_y() const {return angle[1]>180.0 ? 0.0: angle[1];};
+		Scalar get_rot_y() const {return angle_(0)>Scalar(180) ? Scalar(0): angle_(0);};
 		//! Get Euler angle values.
-		REAL8 get_rot_z() const {return angle[2]>180.0 ? 0.0: angle[2];};
+		Scalar get_rot_z() const {return angle_(0)>Scalar(180) ? Scalar(0): angle_(0);};
 		//! Get Euler angle values.
 		template <int x>
-		REAL8 get_rot() const {return angle[x]>180.0 ? 0.0: angle[x];};
+		Scalar get_rot() const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
 		//! Get Euler angle values.
-		REAL8 get_rot(int x) const {return angle[x]>180.0 ? 0.0: angle[x];};
+		Scalar get_rot(int x) const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
 		//! Get Euler angle values.
-		Eigen::Vector3d get_angle() const {
-			if((angle>180.0).any()){
-				return Eigen::Vector3d::Zero();
+		vec3_<Scalar> get_angle() const{
+			if((angle_>Scalar(180)).any()){
+				vec3_<Scalar> tmp(Scalar(0), Scalar(0), Scalar(0));
+				return tmp;
 			}
 			else{
-				return angle;
+				return angle_;
 			};
 		};
-		
+		//! Print node information.
+		friend std::ostream& operator<<(std::ostream& cout, const Node &a){
+			cout << fmt::format("Node:{0}\t", a.id_);
+			switch(a.csys_){
+			case CoordinateSystem::CARTESIAN:
+				cout << "Cartesian\n";
+				break;
+			case CoordinateSystem::SPHERICAL:
+				cout << "Spherical\n";
+				break;
+			case CoordinateSystem::CYLINDRICAL:
+				cout << "Cylindrical\n";
+				break;
+			default:
+				cout << "Unkown\n";
+			}
+			return cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.xyz_(0), a.xyz_(1), a.xyz_(2));
+		};
 	private:
-		int csys{-1};//!< Coordinate system.
-		Eigen::Vector3d xyz(0.0, 0.0, 0.0);//!< Values of coordinate.
-		Eigen::Vector3d angle(181.0, 181.0, 181.0);//!< Euler's angle in degree.
-		std::vector<int> dofs;//!< Storage of Degree of freedoms.
-		Eigen::MatrixXd mode_shape;//!< Storage of mode shape.
-		Eigen::VectorXd range;//!< Storage of time- or frequency- domain range.
-		
-		CoordinateSystem csys_val;//!< Coordinate system enum.
-		
-		using REAL8 = double;//!< ISO_C_Binding Doube == Real(kind=8)
+		template <class T>
+		using vec3_ = Eigen::Matrix<T, 3, 1>;
 		//! C++11's trick for template aliase.
 		template <class U>
 		using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
-		matrix_<T> pres;//!< Storage of pressure.
-		matrix_<T> disp;//!< Storage of displacement.
-		matrix_<T> vel;//!< Storage of velocity.
-		matrix_<T> accel;//!< Storage of acceleration.
-		matrix_<T> stress;//!< Storage of stress.	
+		
+		CoordinateSystem csys_{CoordinateSystem::CARTESIAN};//!< Coordinate system.
+		vec3_<Scalar> xyz_(Scalar(0), Scalar(0), Scalar(0));//!< Values of coordinate.
+		vec3_<Scalar> angle_(Scalar(181), Scalar(181), Scalar(181));//!< Euler's angle in degree.
+		std::vector<int> dofs_;//!< Storage of Degree of freedoms.
+		matrix_<ResultScalar> mode_shape_;//!< Storage of mode shape.
+		Eigen::VectorXd range_;//!< Storage of time- or frequency- domain range.
+		
+		matrix_<ResultScalar> pres_;//!< Storage of pressure.
+		matrix_<ResultScalar> disp_;//!< Storage of displacement.
+		matrix_<ResultScalar> vel_;//!< Storage of velocity.
+		matrix_<ResultScalar> accel_;//!< Storage of acceleration.
+		matrix_<ResultScalar> stress_;//!< Storage of stress.	
 };
 
 //! Coordinate transform for 2-node pipe element.

@@ -2,7 +2,9 @@
 #define BOUNDARY_H
 
 #include <cassert>
+#include <iostream>
 
+#include "cppformat/format.h"
 
 #include "base.h"
 
@@ -32,21 +34,53 @@ class Boundary: public OjbectBase {
 		 *  \param [in] id boundary's id.
 		 *  \param [in] type boundary's type.
 		 */
-		Boundary(int id, BoundaryType bc):id(id), m_val(bc), name("Boundary"){};
-		// Boundary(int id, int type):id(id), type_(type), name("Boundary"){};
+		Boundary(int id, BoundaryType bc):id_(id), val_(bc),
+			name_(fmt::format("Boundary#{0}", id){assert(id>0);};
 		//! A destructor.
 		~Boundary(){};
-		/* //! Set boundary type.
-		void set_boundary_type(int i){m_type = i;};
-		//! Get boundary type.
-		int get_boundary_type() const {return m_type;}; */
 		//! Set boundary type.
-		void set_boundary_type(BoundaryType bc){m_val = bc;};
+		void set_boundary_type(BoundaryType bc){val_ = bc;};
 		//! Get boundary type.
-		BoundaryType get_boundary_type() const {return m_val;};
+		BoundaryType get_boundary_type() const {return val_;};
+		//! Print boundary.
+		friend std::ostream& operator<<(std::ostream& cout, const Boundary &a)
+		{
+			cout << a.name_ << "\t";
+			switch(a.val_){
+			case BoundaryType::FIX_ALL:
+				cout << "Fix all dofs.\n";
+				break;
+			case BoundaryType::FIX_U_ALL:
+				cout << "Fix ux uy uz.\n";
+				break;
+			case BoundaryType::FIX_UR_ALL:
+				cout << "Fix rotx roty rotz.\n";
+				break;
+			case BoundaryType::FIX_URX:
+				cout << "Fix rotx.\n";
+				break;
+			case BoundaryType::FIX_URY:
+				cout << "Fix roty.\n";
+				break;
+			case BoundaryType::FIX_URZ:
+				cout << "Fix rotz.\n";
+				break;
+			case BoundaryType::FIX_UX:
+				cout << "Fix ux.\n";
+				break;
+			case BoundaryType::FIX_UY:
+				cout << "Fix uy.\n";
+				break;
+			case BoundaryType::FIX_UZ:
+				cout << "Fix uz.\n";
+				break;
+			default:
+				cout << "Unkown.\n";
+			}
+			return cout;
+		};
 	private:
-		// int m_type{-1};//!< Type of boundary condition.
-		BoundaryType m_val = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
+		BoundaryType val_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
 };
 }
 #endif

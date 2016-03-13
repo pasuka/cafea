@@ -32,7 +32,6 @@ enum struct ElementType {
 template <class T>
 class Element: public ObjectBase {
 	public:
-		using ObjectBase::ObjectBase;// Inherit parent's constructors.
 		//* Default constructor.
 		Element(){};
 		//* Destructor.
@@ -53,7 +52,7 @@ class Element: public ObjectBase {
 		 *  \param [in] nodes list of nodes id.
 		 */
 		Element(int id, 
-			int et, 
+			ElementType et, 
 			int mp, 
 			init_list_<size_t> nodes):id(id), etype(et), matl(mp), name("Element")
 		{
@@ -130,26 +129,25 @@ class Element: public ObjectBase {
 		int get_active_num_of_nodes() const;
 		
  	private:
-		int etype{-1};//!< Type of element.
+		ElementType etype{ElementType::UNKNOWN};//!< Type of element.
 		int matl{-1};//!< Material id.
 		// int order{-1};//!< Order of element.
 		// int dofs_per_node{-1};//!< Dofs for each node.
 		std::array<int, 8> keyopt{-1, -1, -1, -1, -1, -1, -1, -1};//!< Parameters of element.
 		std::vector<size_t> node_list;//!< Array of node list.
 		
-		ElementType etype_val;//!< Element type enum.
 		
-		Eigen::MatrixXd m_stif;//!< Stiffness matrix of element.
-		Eigen::MatrixXd m_mass;//!< Mass matrix of element.
-		Eigen::MatrixXd m_tran;//!< Transpose matrix of element.
-		Eigen::MatrixXd m_rhs;//!< Right-hand side of element.
+		Eigen::MatrixXd stif_;//!< Stiffness matrix of element.
+		Eigen::MatrixXd mass_;//!< Mass matrix of element.
+		Eigen::MatrixXd tran_;//!< Transpose matrix of element.
+		Eigen::MatrixXd rhs_;//!< Right-hand side of element.
 		
 		template <class U>
 		using init_list_ = std::initializer_list<U>;
 		template <class U>
 		using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
-		matrix_<T> m_stress;//!< Stress of element.
-		matrix_<T> m_reaction_force;//!< Reaction force of element.
+		matrix_<T> stress_;//!< Stress of element.
+		matrix_<T> reaction_force_;//!< Reaction force of element.
 };
 
 namespace
