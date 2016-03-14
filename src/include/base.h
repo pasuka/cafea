@@ -18,9 +18,16 @@ namespace cafea
 //! Precision of machine via different types.	
 template<class T>
 constexpr T EPS() {return std::numeric_limits<T>::epsilon();};
-//! M_PI
+//! M_PI.
 template<class T>
 constexpr T PI() {return T(std::atan(1.0)*4.0);};
+//! Vector3.
+template <class T>
+using vec3_ = Eigen::Matrix<T, 3, 1>;
+//! Matirx.
+//! C++11's trick for template aliase.
+template <class U>
+using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
 
 /**
  *  Basic parent object.

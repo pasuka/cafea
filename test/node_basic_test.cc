@@ -17,11 +17,11 @@ int node_add_test()
 	
 	std::vector<Node<Scalar, ResType> > list2;
 	list2.push_back({100});
-	list2.push_back({101, 1.0f, 2.0f, 3.0f});
-	list2.push_back({103, CoordinateSystem::SPHERICAL,2.0f, 3.5f, 3.0f});
+	list2.push_back({101, 1.0f, -2.0f, 3.0f});
+	list2.push_back({103, CoordinateSystem::SPHERICAL,2.0f, 3.5f, -3.0f});
 	list2.push_back({104, CoordinateSystem::CYLINDRICAL});
-	list2.push_back({202, 0.1, 0.1, 0.1, 20.0, 30.0, 4.e1});
-	list2.push_back({203, CoordinateSystem::UNKNOWN,0.1, 0.1, 0.1, 20.0, 30.0, 4.e1});
+	list2.push_back({202, -0.1, 0.1, 0.1, 20.0, 30.0, 4.e1});
+	list2.push_back({203, CoordinateSystem::UNKNOWN,0.1, -0.1, 0.1, 20.500002, 30.60, 4.2e1});
 	for(const auto& x: list2)std::cout << x;
 	return 0;
 }

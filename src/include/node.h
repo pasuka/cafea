@@ -199,10 +199,9 @@ class Node: public ObjectBase {
 		//! Get Euler angle values.
 		Scalar get_rot(int x) const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
 		//! Get Euler angle values.
-		Eigen::Matrix<Scalar, 3, 1> get_angle() const{
+		vec3_<Scalar> get_angle() const{
 			if((angle_.array()>Scalar(1.8e2)).any()){
-				Eigen::Matrix<Scalar, 3, 1> tmp(Scalar(0), Scalar(0), Scalar(0));
-				return tmp;
+				return vec3_<Scalar>::Zero();
 			}
 			else{
 				return angle_;
@@ -224,18 +223,11 @@ class Node: public ObjectBase {
 			default:
 				cout << "Unkown\n";
 			}
-			cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.xyz_(0), a.xyz_(1), a.xyz_(2));
-			Eigen::Matrix<Scalar, 3, 1> angle = a.get_angle();
-			cout << fmt::format("Euler angle Yaw:{0}\tPitch:{1}\tRoll:{2}\n", angle(0), angle(1), angle(2));
+			cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.get_x(), a.get_y(), a.get_z());
+			cout << fmt::format("Euler angle Yaw:{0}\tPitch:{1}\tRoll:{2}\n", a.get_rot<0>(), a.get_rot<1>(), a.get_rot<2>());
 			return cout;
 		};
 	private:
-		template <class T>
-		using vec3_ = Eigen::Matrix<T, 3, 1>;
-		//! C++11's trick for template aliase.
-		template <class U>
-		using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
-		
 		CoordinateSystem csys_{CoordinateSystem::CARTESIAN};//!< Coordinate system.
 		vec3_<Scalar> xyz_ = vec3_<Scalar>::Zero();//!< Values of coordinate.
 		vec3_<Scalar> angle_ = vec3_<Scalar>::Constant(181);//!< Euler's angle in degree.
@@ -252,15 +244,15 @@ class Node: public ObjectBase {
 
 //! Coordinate transform for 2-node pipe element.
 template <class T, class U>
-std::tuple<double, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&);
+std::tuple<T, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&);
 //! Coordinate transform for 2-node beam element.
 template <class T, class U>
-std::tuple<double, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&, const double[]);
+std::tuple<T, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&, const double[]);
 //! Coordinate transform for 3-node triangle element.
 template <class T, class U>
-std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
+std::tuple<T, matrix_<T>, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
 //! Coordinate transform for 4-node quadrangle element.
 template <class T, class U>
-std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
+std::tuple<T, matrix_<T>, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
 }
 #endif

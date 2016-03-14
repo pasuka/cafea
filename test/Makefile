@@ -22,4 +22,9 @@ clean:
 	@echo "Clean files"
 	- $(RM) $(CLEAN) *.o test_*
 	
-.PHONY: clean test_node
+all:
+	$(MAKE) test_node
+	./test_node
+	$(MAKE) clean
+	
+.PHONY: clean test_node all
