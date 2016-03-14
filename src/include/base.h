@@ -29,13 +29,17 @@ class ObjectBase {
 	public:
 		//! A constructor.
 		ObjectBase(){};
+		//! Another constructor.
+		ObjectBase(int id, std::string s):id_(id), name_(s) {assert(id_>0);};
+		//! Another constructor.
+		ObjectBase(int id):id_(id) {assert(id_>0);};
 		//! A destructor.
 		virtual ~ObjectBase(){};
 		//! Set numeric number for object's name.
 		template <class T>
 		void set_name(T val){name_ = std::to_string(val);};
 		//! Set object's name.
-		void set_name(std::string s){name_ = s};
+		void set_name(std::string s){name_ = s;};
 		void set_name(const char *cs){name_ = cs;};
 		//! Set object's id.
 		void set_id(int x){id_ = x;};
@@ -65,7 +69,7 @@ class ObjectBase {
 		
 	protected:
 		int id_{-1};//!< Object's id.
-		std::array<int, 8> group_{-1, -1, -1, -1, -1, -1, -1, -1};//!< Object's group array.
+		std::array<int, 8> group_{{-1, -1, -1, -1, -1, -1, -1, -1}};//!< Object's group array.
 		std::string name_{"This is a base object!"};//!< Object's name.
 };
 

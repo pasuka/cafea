@@ -38,9 +38,8 @@ class Node: public ObjectBase {
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		Node(int id):id_(id), 
-			csys_(CoordinateSystem::CARTESIAN), 
-			name_(fmt::format("Node#{0}", id)){assert(id>0);};
+		Node(int id):ObjectBase{id, fmt::format("Node#{0}", id)}, 
+			csys_(CoordinateSystem::CARTESIAN) {assert(id_>0);};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
 		 *  \param [in] id an integer must bigger than zero.
@@ -53,8 +52,10 @@ class Node: public ObjectBase {
 		 *  |Cylindrical|1       |
 		 *  |Spherical  |2       |
 		 */
-		Node(int id, CoordinateSystem csys):id_(id), 
-			csys_(csys), name_(fmt::format("Node#{0}", id)) {assert(id>0&&csys>=0);};
+		Node(int id, CoordinateSystem csys):csys_(csys),
+			ObjectBase{id, fmt::format("Node#{0}", id)}{
+				assert(id_>0);
+		};
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -64,8 +65,12 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Default coordinate system Cartesian.
 		 */
-		Node(int id, Scalar x, Scalar y, Scalar z):id_(id), csys_(CoordinateSystem::CARTESIAN), 
-			name_(fmt::format("Node#{0}", id)) {assert(id>0&&csys>=0); xyz_ << x, y, z;}
+		Node(int id, Scalar x, Scalar y, Scalar z):
+			ObjectBase{id, fmt::format("Node#{0}", id)},
+			csys_(CoordinateSystem::CARTESIAN){
+				assert(id_>0);
+				xyz_ << x, y, z;
+		};
 		/**
 		 *  \brief Initialize with node's id coordinate system and values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -74,9 +79,11 @@ class Node: public ObjectBase {
 		 *  \param [in] u2 value of axis-2.
 		 *  \param [in] u3 value of axis-3.
 		 */
-		Node(int id, int csys, Scalar u1, Scalar u2, Scalar u3):id_(id), 
-			csys_(CoordinateSystem::CARTESIAN), 
-			name_(fmt::format("Node#{0}", id)){assert(id>0&&csys>=0); xyz_ << u1, u2, u3;};
+		Node(int id, CoordinateSystem csys, Scalar u1, Scalar u2, Scalar u3):
+			csys_(csys), ObjectBase{id, fmt::format("Node#{0}", id)}{
+				assert(id_>0);
+				xyz_ << u1, u2, u3;
+		};
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
@@ -89,9 +96,29 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Euler angle must in degrees.
 		 */
-		Node(int id, Scalar x, Scalar y, Scalar z, Scalar rotx, Scalar roty, Scalar rotz):
-			id_(id), csys_(CoordinateSystem::CARTESIAN), name_(fmt::format("Node#{0}", id)){
-				assert(id>0&&csys>=0);
+		Node(int id, Scalar x, Scalar y, Scalar z,
+			Scalar rotx, Scalar roty, Scalar rotz):
+			csys_(CoordinateSystem::CARTESIAN),
+			ObjectBase{id, fmt::format("Node#{0}", id)}{
+				assert(id_>0);
+				xyz_ << x, y, z;
+				angle_ << rotx, roty, rotz;
+		};
+		/**
+		 *  \brief Initialize with node's id coordinate and Euler angles.
+		 *  \param [in] id an integer must bigger than zero.
+		 *  \param [in] csys coordinate system type.
+		 *  \param [in] x value of x-axis.
+		 *  \param [in] y value of y-axis.
+		 *  \param [in] z value of z-axis.
+		 *  \param [in] rotx value of rotate x-axis.
+		 *  \param [in] roty value of rotate y-axis.
+		 *  \param [in] rotz value of rotate z-axis.
+		 */
+		Node(int id, CoordinateSystem csys, Scalar x, Scalar y, Scalar z,
+			Scalar rotx, Scalar roty, Scalar rotz):csys_(csys),
+			ObjectBase{id, fmt::format("Node#{0}", id)}{
+				assert(id_>0);
 				xyz_ << x, y, z;
 				angle_ << rotx, roty, rotz;
 		};
@@ -127,7 +154,7 @@ class Node: public ObjectBase {
 		void set_csys(CoordinateSystem ct) {csys_ = ct;};
 		
 		//! Get xyz values.
-		vec3_<Scalar> get_xyz() const {return xyz_;};
+		Eigen::Matrix<Scalar, 3, 1> get_xyz() const {return xyz_;};
 		//! Get x value.
 		Scalar get_x() const {return xyz_(0);};
 		//! Get y value.
@@ -172,9 +199,9 @@ class Node: public ObjectBase {
 		//! Get Euler angle values.
 		Scalar get_rot(int x) const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
 		//! Get Euler angle values.
-		vec3_<Scalar> get_angle() const{
-			if((angle_>Scalar(180)).any()){
-				vec3_<Scalar> tmp(Scalar(0), Scalar(0), Scalar(0));
+		Eigen::Matrix<Scalar, 3, 1> get_angle() const{
+			if((angle_.array()>Scalar(1.8e2)).any()){
+				Eigen::Matrix<Scalar, 3, 1> tmp(Scalar(0), Scalar(0), Scalar(0));
 				return tmp;
 			}
 			else{
@@ -197,7 +224,10 @@ class Node: public ObjectBase {
 			default:
 				cout << "Unkown\n";
 			}
-			return cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.xyz_(0), a.xyz_(1), a.xyz_(2));
+			cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.xyz_(0), a.xyz_(1), a.xyz_(2));
+			Eigen::Matrix<Scalar, 3, 1> angle = a.get_angle();
+			cout << fmt::format("Euler angle Yaw:{0}\tPitch:{1}\tRoll:{2}\n", angle(0), angle(1), angle(2));
+			return cout;
 		};
 	private:
 		template <class T>
@@ -207,8 +237,8 @@ class Node: public ObjectBase {
 		using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
 		
 		CoordinateSystem csys_{CoordinateSystem::CARTESIAN};//!< Coordinate system.
-		vec3_<Scalar> xyz_(Scalar(0), Scalar(0), Scalar(0));//!< Values of coordinate.
-		vec3_<Scalar> angle_(Scalar(181), Scalar(181), Scalar(181));//!< Euler's angle in degree.
+		vec3_<Scalar> xyz_ = vec3_<Scalar>::Zero();//!< Values of coordinate.
+		vec3_<Scalar> angle_ = vec3_<Scalar>::Constant(181);//!< Euler's angle in degree.
 		std::vector<int> dofs_;//!< Storage of Degree of freedoms.
 		matrix_<ResultScalar> mode_shape_;//!< Storage of mode shape.
 		Eigen::VectorXd range_;//!< Storage of time- or frequency- domain range.
@@ -221,12 +251,16 @@ class Node: public ObjectBase {
 };
 
 //! Coordinate transform for 2-node pipe element.
-std::tuple<double, Eigen::MatrixXd> coord_tran(const Node&, const Node&);
+template <class T, class U>
+std::tuple<double, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&);
 //! Coordinate transform for 2-node beam element.
-std::tuple<double, Eigen::MatrixXd> coord_tran(const Node&, const Node&, const double[]);
+template <class T, class U>
+std::tuple<double, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&, const double[]);
 //! Coordinate transform for 3-node triangle element.
-std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node&, const Node&, const Node&);
+template <class T, class U>
+std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
 //! Coordinate transform for 4-node quadrangle element.
-std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node&, const Node&, const Node&, const Node&);
+template <class T, class U>
+std::tuple<double, Eigen::MatrixXd, Eigen::MatrixXd> coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
 }
 #endif

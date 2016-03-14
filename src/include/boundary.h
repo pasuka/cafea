@@ -25,8 +25,9 @@ enum struct BoundaryType {
 /**
  *  Boundary definition.
  */
-class Boundary: public OjbectBase {
+class Boundary: public ObjectBase {
 	public:
+		using ObjectBase::ObjectBase;// Inherit Base's constructors.
 		//! A constructor.
 		Boundary(){};
 		/**
@@ -34,8 +35,8 @@ class Boundary: public OjbectBase {
 		 *  \param [in] id boundary's id.
 		 *  \param [in] type boundary's type.
 		 */
-		Boundary(int id, BoundaryType bc):id_(id), val_(bc),
-			name_(fmt::format("Boundary#{0}", id){assert(id>0);};
+		Boundary(int id, BoundaryType bc):val_(bc),
+			ObjectBase{id, fmt::format("Boundary#{0}", id)} {assert(id_>0);};
 		//! A destructor.
 		~Boundary(){};
 		//! Set boundary type.
