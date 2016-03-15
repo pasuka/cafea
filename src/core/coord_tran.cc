@@ -17,10 +17,10 @@ namespace cafea
  *  \param [in] p1 Start node.
  *  \param [in] p2 End node. 
  */
-template <class Scalar, class T>
+template <class Scalar>
 tuple<Scalar, matrix_<Scalar> > coord_tran(
-	const Node<Scalar, T> &p1,
-	const Node<Scalar, T> &p2,)
+	const NodeBase<Scalar> &p1,
+	const NodeBase<Scalar> &p2)
 {
 	Scalar length{0};
 	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
@@ -28,7 +28,7 @@ tuple<Scalar, matrix_<Scalar> > coord_tran(
 	
 	vxx = p2.get_xyz() - p1.get_xyz();
 	length = vxx.norm();
-	assert(length>(cafea::EPS<Scalar>()));
+	assert(length>(EPS<Scalar>()));
 	vxx /= length;
 	
 	auto A{sqrt(vxx(0)*vxx(0)+vxx(1)*vxx(1))};
@@ -49,11 +49,11 @@ tuple<Scalar, matrix_<Scalar> > coord_tran(
 /**
  *  \brief Coordinate transform for 2-node beam with up-axis.
  */
-template <class Scalar, class T>
+template <class Scalar>
 tuple<Scalar, matrix_<Scalar> > coord_tran(
-	const node<Scalar, T> &p1,
-	const node<Scalar, T> &p2,
-	const double up[])
+	const NodeBase<Scalar> &p1,
+	const NodeBase<Scalar> &p2,
+	const Scalar up[])
 {
 	Scalar length{0};
 	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
@@ -64,12 +64,12 @@ tuple<Scalar, matrix_<Scalar> > coord_tran(
 	
 	length = vxx.norm();
 	
-	assert(length>(cafea::EPS<double>()));
+	assert(length>(EPS<Scalar>()));
 	
 	vxx /= length;
 	vxy /= vxy.norm();
 	
-	auto the{acos(vxx.dot(vxy))*Scalar(180)/cafea::PI<Scalar>()};
+	auto the{acos(vxx.dot(vxy))*Scalar(180)/PI<Scalar>()};
 	if(the<Scalar(1)){
 		vxy << Scalar(1), Scalar(0), Scalar(1);
 	}
@@ -89,25 +89,25 @@ tuple<Scalar, matrix_<Scalar> > coord_tran(
 /**
  *  \brief Coordinate transform for 3-node triangle element.
  */
-template <class Scalar, class T>
+template <class Scalar>
 tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
-	const Node<Scalar, T>& p1, 
-	const Node<Scalar, T>& p2,
-	const Node<Scalar, T>& p3)
+	const NodeBase<Scalar> *p1, 
+	const NodeBase<Scalar> *p2,
+	const NodeBase<Scalar> *p3)
 {
 	Scalar area{0};
 	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
 	matrix_<Scalar> xy = matrix_<Scalar>::Zero(3, 2);
 	vec3_<Scalar> vxx, vyy, vzz, vxy;
 	
-	vxx = p2.get_xyz() - p1.get_xyz();
-	vxy = p3.get_xyz() - p1.get_xyz();
+	vxx = p2->get_xyz() - p1->get_xyz();
+	vxy = p3->get_xyz() - p1->get_xyz();
 	
 	auto L12 = vxx.norm();
 	auto L13 = vxy.norm();
 	
-	assert(L12>(cafea::EPS<Scalar>()));
-	assert(L13>(cafea::EPS<Scalar>()));
+	assert(L12>(EPS<Scalar>()));
+	assert(L13>(EPS<Scalar>()));
 	
 	vxx /= L12;
 	vxy /= L13;
@@ -121,10 +121,10 @@ tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
 	tran.row(0) << vxx(0), vxx(1), vxx(2);
 	tran.row(1) << vyy(0), vyy(1), vyy(2);
 	tran.row(2) << vzz(0), vzz(1), vzz(2);
-	vxy = p3.get_xyz() - p2.get_xyz();
+	vxy = p3->get_xyz() - p2->get_xyz();
 	auto L23 = vxy.norm();
 	
-	assert(L23>(cafea::EPS<Scalar>()));
+	assert(L23>(EPS<Scalar>()));
 	auto cos_t = (L12*L12+L13*L13-L23*L23)/(Scalar(2)*L12*L13);
 	auto alpha = acos(cos_t);
 	
@@ -138,26 +138,26 @@ tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
 /**
  *  \brief Coordinate transform for 4-node quadrangle element.
  */
-template <class Scalar, class T>
+template <class Scalar>
 tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
-	const Node<Scalar, T>& p1,
-	const Node<Scalar, T>& p2,
-	const Node<Scalar, T>& p3,
-	const Node<Scalar, T>& p4)
+	const NodeBase<Scalar> *p1,
+	const NodeBase<Scalar> *p2,
+	const NodeBase<Scalar> *p3,
+	const NodeBase<Scalar> *p4) 
 {
 	Scalar area{0};
 	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3); 
 	matrix_<Scalar> xy = matrix_<Scalar>::Zero(4, 2);
 	vec3_<Scalar> vxx, vyy, vzz, vxy;
 
-	vxx = p2.get_xyz() - p1.get_xyz();
-	vxy = p3.get_xyz() - p1.get_xyz();
+	vxx = p2->get_xyz() - p1->get_xyz();
+	vxy = p3->get_xyz() - p1->get_xyz();
 	
 	auto L12 = vxx.norm();
 	auto L13 = vxy.norm();
 	
-	assert(L12>(cafea::EPS<Scalar>()));
-	assert(L13>(cafea::EPS<Scalar>()));
+	assert(L12>(EPS<Scalar>()));
+	assert(L13>(EPS<Scalar>()));
 	
 	vxx /= L12;
 	vxy /= L13;
@@ -170,25 +170,25 @@ tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
 	tran.row(1) << vyy(0), vyy(1), vyy(2);
 	tran.row(2) << vzz(0), vzz(1), vzz(2);
 	
-	vxy = p3.get_xyz() - p2.get_xyz();
+	vxy = p3->get_xyz() - p2->get_xyz();
 	auto L23 = vxy.norm();
 	
-	assert(L23>(cafea::EPS<Scalar>()));
+	assert(L23>(EPS<Scalar>()));
 	
 	auto alpha213 = acos((L12*L12+L13*L13-L23*L23)/(Scalar(2)*L12*L13));
 	
-	vxy = p4.get_xyz() - p1.get_xyz();
+	vxy = p4->get_xyz() - p1->get_xyz();
 	auto L14 = vxy.norm();
 	
-	assert(L14>(cafea::EPS<Scalar>()));
+	assert(L14>(EPS<Scalar>()));
 	
-	vxy = p4.get_xyz() - p3.get_xyz();
+	vxy = p4->get_xyz() - p3->get_xyz();
 	auto L34 = vxy.norm();
 	
-	assert(L34>(cafea::EPS<Scalar>()));
+	assert(L34>(EPS<Scalar>()));
 	
 	auto alpha314 = acos((L13*L13+L14*L14-L34*L34)/(Scalar(2)*L13*L14));
-	auto alpha41y = cafea::PI<Scalar>()/Scalar(2) - alpha213 - alpha314;
+	auto alpha41y = PI<Scalar>()/Scalar(2) - alpha213 - alpha314;
 	
 	xy.row(0) << Scalar(0), Scalar(0);
 	xy.row(1) << L12, Scalar(0);

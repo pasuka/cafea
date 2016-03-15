@@ -40,45 +40,45 @@ class Boundary: public ObjectBase {
 		//! A destructor.
 		~Boundary(){};
 		//! Set boundary type.
-		void set_boundary_type(BoundaryType bc){val_ = bc;};
+		void set_boundary_type(BoundaryType bc) {val_ = bc;};
 		//! Get boundary type.
 		BoundaryType get_boundary_type() const {return val_;};
 		//! Print boundary.
 		friend std::ostream& operator<<(std::ostream& cout, const Boundary &a)
 		{
-			cout << a.name_ << "\t";
-			switch(a.val_){
+			cout << a.get_name() << "\t";
+			switch(a.get_boundary_type()){
 			case BoundaryType::FIX_ALL:
-				cout << "Fix all dofs.\n";
+				cout << "Fix all dofs.";
 				break;
 			case BoundaryType::FIX_U_ALL:
-				cout << "Fix ux uy uz.\n";
+				cout << "Fix ux uy uz.";
 				break;
 			case BoundaryType::FIX_UR_ALL:
-				cout << "Fix rotx roty rotz.\n";
+				cout << "Fix rotx roty rotz.";
 				break;
 			case BoundaryType::FIX_URX:
-				cout << "Fix rotx.\n";
+				cout << "Fix rotx.";
 				break;
 			case BoundaryType::FIX_URY:
-				cout << "Fix roty.\n";
+				cout << "Fix roty.";
 				break;
 			case BoundaryType::FIX_URZ:
-				cout << "Fix rotz.\n";
+				cout << "Fix rotz.";
 				break;
 			case BoundaryType::FIX_UX:
-				cout << "Fix ux.\n";
+				cout << "Fix ux.";
 				break;
 			case BoundaryType::FIX_UY:
-				cout << "Fix uy.\n";
+				cout << "Fix uy.";
 				break;
 			case BoundaryType::FIX_UZ:
-				cout << "Fix uz.\n";
+				cout << "Fix uz.";
 				break;
 			default:
-				cout << "Unkown.\n";
+				cout << "Unkown.";
 			}
-			return cout;
+			return cout << "\n";
 		};
 	private:
 		BoundaryType val_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.

@@ -12,6 +12,7 @@
 #include "cppformat/format.h"
 
 #include "base.h"
+#include "boundary.h"
 
 namespace cafea
 {
@@ -24,21 +25,20 @@ enum struct CoordinateSystem {
 	SPHERICAL,
 	UNKNOWN,
 };
-
 /**
- *  Node object definition.
+ *  Basic node object definition.
  */
-template <class Scalar, class ResultScalar>
-class Node: public ObjectBase {
+template <class Scalar>
+class NodeBase: public ObjectBase {
 	public:
-		using ObjectBase::ObjectBase;// Inherit Base's constructors.
+		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//! Default constructor.
-		Node(){};
+		NodeBase(){};
 		/**
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		Node(int id):ObjectBase{id, fmt::format("Node#{0}", id)}, 
+		NodeBase(int id):ObjectBase{id, fmt::format("Node#{0}", id)}, 
 			csys_(CoordinateSystem::CARTESIAN) {assert(id_>0);};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
@@ -52,10 +52,8 @@ class Node: public ObjectBase {
 		 *  |Cylindrical|1       |
 		 *  |Spherical  |2       |
 		 */
-		Node(int id, CoordinateSystem csys):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)}{
-				assert(id_>0);
-		};
+		NodeBase(int id, CoordinateSystem csys):csys_(csys),
+			ObjectBase{id, fmt::format("Node#{0}", id)} {assert(id_>0);};
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -65,9 +63,9 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Default coordinate system Cartesian.
 		 */
-		Node(int id, Scalar x, Scalar y, Scalar z):
+		NodeBase(int id, Scalar x, Scalar y, Scalar z):
 			ObjectBase{id, fmt::format("Node#{0}", id)},
-			csys_(CoordinateSystem::CARTESIAN){
+			csys_(CoordinateSystem::CARTESIAN) {
 				assert(id_>0);
 				xyz_ << x, y, z;
 		};
@@ -79,8 +77,9 @@ class Node: public ObjectBase {
 		 *  \param [in] u2 value of axis-2.
 		 *  \param [in] u3 value of axis-3.
 		 */
-		Node(int id, CoordinateSystem csys, Scalar u1, Scalar u2, Scalar u3):
-			csys_(csys), ObjectBase{id, fmt::format("Node#{0}", id)}{
+		NodeBase(int id, CoordinateSystem csys,
+			Scalar u1, Scalar u2, Scalar u3):csys_(csys),
+			ObjectBase{id, fmt::format("Node#{0}", id)} {
 				assert(id_>0);
 				xyz_ << u1, u2, u3;
 		};
@@ -96,10 +95,10 @@ class Node: public ObjectBase {
 		 *  
 		 *  \details Euler angle must in degrees.
 		 */
-		Node(int id, Scalar x, Scalar y, Scalar z,
+		NodeBase(int id, Scalar x, Scalar y, Scalar z,
 			Scalar rotx, Scalar roty, Scalar rotz):
 			csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase{id, fmt::format("Node#{0}", id)}{
+			ObjectBase{id, fmt::format("Node#{0}", id)} {
 				assert(id_>0);
 				xyz_ << x, y, z;
 				angle_ << rotx, roty, rotz;
@@ -115,39 +114,15 @@ class Node: public ObjectBase {
 		 *  \param [in] roty value of rotate y-axis.
 		 *  \param [in] rotz value of rotate z-axis.
 		 */
-		Node(int id, CoordinateSystem csys, Scalar x, Scalar y, Scalar z,
+		NodeBase(int id, CoordinateSystem csys, Scalar x, Scalar y, Scalar z,
 			Scalar rotx, Scalar roty, Scalar rotz):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)}{
+			ObjectBase{id, fmt::format("Node#{0}", id)} {
 				assert(id_>0);
 				xyz_ << x, y, z;
 				angle_ << rotx, roty, rotz;
 		};
 		//! Destructor.
-		~Node(){
-			dofs_.clear();
-			range_.resize(0);
-			mode_shape_.resize(0, 0);
-			vel_.resize(0, 0);
-			disp_.resize(0, 0);
-			pres_.resize(0, 0);
-			accel_.resize(0, 0);
-			stress_.resize(0, 0);
-		};
-		//! Inquire if this node is used in FE analysis.
-		bool is_active() const {return !dofs_.empty();}; 
-		//! Get size of dofs vector.
-		size_t get_dofs_size() const {return dofs_.size();};
-		//! Get dofs vector. 
-		std::vector<int> get_dofs() const {return dofs_;};
-		//! Get dofs vector's data pointer.
-		int* get_dofs_ptr() {return dofs_.data();};
-		//! Append dofs vector.
-		void append_dofs(int i) {dofs_.push_back(i);};
-		//! Clear dofs vector.
-		void clear_dofs() {dofs_.clear();};
-		//! Constraint dofs vector.
-		void constraint_dofs(BoundaryType bt);
-		
+		~NodeBase(){};
 		//! Get coordinate system.
 		CoordinateSystem get_csys() const {return csys_;};
 		//! Set coordinate system.
@@ -167,7 +142,8 @@ class Node: public ObjectBase {
 		//! Set xyz values with 1d array.
 		void set_xyz(Scalar val[3]) {xyz_ << val[0], val[1], val[2];};
 		//! Set xyz values with list.
-		void set_xyz(std::initializer_list<Scalar> val){
+		void set_xyz(std::initializer_list<Scalar> val)
+		{
 			assert(val.size()==3);
 			xyz_ << val[0], val[1], val[2];
 		};
@@ -183,7 +159,8 @@ class Node: public ObjectBase {
 		//! Set Euler angle values with 1d array.
 		void set_angle(Scalar val[3]) {angle_ << val[0], val[1], val[2];};
 		//! Set Euler angle values with list.
-		void set_angle(std::initializer_list<Scalar> val){
+		void set_angle(std::initializer_list<Scalar> val)
+		{
 			assert(val.size()==3);
 			angle_ << val[0], val[1], val[2];
 		};
@@ -199,8 +176,10 @@ class Node: public ObjectBase {
 		//! Get Euler angle values.
 		Scalar get_rot(int x) const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
 		//! Get Euler angle values.
-		vec3_<Scalar> get_angle() const{
-			if((angle_.array()>Scalar(1.8e2)).any()){
+		vec3_<Scalar> get_angle() const
+		{
+			if((angle_.array()>Scalar(1.8e2)).any())
+			{
 				return vec3_<Scalar>::Zero();
 			}
 			else{
@@ -208,7 +187,8 @@ class Node: public ObjectBase {
 			};
 		};
 		//! Print node information.
-		friend std::ostream& operator<<(std::ostream& cout, const Node &a){
+		friend std::ostream& operator<<(std::ostream& cout, const NodeBase &a)
+		{
 			cout << fmt::format("Node:{0}\t", a.id_);
 			switch(a.csys_){
 			case CoordinateSystem::CARTESIAN:
@@ -227,10 +207,54 @@ class Node: public ObjectBase {
 			cout << fmt::format("Euler angle Yaw:{0}\tPitch:{1}\tRoll:{2}\n", a.get_rot<0>(), a.get_rot<1>(), a.get_rot<2>());
 			return cout;
 		};
-	private:
+	protected:
 		CoordinateSystem csys_{CoordinateSystem::CARTESIAN};//!< Coordinate system.
 		vec3_<Scalar> xyz_ = vec3_<Scalar>::Zero();//!< Values of coordinate.
-		vec3_<Scalar> angle_ = vec3_<Scalar>::Constant(181);//!< Euler's angle in degree.
+		vec3_<Scalar> angle_ = vec3_<Scalar>::Constant(181);//!< Euler's angle in degree.		
+};
+
+/**
+ *  Node object definition.
+ */
+template <class Scalar, class ResultScalar>
+class Node: public NodeBase<Scalar> {
+	public:
+		using NodeBase<Scalar>::NodeBase;// Inherit Base's constructors.
+		//! Default constructor.
+		Node(){};
+		//! Destructor.
+		~Node(){
+			dofs_.clear();
+			range_.resize(0);
+			mode_shape_.resize(0, 0);
+			vel_.resize(0, 0);
+			disp_.resize(0, 0);
+			pres_.resize(0, 0);
+			accel_.resize(0, 0);
+			stress_.resize(0, 0);
+		};
+		//! Inquire if this node is used in FE analysis.
+		bool is_active() const {return !dofs_.empty();}; 
+		//! Get size of dofs vector.
+		size_t get_dofs_size() const {return dofs_.size();};
+		//! Get dofs vector. 
+		std::vector<int> get_dofs() const {return dofs_;};
+		//! Get dofs vector's data pointer.
+		int* get_dofs_ptr() const {return dofs_.data();};
+		//! Append dofs vector.
+		void append_dofs(int i) {dofs_.push_back(i);};
+		//! Clear dofs vector.
+		void clear_dofs() {dofs_.clear();};
+		//! Constraint dofs vector.
+		void constraint_dofs(BoundaryType bt);
+		//! Print information.
+		friend std::ostream& operator<<(std::ostream& cout, const Node &a)
+		{
+			cout << "This Node information\n";
+			return cout << static_cast<const NodeBase<Scalar>&>(a);
+		};
+		
+	private:
 		std::vector<int> dofs_;//!< Storage of Degree of freedoms.
 		matrix_<ResultScalar> mode_shape_;//!< Storage of mode shape.
 		Eigen::VectorXd range_;//!< Storage of time- or frequency- domain range.
@@ -243,16 +267,16 @@ class Node: public ObjectBase {
 };
 
 //! Coordinate transform for 2-node pipe element.
-template <class T, class U>
-std::tuple<T, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&);
+template <class T>
+std::tuple<T, matrix_<T> > coord_tran(const NodeBase<T>*, const NodeBase<T>*);
 //! Coordinate transform for 2-node beam element.
-template <class T, class U>
-std::tuple<T, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&, const double[]);
+template <class T>
+std::tuple<T, matrix_<T> > coord_tran(const NodeBase<T>*, const NodeBase<T>*, const T[]);
 //! Coordinate transform for 3-node triangle element.
-template <class T, class U>
-std::tuple<T, matrix_<T>, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
+template <class T>
+std::tuple<T, matrix_<T>, matrix_<T> > coord_tran(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*);
 //! Coordinate transform for 4-node quadrangle element.
-template <class T, class U>
-std::tuple<T, matrix_<T>, matrix_<T> > coord_tran(const Node<T, U>&, const Node<T, U>&, const Node<T, U>&, const Node<T, U>&);
+template <class T>
+std::tuple<T, matrix_<T>, matrix_<T> > coord_tran(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*);
 }
 #endif
