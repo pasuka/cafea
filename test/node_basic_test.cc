@@ -7,7 +7,7 @@
 #include <tuple>
 
 #include "cafea.h"
-
+	
 template <class Scalar, class ResType>
 int node_add_test()
 {
@@ -28,12 +28,11 @@ int node_add_test()
 template <class Scalar, class ResType>
 Scalar triangle_area_test_01()
 {
-	// using cafea::NodeBase;
-	// using cafea::Node;
-	// using cafea::coord_tran;
-	// using cafea::matrix_;
+	using cafea::NodeBase;
+	using cafea::Node;
+	using cafea::coord_tran;
+	using cafea::matrix_;
 	using std::tie;
-	using namespace cafea;
 	
 	Node<Scalar, ResType> p1{101, 0, 0, 0};
 	Node<Scalar, ResType> p2{102, 2, 0, 0};

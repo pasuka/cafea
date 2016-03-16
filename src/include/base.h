@@ -2,6 +2,7 @@
 #define BASE_H
 
 #include <cmath>
+#include <complex>
 #include <cassert>
 #include <tuple>
 #include <array>
@@ -28,7 +29,21 @@ using vec3_ = Eigen::Matrix<T, 3, 1>;
 //! C++11's trick for template aliase.
 template <class U>
 using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
-
+//! Matlab style varargout with 2 return.
+//! Template aliases trick in C++11.
+template <class T>
+using varargout_2_ = std::tuple<T, matrix_<T> >; 
+//! Matlab style varargout with 3 return.
+template <class T>
+using varargout_3_ = std::tuple<T, matrix_<T>, matrix_<T> >;
+//! REAL(kind=4) in Fortran iso_c_binding.
+using REAL4 = float;
+//! REAL(kind=8) in Fortran iso_c_binding.
+using REAL8 = double;
+//! COMPLEX(kind=4) in Fortran iso_c_binding.
+using COMPLEX4 = std::complex<float>;
+//! COMPLEX(kind=8) in Fortran iso_c_binding.
+using COMPLEX8 = std::complex<double>;
 /**
  *  Basic parent object.
  */
@@ -57,13 +72,15 @@ class ObjectBase {
 		 *  a.set_group({1,3,4,5,8,2});
 		 *  \endcode
 		 */
-		void set_group(std::initializer_list<int> abc){
+		void set_group(std::initializer_list<int> abc)
+		{
 			assert(abc.size()<=8);
 			int i{0};
 			for(auto const &it: abc)group_[i++] = it;
 		}
 		//! Set object's group via C-style.
-		void set_group(const int y[], int n){
+		void set_group(const int y[], int n)
+		{
 			assert(n<=8);
 			for(int i=0; i<n; i++)group_[i] = y[i];
 		};
@@ -73,6 +90,12 @@ class ObjectBase {
 		int get_id() const {return id_;};
 		//! Get object's group.
 		std::array<int, 8> get_group() const {return group_;};
+		//! Print object's id and name.
+		friend std::ostream& operator<<(std::ostream& cout, const ObjectBase &a)
+		{
+			cout << "Object id:\t" << a.id_ << "\tname:\t" << a.name_ << "\n";
+			return cout;
+		}
 		
 	protected:
 		int id_{-1};//!< Object's id.
@@ -97,7 +120,8 @@ class Timer{
 			return std::chrono::duration_cast<second_>(clock_::now()-beg_).count();
 		};
 		//! Print time cost.
-		friend std::ostream& operator<<(std::ostream& cout, const Timer a){
+		friend std::ostream& operator<<(std::ostream& cout, const Timer &a)
+		{
 			return cout << "Time cost:\t" << a.elapsed() << "seconds.\n";
 		}
 	private:
