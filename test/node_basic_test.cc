@@ -34,15 +34,11 @@ Scalar triangle_area_test_01()
 	using cafea::matrix_;
 	using std::tie;
 	
-	Node<Scalar, ResType> p1{101, 0, 0, 0};
-	Node<Scalar, ResType> p2{102, 2, 0, 0};
-	Node<Scalar, ResType> p3{103, 0, 2, 0};
+	Node<Scalar, ResType> p1{101, {0, 0, 0}};
+	Node<Scalar, ResType> p2(102, {2, 0, 0}, {15.0, 30.0, 60.0});
+	Node<Scalar, ResType> p3{103, {0, 2, 0}, {10.0, 10.0, 20.0}};
 	Node<Scalar, ResType> p4{104, -2, 2, 0};
 	
-	NodeBase<Scalar> pp1{101, 0, 0, 0};
-	NodeBase<Scalar> pp2{102, 2, 0, 0};
-	NodeBase<Scalar> pp3{103, 0, 2, 0};
-	NodeBase<Scalar> pp4{104, -2, 2, 0};
 	Scalar area{2};
 	matrix_<Scalar> xy, tran;
 	tie(area, xy, tran) = coord_tran<Scalar>(&p1, &p2, &p3);

@@ -19,7 +19,9 @@ SRC = ../cppformat/cppformat/format.o ../src/core/coord_tran.o
 test_node: $(SRC) ./node_basic_test.o 
 	$(COMMENT)
 	@echo "Begin node test"
+	$(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_node
+	
 clean:
 	@echo "Clean files"
 	- $(RM) $(CLEAN) *.o test_*

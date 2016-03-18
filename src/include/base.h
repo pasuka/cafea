@@ -36,6 +36,9 @@ using varargout_2_ = std::tuple<T, matrix_<T> >;
 //! Matlab style varargout with 3 return.
 template <class T>
 using varargout_3_ = std::tuple<T, matrix_<T>, matrix_<T> >;
+//! Initializer list.
+template <class T>
+using init_list_ = std::initializer_list<T>;
 //! REAL(kind=4) in Fortran iso_c_binding.
 using REAL4 = float;
 //! REAL(kind=8) in Fortran iso_c_binding.

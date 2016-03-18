@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <initializer_list>
 
 #include <Eigen/Dense>
 #include "cppformat/format.h"
@@ -65,7 +64,8 @@ class NodeBase: public ObjectBase {
 		 */
 		NodeBase(int id, Scalar x, Scalar y, Scalar z):
 			ObjectBase{id, fmt::format("Node#{0}", id)},
-			csys_(CoordinateSystem::CARTESIAN) {
+			csys_(CoordinateSystem::CARTESIAN)
+		{
 				assert(id_>0);
 				xyz_ << x, y, z;
 		};
@@ -79,9 +79,10 @@ class NodeBase: public ObjectBase {
 		 */
 		NodeBase(int id, CoordinateSystem csys,
 			Scalar u1, Scalar u2, Scalar u3):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {
-				assert(id_>0);
-				xyz_ << u1, u2, u3;
+			ObjectBase{id, fmt::format("Node#{0}", id)}
+		{
+			assert(id_>0);
+			xyz_ << u1, u2, u3;
 		};
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
@@ -98,10 +99,11 @@ class NodeBase: public ObjectBase {
 		NodeBase(int id, Scalar x, Scalar y, Scalar z,
 			Scalar rotx, Scalar roty, Scalar rotz):
 			csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {
-				assert(id_>0);
-				xyz_ << x, y, z;
-				angle_ << rotx, roty, rotz;
+			ObjectBase{id, fmt::format("Node#{0}", id)}
+		{
+			assert(id_>0);
+			xyz_ << x, y, z;
+			angle_ << rotx, roty, rotz;
 		};
 		/**
 		 *  \brief Initialize with node's id coordinate and Euler angles.
@@ -116,10 +118,56 @@ class NodeBase: public ObjectBase {
 		 */
 		NodeBase(int id, CoordinateSystem csys, Scalar x, Scalar y, Scalar z,
 			Scalar rotx, Scalar roty, Scalar rotz):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {
-				assert(id_>0);
-				xyz_ << x, y, z;
-				angle_ << rotx, roty, rotz;
+			ObjectBase{id, fmt::format("Node#{0}", id)}
+		{
+			assert(id_>0);
+			xyz_ << x, y, z;
+			angle_ << rotx, roty, rotz;
+		};
+		/**
+		 *  \brief Initialize with node's id and coordinate system and values.
+		 */
+		NodeBase(int id, CoordinateSystem csys, init_list_<Scalar> val):
+			ObjectBase{id, fmt::format("Node#{0}", id)}, csys_(csys)
+		{
+			assert(val.size()==3);
+			int i{0};
+			for(const auto it: val)xyz_(i++) = it;
+		};
+		/**
+		 *  \brief Initialize with node's id and coordinate values.
+		 */
+		NodeBase(int id, init_list_<Scalar> val):
+			csys_(CoordinateSystem::CARTESIAN),
+			ObjectBase{id, fmt::format("Node#{0}", id)}
+		{
+			assert(val.size()==3);
+			int i{0};
+			for(const auto it: val)xyz_(i++) = it;
+		};
+		/**
+		 *  \brief Initialize with node's id and coordinate and Euler angles.
+		 */
+		NodeBase(int id, CoordinateSystem csys, init_list_<Scalar> val,
+			init_list_<Scalar> val2):csys_(csys),
+			ObjectBase{id, fmt::format("Node#{0}", id)}
+		{
+			assert(val.size()==3&&val2.size()==3);
+			int i{0}, j{0};
+			for(const auto it: val)xyz_(i++) = it;
+			for(const auto it: val2)angle_(j++) = it;
+		};
+		/**
+		 *  \brief Initialize with node's id and coordinate and Euler angles.		
+		 */
+		NodeBase(int id, init_list_<Scalar> val, init_list_<Scalar> val2):
+			csys_(CoordinateSystem::CARTESIAN),
+			ObjectBase{id, fmt::format("Node#{0}", id)}
+		{
+			assert(val.size()==3&&val2.size()==3);
+			int i{0}, j{0};
+			for(const auto it: val)xyz_(i++) = it;
+			for(const auto it: val2)angle_(j++) = it;
 		};
 		//! Destructor.
 		~NodeBase(){};
@@ -159,17 +207,18 @@ class NodeBase: public ObjectBase {
 		//! Set Euler angle values with 1d array.
 		void set_angle(Scalar val[3]) {angle_ << val[0], val[1], val[2];};
 		//! Set Euler angle values with list.
-		void set_angle(std::initializer_list<Scalar> val)
+		void set_angle(init_list_<Scalar> val)
 		{
 			assert(val.size()==3);
-			angle_ << val[0], val[1], val[2];
+			int i{0};
+			for(const auto it: val)angle_(i++) = it;
 		};
 		//! Get Euler angle values.
 		Scalar get_rot_x() const {return angle_(0)>Scalar(180) ? Scalar(0): angle_(0);};
 		//! Get Euler angle values.
-		Scalar get_rot_y() const {return angle_(0)>Scalar(180) ? Scalar(0): angle_(0);};
+		Scalar get_rot_y() const {return angle_(1)>Scalar(180) ? Scalar(0): angle_(1);};
 		//! Get Euler angle values.
-		Scalar get_rot_z() const {return angle_(0)>Scalar(180) ? Scalar(0): angle_(0);};
+		Scalar get_rot_z() const {return angle_(2)>Scalar(180) ? Scalar(0): angle_(2);};
 		//! Get Euler angle values.
 		template <int x>
 		Scalar get_rot() const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
@@ -178,7 +227,7 @@ class NodeBase: public ObjectBase {
 		//! Get Euler angle values.
 		vec3_<Scalar> get_angle() const
 		{
-			if((angle_.array()>Scalar(1.8e2)).any())
+			if((angle_.array()>Scalar(180)).any())
 			{
 				return vec3_<Scalar>::Zero();
 			}
@@ -189,7 +238,7 @@ class NodeBase: public ObjectBase {
 		//! Print node information.
 		friend std::ostream& operator<<(std::ostream& cout, const NodeBase &a)
 		{
-			cout << fmt::format("Node:{0}\t", a.id_);
+			cout << a.name_ << "\t";
 			switch(a.csys_){
 			case CoordinateSystem::CARTESIAN:
 				cout << "Cartesian\n";
@@ -204,7 +253,7 @@ class NodeBase: public ObjectBase {
 				cout << "Unkown\n";
 			}
 			cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.get_x(), a.get_y(), a.get_z());
-			cout << fmt::format("Euler angle Yaw:{0}\tPitch:{1}\tRoll:{2}\n", a.get_rot<0>(), a.get_rot<1>(), a.get_rot<2>());
+			cout << fmt::format("Euler angle Yaw:{0}\tPitch:{1}\tRoll:{2}\n", a.get_rot(0), a.get_rot(1), a.get_rot(2));
 			return cout;
 		};
 	protected:

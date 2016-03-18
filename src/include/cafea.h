@@ -4,5 +4,6 @@
 #include "base.h"
 #include "boundary.h"
 #include "node.h"
+#include "material.h"
 
 #endif
