@@ -109,7 +109,28 @@ class Material: public ObjectBase {
 		friend std::ostream& operator<<(std::ostream& cout, const Material &a)
 		{
 			cout << a.name_ << "\t";
-			return cout;
+			switch(a.mtype_){
+			case MaterialType::LINEAR_ELASTIC:
+				cout << "Linear elastic material";
+				break;
+			default:
+				cout << "Unkown material";
+			}
+			switch(a.sect_){
+			case SectionType::SHELL:
+				cout << "Shell section";
+				break;
+			case SectionType::SOLID:
+				cout << "Solid section";
+				break;
+			case SectionType::PIPE:
+			case SectionType::CTUBE_BEAM:
+				cout << "Tube section";
+				break;
+			default:
+				cout << "Other section";
+			}
+			return cout << "\n";
 		};
 		
 	private:
