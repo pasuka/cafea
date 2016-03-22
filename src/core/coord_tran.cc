@@ -31,7 +31,8 @@ tuple<Scalar, matrix_<Scalar> > coord_tran(
 	assert(length>(EPS<Scalar>()));
 	vxx /= length;
 	
-	auto A{sqrt(vxx(0)*vxx(0)+vxx(1)*vxx(1))};
+	// auto A{sqrt(vxx(0)*vxx(0)+vxx(1)*vxx(1))};
+	auto A = hypot(vxx(0), vxx(1));
 	if(A<Scalar(1.e-6)){
 		tran(0, 2) = vxx(2)/fabs(vxx(2));
 		tran(1, 1) = Scalar(1);

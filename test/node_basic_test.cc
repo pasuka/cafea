@@ -39,7 +39,7 @@ Scalar triangle_area_test_01()
 	Node<Scalar, ResType> p3{103, {0, 2, 0}, {10.0, 10.0, 20.0}};
 	Node<Scalar, ResType> p4{104, -2, 2, 0};
 	
-	Scalar area{2};
+	Scalar area{0};
 	matrix_<Scalar> xy, tran;
 	tie(area, xy, tran) = coord_tran<Scalar>(&p1, &p2, &p3);
 	return area;

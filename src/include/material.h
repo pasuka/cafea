@@ -105,7 +105,7 @@ class Material: public ObjectBase {
 		SectionType get_sect_type() const {return sect_;};
 		//! Set type of section.
 		void set_sect_type(SectionType st) {sect_ = st;};
-		
+		//! Print material info.
 		friend std::ostream& operator<<(std::ostream& cout, const Material &a)
 		{
 			cout << a.name_ << "\t";
@@ -136,8 +136,8 @@ class Material: public ObjectBase {
 	private:
 		MaterialType mtype_{MaterialType::UNKNOWN};//!< Material type.
 		SectionType sect_{SectionType::UNKNOWN};//!< Section type.
-		std::array<double, 10> param_;//!< 1st parameter array.
-		std::array<double, 10> param2_;//!< 2nd parameter array.	
+		std::array<Scalar, 10> param_;//!< 1st parameter array.
+		std::array<Scalar, 10> param2_;//!< 2nd parameter array.	
 };
 }
 #endif

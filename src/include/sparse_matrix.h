@@ -14,6 +14,8 @@ struct SparseCell {
 	size_t row, col;//!< Row and Column index.
 	//! Default constructor.
 	SparseCell(){};
+	//! Default deconstructor.
+	~SparseCell(){};
 	//! Constructor with row and column index.
 	SparseCell(size_t ir, size_t jc):row(ir), col(jc){};
 	//! Compare ().
@@ -24,12 +26,12 @@ struct SparseCell {
 	//! Compare <.
 	bool operator< (const SparseCell *a) const
 	{
-		return this->row==a.row && this->col < a.col;
+		return this->row==a->row && this->col < a->col;
 	}
 	//! Compare .equal.
 	bool operator== (const SparseCell *a) const
 	{
-		return this->row==a.row && this->col==a.col;
+		return this->row==a->row && this->col==a->col;
 	}
 };
 
@@ -47,14 +49,23 @@ bool compare_pair(const SparseCell&, const SparseCell&);
  */
 template <class T>
 struct SparseMat {
-	std::string storge("CSR");
-	bool is_full{true};
-	bool is_sym{true};
-	size_t dim{0};
-	size_t nnz{0};
-	std::vector<SparseCell> row_col;
-	std::vector<size_t> aux;
-	std::vector<T> stif, mass;
+	std::string storge("CSR");//!< Storage method.
+	bool is_sym{true};//!< Symmetry matrix.
+	size_t dim{0};//!< Dimension of matrix.
+	size_t nnz{0};//!< Non-zeros of matrix.
+	std::vector<SparseCell> row_col;//!< Row and column index.
+	std::vector<size_t> aux;//!< Auxiliary index.
+	std::vector<T> stif, mass;//!< Global mass and stiffness values.
+	//! Default constructor.
+	SparseMat(){};
+	//! Deconstructor.
+	~SparseMat()
+	{
+		row_col.clear();
+		aux.clear();
+		stif.clear();
+		mass.clear();
+	};
 };
 }
 #endif
