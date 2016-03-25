@@ -18,9 +18,7 @@ namespace cafea
  *  \param [in] p2 End node. 
  */
 template <class Scalar>
-tuple<Scalar, matrix_<Scalar> > coord_tran(
-	const NodeBase<Scalar> *p1,
-	const NodeBase<Scalar> *p2)
+varargout_2_<Scalar> coord_tran(const NodeBase<Scalar> *p1, const NodeBase<Scalar> *p2)
 {
 	Scalar length{0};
 	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
@@ -51,10 +49,7 @@ tuple<Scalar, matrix_<Scalar> > coord_tran(
  *  \brief Coordinate transform for 2-node beam with up-axis.
  */
 template <class Scalar>
-tuple<Scalar, matrix_<Scalar> > coord_tran(
-	const NodeBase<Scalar> *p1,
-	const NodeBase<Scalar> *p2,
-	const Scalar up[])
+varargout_2_<Scalar> coord_tran(const NodeBase<Scalar> *p1, const NodeBase<Scalar> *p2, const Scalar up[])
 {
 	Scalar length{0};
 	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
@@ -91,7 +86,7 @@ tuple<Scalar, matrix_<Scalar> > coord_tran(
  *  \brief Coordinate transform for 3-node triangle element.
  */
 template <class Scalar>
-tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
+varargout_3_<Scalar> coord_tran(
 	const NodeBase<Scalar> *p1, 
 	const NodeBase<Scalar> *p2,
 	const NodeBase<Scalar> *p3)
@@ -140,11 +135,9 @@ tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
  *  \brief Coordinate transform for 4-node quadrangle element.
  */
 template <class Scalar>
-tuple<Scalar, matrix_<Scalar>, matrix_<Scalar> > coord_tran(
-	const NodeBase<Scalar> *p1,
-	const NodeBase<Scalar> *p2,
-	const NodeBase<Scalar> *p3,
-	const NodeBase<Scalar> *p4) 
+varargout_3_<Scalar> coord_tran(
+	const NodeBase<Scalar> *p1, const NodeBase<Scalar> *p2,
+	const NodeBase<Scalar> *p3, const NodeBase<Scalar> *p4) 
 {
 	Scalar area{0};
 	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3); 
