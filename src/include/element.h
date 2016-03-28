@@ -32,6 +32,7 @@ enum struct ElementType {
 template <class T>
 class Element: public ObjectBase {
 	public:
+		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//* Default constructor.
 		Element(){};
 		//* Destructor.
@@ -51,13 +52,14 @@ class Element: public ObjectBase {
 		 *  \param [in] mp number of material type.
 		 *  \param [in] nodes list of nodes id.
 		 */
-		Element(int id, 
-			ElementType et, 
-			int mp, 
-			init_list_<size_t> nodes):id(id), etype(et), matl(mp), name("Element")
+		Element(int id, ElementType et, int mp, init_list_<int> nodes):
+			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype(et), matl(mp),
 		{
-			assert(id>0&&etype>0&&matl>0);
-			for(const auto& it: nodes)node_list.push_back(it);
+			assert(id>0&&matl>0);
+			for(const auto& it: nodes){
+				assert(it>0);
+				node_list.push_back(it);
+			}
 		}
 		//! Generate stifness mass matrix of element.
 		void form_matrix();
@@ -87,7 +89,7 @@ class Element: public ObjectBase {
 		void post_stress();
 		
 		//! Get node list.
-		std::vector<size_t> get_node_list() const {return node_list;};
+		std::vector<int> get_node_list() const {return node_list;};
 		//! Set node list.
 		void set_node_list(const int a[], int m){
 			if(!node_list.empty())node_list.clear();
@@ -142,8 +144,7 @@ class Element: public ObjectBase {
 		Eigen::MatrixXd tran_;//!< Transpose matrix of element.
 		Eigen::MatrixXd rhs_;//!< Right-hand side of element.
 		
-		template <class U>
-		using init_list_ = std::initializer_list<U>;
+		
 		template <class U>
 		using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
 		matrix_<T> stress_;//!< Stress of element.

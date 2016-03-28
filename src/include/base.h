@@ -2,14 +2,15 @@
 #define BASE_H
 
 #include <cmath>
-#include <complex>
-#include <cassert>
 #include <tuple>
 #include <array>
 #include <string>
 #include <vector>
 #include <limits>
 #include <chrono>
+#include <complex>
+#include <cassert>
+#include <unordered_map>
 #include <initializer_list>
 
 #include <Eigen/Dense>
@@ -39,6 +40,9 @@ using varargout_3_ = std::tuple<T, matrix_<T>, matrix_<T> >;
 //! Initializer list.
 template <class T>
 using init_list_ = std::initializer_list<T>;
+//! Dictionary.
+template <typename T>
+using dict_ = std::unordered_map<int, T>;
 //! REAL(kind=4) in Fortran iso_c_binding.
 using REAL4 = float;
 //! REAL(kind=8) in Fortran iso_c_binding.

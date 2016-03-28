@@ -3,7 +3,6 @@
 
 #include <complex>
 #include <vector>
-#include <unordered_map>
 
 #include <Eigen/Eigen>
 
@@ -16,60 +15,82 @@
 namespace cafea
 {
 /**
- *  Solution base definition.	
+ *  Solution base def.
  */
-template <class FileReader, class ResultDataType>
+template <class FileReader, class Scalar=float>
 class SolutionBase {
 	public:
 		//! Default constructor.
 		SolutionBase(){};
 		//! Destructor.
-		virtual ~SolutionBase();
+		virtual ~SolutionBase(){};
 		//! Initialize environment.
-		virtual void init_model() const=0;
+		virtual init_model();
 		//! Load input file.
-		virtual void load_file(const std::string& file_name) const=0;
-		//! Load input file.
-		virtual void load_file(const char* file_name) const=0;
+		virtual void load_file(const char* file_name);
 		//! Check input model data.
-		virtual void check_model() const=0;
+		virtual void check_model();
 		//! Analyze sparse pattern.
-		virtual void analyze_pattern() const=0;
+		virtual void analyze_pattern();
 		//! Assemble global matrix.
-		virtual void assemble_matrix() const=0;
+		virtual void assemble_matrix();
+		//! Solve.
+		virtual void solve();
+		//! Post process.
+		virtual void post_process();
 	protected:
-		template <typename T>
-		using dict_ = std::unordered_map<int, T>;
-		dict_<Node<ResultDataType>> m_node_dict;//!< Node dictionary.
-		dict_<Element<ResultDataType>> m_elem_dict;//!< Element dictionary.
-		dict_<Material> m_matl_dict;//!< Material dictionary.
-		std::vector<Boundary> m_boundary_dict;//!< Boundary dictionary.
+		FileReader<Scalar> file_parser_;//!< Input file loader.
+};
+
+/**
+ *  Solution of modal analysis.	
+ */
+template <class FileReader, class Scalar=float, class ResultScalar=double>
+class SolutionModal: public SolutionBase <FileReader, Scalar>{
+	public:
+		//! Default constructor.
+		SolutionBase(){};
+		//! Destructor.
+		~SolutionBase();
+		//! Initialize environment.
+		void init_model();
+		//! Load input file.
+		void load_file(const char* file_name);
+		//! Check input model data.
+		void check_model();
+		//! Analyze sparse pattern.
+		void analyze_pattern();
+		//! Assemble global matrix.
+		void assemble_matrix();
+		//! Solve.
+		void solve();
+		//! Post process.
+		void post_process();
+	protected:
+		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
+		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.
+		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
+		std::vector<Boundary> boundary_group_;//!< Boundary dictionary.
 		
-		FileReader m_file_parser;//!< Input file loader.
+		SparseMat<ResultScalar> stif_global_;//!< Global stiffness matrix.
+		SparseMat<ResultScalar> mass_global_;//!< Global mass matrix.
 };
 
 /**
- *  Solution for response in frequency domain.
+ *  Solution of harmonic
  */
-template <class FileReader>
-class SolutionFrequencyResponse: public SolutionBase <FileReader, std::complex<double>> {
+template <class FileReader, class Scalar=float, class ResultScalar=double>
+class SolutionHarmonic: public SolutionBase <FileReader, Scalar>{
 	public:
 		//! Default constructor.
-		SolutionFrequencyResponse(){};
+		SolutionHarmonic(){};
 		//! Destructor.
-		~SolutionFrequencyResponse(){
-			m_node_dict.clear();
-			m_elem_dict.clear();
-			m_matl_dict.clear();
-			m_boundary_dict.clear();
-		};
+		~SolutionHarmonic(){};
 		//! Initialize environment.
 		void init_model();
 		//! Load input file.
-		void load_file(const std::string& file_name);
-		//! Load input file.
 		void load_file(const char* file_name);
-		//! Check model data.
+		//! Check input model data.
 		void check_model();
 		//! Analyze sparse pattern.
 		void analyze_pattern();
@@ -79,54 +100,14 @@ class SolutionFrequencyResponse: public SolutionBase <FileReader, std::complex<d
 		void solve();
 		//! Post process.
 		void post_process();
-		//! Set mass matrix as lumped.
-		void set_lump(bool x){m_lump = x};
-		//! Get mass matrix whether lumped.
-		bool get_lump() const {return m_lump;};
-	private:
-		SparseMat<double> m_global_matrix;//!< Global matrix index and values.
-		bool m_lump{false};//!< Lump mass matrix.
+	protected:
+		dict_<Node<Scalar, std::complex<ResultScalar>>> node_group_;//!< Node dictionary.
+		dict_<Element<std::complex<ResultScalar>>> elem_group_;//!< Element dictionary.
+		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
+		std::vector<Boundary> boundary_group_;//!< Boundary dictionary.
+		
+		SparseMat<ResultScalar> stif_global_;//!< Global stiffness matrix.
+		SparseMat<ResultScalar> mass_global_;//!< Global mass matrix.
 };
-
-/**
- * Solution for response in time domain. 
- */
-template <class FileReader>
-class SolutionTimeResponse: public SolutionBase<FileReader, double> {
-	public:
-		//! Default constructor.
-		SolutionTimeResponse(){};
-		//! Destructor.
-		~SolutionTimeResponse(){
-			m_node_dict.clear();
-			m_elem_dict.clear();
-			m_matl_dict.clear();
-			m_boundary_dict.clear();
-		};
-		//! Initialize environment.
-		void init_model();
-		//! Load input file.
-		void load_file(const std::string& file_name);
-		//! Load input file.
-		void load_file(const char* file_name);
-		//! Check model data.
-		void check_model();
-		//! Analyze sparse pattern.
-		void analyze_pattern();
-		//! Assemble global matrix.
-		void assemble_matrix();
-		//! Solve.
-		void solve();
-		//! Post process.
-		void post_process();
-		//! Set mass matrix as lumped.
-		void set_lump(bool x){m_lump = x};
-		//! Get mass matrix whether lumped.
-		bool get_lump() const {return m_lump;};
-	private:
-		SparseMat<double> m_global_matrix;//!< Global matrix index and values.
-		bool m_lump{false};//!< Lump mass matrix.
-};
-
 }
 #endif
