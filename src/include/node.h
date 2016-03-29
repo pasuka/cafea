@@ -306,7 +306,7 @@ class Node: public NodeBase<Scalar> {
 	private:
 		std::vector<int> dofs_;//!< Storage of Degree of freedoms.
 		matrix_<ResultScalar> mode_shape_;//!< Storage of mode shape.
-		Eigen::VectorXd range_;//!< Storage of time- or frequency- domain range.
+		vecX_<ResultScalar> range_;//!< Storage of time- or frequency- domain range.
 		
 		matrix_<ResultScalar> pres_;//!< Storage of pressure.
 		matrix_<ResultScalar> disp_;//!< Storage of displacement.

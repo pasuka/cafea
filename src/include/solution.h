@@ -40,6 +40,8 @@ class SolutionBase {
 		virtual void post_process();
 	protected:
 		FileReader<Scalar> file_parser_;//!< Input file loader.
+		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
+		std::vector<Boundary> boundary_group_;//!< Boundary dictionary.
 };
 
 /**
@@ -49,11 +51,17 @@ template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionModal: public SolutionBase <FileReader, Scalar>{
 	public:
 		//! Default constructor.
-		SolutionBase(){};
+		SolutionModal(){};
 		//! Destructor.
-		~SolutionBase();
+		~SolutionModal() {init_model();};
 		//! Initialize environment.
-		void init_model();
+		void init_model()
+		{
+			if(!mat_global_.empty())matl_group_.clear();
+			if(!boundary_group_.empty())boundary_group_.clear();
+			if(!node_group_.empty())node_group_.clear();
+			if(!elem_group_.empty())elem_group_.clear();
+		};
 		//! Load input file.
 		void load_file(const char* file_name);
 		//! Check input model data.
@@ -69,25 +77,28 @@ class SolutionModal: public SolutionBase <FileReader, Scalar>{
 	protected:
 		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
 		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.
-		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
-		std::vector<Boundary> boundary_group_;//!< Boundary dictionary.
 		
-		SparseMat<ResultScalar> stif_global_;//!< Global stiffness matrix.
-		SparseMat<ResultScalar> mass_global_;//!< Global mass matrix.
+		SparseMat<ResultScalar> mat_global_;//!< Global stiffness and mass matrix.
 };
 
 /**
  *  Solution of harmonic
  */
 template <class FileReader, class Scalar=float, class ResultScalar=double>
-class SolutionHarmonic: public SolutionBase <FileReader, Scalar>{
+class SolutionHarmonic: public SolutionBase <FileReader, Scalar> {
 	public:
 		//! Default constructor.
 		SolutionHarmonic(){};
 		//! Destructor.
-		~SolutionHarmonic(){};
+		~SolutionHarmonic() {init_model();};
 		//! Initialize environment.
-		void init_model();
+		void init_model()
+		{
+			if(!mat_global_.empty())matl_group_.clear();
+			if(!boundary_group_.empty())boundary_group_.clear();
+			if(!node_group_.empty())node_group_.clear();
+			if(!elem_group_.empty())elem_group_.clear();
+		};
 		//! Load input file.
 		void load_file(const char* file_name);
 		//! Check input model data.
@@ -103,11 +114,8 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar>{
 	protected:
 		dict_<Node<Scalar, std::complex<ResultScalar>>> node_group_;//!< Node dictionary.
 		dict_<Element<std::complex<ResultScalar>>> elem_group_;//!< Element dictionary.
-		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
-		std::vector<Boundary> boundary_group_;//!< Boundary dictionary.
 		
-		SparseMat<ResultScalar> stif_global_;//!< Global stiffness matrix.
-		SparseMat<ResultScalar> mass_global_;//!< Global mass matrix.
+		SparseMat<ResultScalar> mat_global_;//!< Global stiffness and mass matrix.
 };
 }
 #endif

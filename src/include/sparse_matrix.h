@@ -47,7 +47,7 @@ bool compare_pair(const SparseCell&, const SparseCell&);
 /**
  *  Struct for global matrix data storge.
  */
-template <class T>
+template <class T=double>
 struct SparseMat {
 	std::string storge("CSR");//!< Storage method.
 	bool is_sym{true};//!< Symmetry matrix.
@@ -59,12 +59,14 @@ struct SparseMat {
 	//! Default constructor.
 	SparseMat(){};
 	//! Deconstructor.
-	~SparseMat()
+	~SparseMat() {init_mat();};
+	//! Initialize.
+	void init_mat()
 	{
-		row_col.clear();
-		aux.clear();
-		stif.clear();
-		mass.clear();
+		if(!row_col.empty())row_col.clear();
+		if(!aux.empty())aux.clear();
+		if(!stif.empty())stif.clear();
+		if(!mass.empty())mass.clear();
 	};
 };
 }

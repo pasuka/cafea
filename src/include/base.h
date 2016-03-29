@@ -26,6 +26,9 @@ constexpr T PI() {return T(std::atan(1.0)*4.0);};
 //! Vector3.
 template <class T>
 using vec3_ = Eigen::Matrix<T, 3, 1>;
+//! Vector.
+template <class T>
+using vecX_ = Eigen::Matirx<T, Eigen::Dynamic, 1>;
 //! Matirx.
 //! C++11's trick for template aliase.
 template <class U>

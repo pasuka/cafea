@@ -2,7 +2,6 @@
 #define ELEMENT_H
 
 #include <cassert>
-#include <cstddef>
 #include <array>
 #include <tuple>
 #include <vector>
@@ -37,13 +36,13 @@ class Element: public ObjectBase {
 		Element(){};
 		//* Destructor.
 		~Element(){
-			node_list.clear();
-			m_mass.resize(0, 0);
-			m_stif.resize(0, 0);
-			m_tran.resize(0, 0);
-			m_rhs.resize(0, 0);
-			m_stress.resize(0, 0);
-			m_reaction_force.resize(0, 0);
+			nodes_.clear();
+			mass_.resize(0, 0);
+			stif_.resize(0, 0);
+			tran_.resize(0, 0);
+			rhs_.resize(0, 0);
+			stress_.resize(0, 0);
+			force_.resize(0, 0);
 		};
 		/**
 		 *  \brief Initialize with element id type material type and node list.
@@ -53,102 +52,95 @@ class Element: public ObjectBase {
 		 *  \param [in] nodes list of nodes id.
 		 */
 		Element(int id, ElementType et, int mp, init_list_<int> nodes):
-			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype(et), matl(mp),
+			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp),
 		{
-			assert(id>0&&matl>0);
+			assert(id_>0&&matl_>0);
 			for(const auto& it: nodes){
 				assert(it>0);
-				node_list.push_back(it);
+				nodes_.push_back(it);
 			}
 		}
 		//! Generate stifness mass matrix of element.
 		void form_matrix();
 		//! Get stiffness matrix.
-		Eigen::MatrixXd get_stif() const {return m_stif;};
+		Eigen::MatrixXd get_stif() const {return stif_;};
 		//! Get mass matrix.
-		Eigen::MatrixXd get_mass() const {return m_mass;};
+		Eigen::MatrixXd get_mass() const {return mass_;};
 		//! Get transpose matrix.
-		Eigen::MatrixXd get_tran() const {return m_tran;};
+		Eigen::MatrixXd get_tran() const {return tran_;};
 		//! Get right-hand side matrix.
-		Eigen::MatrixXd get_rhs() const {return m_rhs;};
+		Eigen::MatrixXd get_rhs() const {return rhs_;};
 		//! Get raw pointer of stiffness matrix.
-		double *get_stif_ptr() const {return m_stif.data();};
+		double *get_stif_ptr() const {return stif_.data();};
 		//! Get raw pointer of mass matrix.
-		double *get_mass_ptr() const {return m_mass.data();};
+		double *get_mass_ptr() const {return mass_.data();};
 		//! Get raw pointer of transpose matrix.
-		double *get_tran_ptr() const {return m_tran.data():};
+		double *get_tran_ptr() const {return tran_.data():};
 		//! Get raw pointer of right-hand side matrix.
-		double *get_rhs_ptr() const {return m_rhs.data();};
+		double *get_rhs_ptr() const {return rhs_.data();};
 		
 		//! Get stress matrix.
-		matrix_<T> get_stress() const {return m_stress;};
+		matrix_<T> get_stress() const {return stress_;};
 		//! Get raw pointer of stress matrix.
-		T *get_stress_ptr() const {return m_stress.data();};
+		T *get_stress_ptr() const {return stress_.data();};
 		
 		//! Post process.
 		void post_stress();
 		
 		//! Get node list.
-		std::vector<int> get_node_list() const {return node_list;};
+		std::vector<int> get_node_list() const {return nodes_;};
 		//! Set node list.
-		void set_node_list(const int a[], int m){
-			if(!node_list.empty())node_list.clear();
-			for(int i=0; i<m; i++)node_list.push_back(a[i]);
+		void set_node_list(const int a[], int m)
+		{
+			if(!nodes_.empty())nodes_.clear();
+			for(int i=0; i<m; i++)nodes_.push_back(a[i]);
 		};
 		//! Set node list with c++11 initializer_list.
-		void set_node_list(init_list_<int> a){
-			if(!node_list.empty())node_list.clear();
-			for(const auto& it: a)node_list.push_back(it);
+		void set_node_list(init_list_<int> a)
+		{
+			if(!nodes_.empty())nodes_.clear();
+			for(const auto& it: a)nodes_.push_back(it);
 		};
 		//! Set id of element.
-		void set_element_id(int x){id = x;};
+		void set_element_id(int x){id_ = x;};
 		//! Set type of element.
-		void set_element_type(int x){etype = x;};
+		void set_element_type(int x){etype_ = x;};
 		//! Set material id.
-		void set_material_id(int x){matl = x;};		
-		//! Set order of element.
-		// void set_element_order(int x){order = x;};
-		//! Set dofs of each node.
-		// void set_dofs_per_node(int x){dofs_per_node = x;};
+		void set_material_id(int x){matl_ = x;};		
 		//! set type of element.
-		void set_element_type(ElementType et){etype_val = et;};
+		void set_element_type(ElementType et){etype_ = et;};
 		
 		//! Get material id.
-		int get_material_id() const {return matl;};
+		int get_material_id() const {return matl_;};
 		//! Get type of element.
-		int get_element_type() const {return etype;};
-		//! Get type of element.
-		ElementType get_element_type() const {return etype_val;};
+		ElementType get_element_type() const {return etype_;};
 		//! Get id of element.
-		int get_element_id() const {return id;};
+		int get_element_id() const {return id_;};
 		//! Get order of element.
 		int get_element_order() const;
 		//! Get dofs of each node.
 		int get_dofs_per_node() const;
 		//! Get total number of nodes.
-		size_t get_total_num_of_nodes() const {return node_list.size();};
+		int get_total_num_of_nodes() const {return nodes_.size();};
 		//! Get active number of nodes.
 		int get_active_num_of_nodes() const;
 		
  	private:
-		ElementType etype{ElementType::UNKNOWN};//!< Type of element.
-		int matl{-1};//!< Material id.
-		// int order{-1};//!< Order of element.
-		// int dofs_per_node{-1};//!< Dofs for each node.
-		std::array<int, 8> keyopt{-1, -1, -1, -1, -1, -1, -1, -1};//!< Parameters of element.
-		std::vector<size_t> node_list;//!< Array of node list.
+		ElementType etype_{ElementType::UNKNOWN};//!< Type of element.
+		int matl_{-1};//!< Material id.
+		std::array<int, 8> keyopt_{-1, -1, -1, -1, -1, -1, -1, -1};//!< Parameters of element.
+		std::vector<int> nodes_;//!< Array of node list.
 		
+		matrix_<T> stif_;//!< Stiffness matrix of element.
+		matrix_<T> mass_;//!< Mass matrix of element.
+		matrix_<T> tran_;//!< Transpose matrix of element.
+		matrix_<T> rhs_;//!< Right-hand side of element.
 		
-		Eigen::MatrixXd stif_;//!< Stiffness matrix of element.
-		Eigen::MatrixXd mass_;//!< Mass matrix of element.
-		Eigen::MatrixXd tran_;//!< Transpose matrix of element.
-		Eigen::MatrixXd rhs_;//!< Right-hand side of element.
-		
-		
-		template <class U>
-		using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
 		matrix_<T> stress_;//!< Stress of element.
-		matrix_<T> reaction_force_;//!< Reaction force of element.
+		matrix_<T> force_;//!< Reaction force of element.
+		
+		matrix_<std::complex<T>> stress_cplx_;//!< Stress of element in complex.
+		matrix_<std::complex<T>> force_cplx_;//!< Stress of element in complex.
 };
 
 namespace
