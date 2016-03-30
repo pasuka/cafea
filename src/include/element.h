@@ -28,7 +28,7 @@ enum struct ElementType {
 /**
  * Element object definition. 
  */
-template <class T>
+template <class T=double, class U=double>
 class Element: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
@@ -42,7 +42,7 @@ class Element: public ObjectBase {
 			tran_.resize(0, 0);
 			rhs_.resize(0, 0);
 			stress_.resize(0, 0);
-			force_.resize(0, 0);
+			reaction_force_.resize(0, 0);
 		};
 		/**
 		 *  \brief Initialize with element id type material type and node list.
@@ -63,26 +63,26 @@ class Element: public ObjectBase {
 		//! Generate stifness mass matrix of element.
 		void form_matrix();
 		//! Get stiffness matrix.
-		Eigen::MatrixXd get_stif() const {return stif_;};
+		matrix_<T> get_stif() const {return stif_;};
 		//! Get mass matrix.
-		Eigen::MatrixXd get_mass() const {return mass_;};
+		matrix_<T> get_mass() const {return mass_;};
 		//! Get transpose matrix.
-		Eigen::MatrixXd get_tran() const {return tran_;};
+		matrix_<T> get_tran() const {return tran_;};
 		//! Get right-hand side matrix.
-		Eigen::MatrixXd get_rhs() const {return rhs_;};
+		matrix_<T> get_rhs() const {return rhs_;};
 		//! Get raw pointer of stiffness matrix.
-		double *get_stif_ptr() const {return stif_.data();};
+		T *get_stif_ptr() const {return stif_.data();};
 		//! Get raw pointer of mass matrix.
-		double *get_mass_ptr() const {return mass_.data();};
+		T *get_mass_ptr() const {return mass_.data();};
 		//! Get raw pointer of transpose matrix.
-		double *get_tran_ptr() const {return tran_.data():};
+		T *get_tran_ptr() const {return tran_.data():};
 		//! Get raw pointer of right-hand side matrix.
-		double *get_rhs_ptr() const {return rhs_.data();};
+		T *get_rhs_ptr() const {return rhs_.data();};
 		
 		//! Get stress matrix.
-		matrix_<T> get_stress() const {return stress_;};
+		matrix_<U> get_stress() const {return stress_;};
 		//! Get raw pointer of stress matrix.
-		T *get_stress_ptr() const {return stress_.data();};
+		U *get_stress_ptr() const {return stress_.data();};
 		
 		//! Post process.
 		void post_stress();
@@ -136,114 +136,8 @@ class Element: public ObjectBase {
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		matrix_<T> rhs_;//!< Right-hand side of element.
 		
-		matrix_<T> stress_;//!< Stress of element.
-		matrix_<T> force_;//!< Reaction force of element.
-		
-		matrix_<std::complex<T>> stress_cplx_;//!< Stress of element in complex.
-		matrix_<std::complex<T>> force_cplx_;//!< Stress of element in complex.
+		matrix_<U> stress_;//!< Stress of element.
+		matrix_<U> reaction_force_;//!< Reaction force of element.
 };
-
-namespace
-{
-template <class T, class U>
-using varargout_base = std::tuple<T, T, T, U>;
-using varargout = varargout_base<Eigen::MatrixXd, Eigen::VectorXd>;
-}	
-
-namespace pipe_elem_lib
-{
-//! 2-node straight pipe element.
-varargout pipe16(const Node[2], const Material&);
-//! 2-node straight pipe element.
-varargout pipe16(const Node&, const Node&, const Material&);
-//! 2-node curved pipe element.
-varargout pipe18(const Node[3], const Material&);
-//! 2-node curved pipe element.
-varargout pipe18(const Node&, const Node&, const Node&, const Material&);
-}
-
-namespace additional_elem_lib
-{
-//! 1-node mass element.
-varargout mass21(const Node&, const Material&, const int[]);
-//! 2-node spring element.
-varargout combin14(const Node&, const Node&, const Material&, const int[]);
-//! 2-node spring element.
-varargout combin14(const Node[2], const Material&, const int[]);
-}
-
-namespace solid_elem_lib
-{
-//! 4-node tetrahedron solid element.
-varargout c3d4(const Node[4], const Material&);
-//! 4-node tetrahedron solid element.
-varargout c3d4(const Node&, const Node&, const Node&, const Node&, const Material&);
-//! 8-node hexahedron solid element.
-varargout c3d8(const Node[8], const Material&);
-//! 8-node hexahedron solid element.
-varargout c3d8(const Node[8], const Material&, const int[]);
-//! 20-node second order hexahedron solid element.
-varargout c3d20(const Node[20], const Material&);
-//! 27-node full second order hexahedron solid element.
-varargout c3d27(const Node[27], const Material&);
-}
-
-namespace shell_elem_lib
-{
-//! 3-node triangle shell element.
-varargout s3r(const Node&, const Node&, const Node&, const Material&);
-//! 3-node triangle shell element.
-varargout s3r(const Node[3], const Material&);
-//! 4-node quadrangle shell element.
-varargout s4r(const Node&, const Node&, const Node&, const Node&, const Material&);
-//! 4-node quadrangle shell element.
-varargout s4r(const Node[4], const Material&);
-//! 8-node second order quadrangle shell element.
-varargout s8r(const Node[8], const Material&);
-//! 9-node full second order quadrangle shell element.
-varargout s9r(const Node[9], const Material&);
-//! 16-node full thrid order quadrangle shell element.
-varargout s16r(const Node[16], const Material&);
-//! 25-node full fourth order quadrangle shell element.
-varargout s25r(const Node[25], const Material&);
-//! 36-node full fifth order quadrangle shell element.
-varargout s36r(const Node[36], const Material&);
-}
-
-namespace beam_elem_lib
-{
-//! 2-node straight beam element.
-varargout b31(const Node[2], const Material&, const float[]);
-//! 2-node straight beam element.
-varargout b31(const Node[3], const Material&);
-//! 2-node straight beam element.
-varargout b31(const Node&, const Node&, const Material&, const float[]);
-//! 2-node straight beam element.
-varargout b31(const Node&, const Node&, const Node&, const Material&);
-//! 2-node straight beam element.
-varargout beam188(const Node[2], const Material&, const float[]);
-//! 2-node straight beam element.
-varargout beam188(const Node[3], const Material&);
-//! 2-node straight beam element.
-varargout beam188(const Node&, const Node&, const Material&, const float[]);
-//! 2-node straight beam element.
-varargout beam188(const Node&, const Node&, const Node&, const Material&);
-//! 3-node straight beam element.
-varargout b32(const Node[3], const Material&, const float[]);
-//! 3-node straight beam element.
-varargout b32(const Node[4], const Material&);
-//! 3-node straight beam element.
-varargout b32(const Node&, const Node&, const Node&, const Material&, const float[]);
-//! 3-node straight beam element.
-varargout b32(const Node&, const Node&, const Node&, const Node&, const Material&);
-//! 3-node straight beam element.	
-varargout beam189(const Node[3], const Material&, const float[]);
-//! 3-node straight beam element.
-varargout beam189(const Node[4], const Material&);
-//! 3-node straight beam element.
-varargout beam189(const Node&, const Node&, const Node&, const Material&, const float[]);
-//! 3-node straight beam element.
-varargout beam189(const Node&, const Node&, const Node&, const Node&, const Material&);
-}
 }
 #endif

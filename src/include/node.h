@@ -177,7 +177,7 @@ class NodeBase: public ObjectBase {
 		void set_csys(CoordinateSystem ct) {csys_ = ct;};
 		
 		//! Get xyz values.
-		Eigen::Matrix<Scalar, 3, 1> get_xyz() const {return xyz_;};
+		vec3_<Scalar> get_xyz() const {return xyz_;};
 		//! Get x value.
 		Scalar get_x() const {return xyz_(0);};
 		//! Get y value.
@@ -274,8 +274,6 @@ class Node: public NodeBase<Scalar> {
 		//! Destructor.
 		~Node(){
 			dofs_.clear();
-			range_.resize(0);
-			mode_shape_.resize(0, 0);
 			vel_.resize(0, 0);
 			disp_.resize(0, 0);
 			pres_.resize(0, 0);
@@ -305,8 +303,6 @@ class Node: public NodeBase<Scalar> {
 		
 	private:
 		std::vector<int> dofs_;//!< Storage of Degree of freedoms.
-		matrix_<ResultScalar> mode_shape_;//!< Storage of mode shape.
-		vecX_<ResultScalar> range_;//!< Storage of time- or frequency- domain range.
 		
 		matrix_<ResultScalar> pres_;//!< Storage of pressure.
 		matrix_<ResultScalar> disp_;//!< Storage of displacement.

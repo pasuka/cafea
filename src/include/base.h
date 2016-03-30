@@ -28,7 +28,7 @@ template <class T>
 using vec3_ = Eigen::Matrix<T, 3, 1>;
 //! Vector.
 template <class T>
-using vecX_ = Eigen::Matirx<T, Eigen::Dynamic, 1>;
+using vecX_ = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 //! Matirx.
 //! C++11's trick for template aliase.
 template <class U>
