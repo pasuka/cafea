@@ -56,6 +56,7 @@ struct SparseMat {
 	std::vector<SparseCell> row_col;//!< Row and column index.
 	std::vector<size_t> aux;//!< Auxiliary index.
 	std::vector<T> stif, mass;//!< Global mass and stiffness values.
+	std::vector<T> rhs;//!< Global RHS values.
 	//! Default constructor.
 	SparseMat(){};
 	//! Deconstructor.
@@ -67,6 +68,7 @@ struct SparseMat {
 		if(!aux.empty())aux.clear();
 		if(!stif.empty())stif.clear();
 		if(!mass.empty())mass.clear();
+		if(!rhs.empty())rhs.clear();
 	};
 };
 }
