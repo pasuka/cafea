@@ -42,7 +42,7 @@ enum struct SectionType {
 /**
  *  Material definition.
  */
-template <class Scalar>
+template <class Scalar=float>
 class Material: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;
