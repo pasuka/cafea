@@ -2,6 +2,7 @@ CC = gcc
 CXX = g++
 FC = gfortran
 CXXFLAGS = -std=c++14 -O3
+FFLAGS = -cpp
 INCLUDE = -I../src/include -I../eigen
 INCLUDE += -I../cppformat -I../Catch/single_include
 
@@ -16,19 +17,31 @@ SRC = ../cppformat/cppformat/format.o ../src/core/coord_tran.o
 	$(COMMENT)
 	$(CXX) -c $(CXXFLAGS) $(INCLUDE) $<
 
+%.o: %.f90
+	$(COMMENT)
+	@echo -ne "Begin compile"
+	$(COMMENT)
+	$(FC) -c $(FFLAGS) $< $(args)
+
 test_node: $(SRC) ./node_basic_test.o 
 	$(COMMENT)
 	@echo "Begin node test"
 	$(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_node
 	
+test_cdb: ../src/fortran/cdb_reader.o ./ansys/cdb_file_test.o
+	$(COMMENT)	
+	@echo "Begin cdb test"
+	$(COMMENT)
+	$(FC) $(notdir $^) -o test_cdb
+
 clean:
 	@echo "Clean files"
-	- $(RM) $(CLEAN) *.o test_*
+	- $(RM) $(CLEAN) *.o *.mod test_*
 	
 all:
 	$(MAKE) test_node
 	./test_node
 	$(MAKE) clean
 	
-.PHONY: clean test_node all
+.PHONY: clean test_node test_cdb all
