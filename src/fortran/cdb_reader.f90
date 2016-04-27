@@ -28,7 +28,7 @@ type(node_base), allocatable:: model_node(:)
 type(elem_base), allocatable:: model_elem(:)
 type(matl_base), allocatable:: model_matl(:)
 contains
-	subroutine model_init() bind(c, name='model_init')
+	subroutine model_init()
 	implicit none
 	if(allocated(model_node))deallocate(model_node)
 	if(allocated(model_elem))deallocate(model_elem)
@@ -53,11 +53,13 @@ contains
 #endif	
 	! Open cdb file
     open(newunit=fid, file=trim(fn), status='old', iostat=fid_stat)
-
+	write(*, *)
     if(fid_stat/=0)then
-        write(*, *)'File open failed.'
-        write(*, *)'Error code is ', fid_stat
+    	line_fmt = '(1x, "Open file: ", a, " Failed. Error code: ", i4)'
+        write(*, line_fmt)trim(fn), fid_stat
         return
+    else
+    	write(*, '(1x, "Begin read file: ", a)')trim(fn)
     endif
     ! initialize global variables
     call model_init()
@@ -80,6 +82,12 @@ contains
         		write(*, *)'Number of elements:', num_elem
         		allocate(model_elem(num_elem))
         		model_elem%id = -1
+        		model_elem%matl = -1
+        		model_elem%etype = -1
+        		do i = 1, num_elem
+        			model_elem(i)%opt = 0
+        			model_elem(i)%node_list = -1
+        		enddo
         	elseif(line(8:11)=='TYPE')then
         		read(line(13:), *)num_etype
         		write(*, *)'Number of element types:', num_etype
@@ -125,6 +133,7 @@ contains
             read(fid, '(a)')line_fmt
 #if(PRINT_ON==1)
 			print_fmt = '(1x, "Node id:", i6, 1x, "XYZ:", *(F12.5))'
+			write(*, '(1x, a)')'Print first 99 of nodes.'
 #endif            
             do i = 1, k
 				r_xyz = 0.0E0
@@ -135,17 +144,42 @@ contains
                 if(r_xyz(4).ne.0E0.or.r_xyz(5).ne.0E0.or.r_xyz(6).ne.0E0)then            	
 	                model_node(i)%rot = r_xyz(4:6)
 #if(PRINT_ON==1)	
-					write(*, print_fmt)node_id, r_xyz(1:6)
+					if(i<=99)write(*, print_fmt)node_id, r_xyz(1:6)
 #endif  
 	            else
 	            	model_node(i)%rot = 1.81E2
 #if(PRINT_ON==1)
-					write(*, print_fmt)node_id, r_xyz(1:3)
+					if(i<=99)write(*, print_fmt)node_id, r_xyz(1:3)
 #endif 	            	
 	            endif
             end do
         elseif(line(1:6)=='EBLOCK')then
         elseif(line(1:6)=='MPDATA')then
+        ! read material
+        	read(line(16:19), '(a4)')keyword(1:4)
+            read(line(21:), *)i, j, r_tmp(1), r_tmp(2), r_tmp(3)
+            if(keyword(1:4)=='DENS')then
+            ! Mass density.
+            	model_matl(i)%val(1, 1) = r_tmp(1)
+            elseif(keyword(1:4)=='DMPR')then
+            ! Constant structural damping coefficient in full harmonic analysis
+            ! or damping ratio in mode-superposition analysis.
+            elseif(keyword(1:4)=='PRXY')then
+            ! Major Poisson's ratios (also PRYZ, PRXZ).
+            elseif(keyword(1:4)=='NUXY')then
+            ! Minor Poisson's ratios (also NUYZ, NUXZ).
+			elseif(keyword(1:4)=='GXY')then
+			! Shear moduli (also GYZ, GXZ).
+			elseif(keyword(1:4)=='ALPD')then
+			! Mass matrix multiplier for damping.
+			elseif(keyword(1:4)=='BETD')then
+			! Stiffness matrix multiplier for damping.
+			elseif(keyword(1:2)=='EX')then
+			! Elastic moduli (also EY, EZ).
+			else
+                write(*,*)'Unsupprot material keyword:',keyword(1:4)
+                cycle
+            endif
         elseif(line(1:2)=='D,')then
         ! read boundary
 	        read(line(3:), *)i, keyword, r_tmp(1:2)
@@ -174,5 +208,6 @@ contains
         endif
     enddo
     close(fid)
+    write(*, '(1x, "Finish read file.")')
 	end subroutine
 end module

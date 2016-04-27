@@ -34,6 +34,7 @@ test_cdb: ../src/fortran/cdb_reader.o ./ansys/cdb_file_test.o
 	@echo "Begin cdb test"
 	$(COMMENT)
 	$(FC) $(notdir $^) -o test_cdb
+	ls ./ansys | ./test_cdb
 
 clean:
 	@echo "Clean files"
