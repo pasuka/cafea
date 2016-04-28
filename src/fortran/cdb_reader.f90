@@ -42,7 +42,7 @@ contains
 	! Internal variables
 	character(len=256):: line, line_fmt
 	character(len=5):: keyword
-	integer:: fid, fid_stat, i, j, k, node_id, csys
+	integer:: fid, fid_stat, i, j, k, node_id, csys, tmp(99)
 	integer:: num_node, num_elem, num_etype, num_real, num_mat, num_csys, num_secn
 	integer, allocatable:: tmp_etype(:, :)
 	real(kind=4):: r_xyz(6), r_tmp(10)
@@ -82,7 +82,7 @@ contains
         		write(*, *)'Number of elements:', num_elem
         		allocate(model_elem(num_elem))
         		model_elem%id = -1
-        		model_elem%matl = -1
+        		model_elem%matl_id = -1
         		model_elem%etype = -1
         		do i = 1, num_elem
         			model_elem(i)%opt = 0
@@ -132,7 +132,7 @@ contains
             endif
             read(fid, '(a)')line_fmt
 #if(PRINT_ON==1)
-			print_fmt = '(1x, "Node id:", i6, 1x, "XYZ:", *(F12.5))'
+			print_fmt = '(1x, "Node id:", i3, 1x, "XYZ:", *(F10.3))'
 			write(*, '(1x, a)')'Print first 99 of nodes.'
 #endif            
             do i = 1, k
@@ -154,31 +154,84 @@ contains
 	            endif
             end do
         elseif(line(1:6)=='EBLOCK')then
+        ! read element block
+	        read(line(8:), *)i, keyword, j, k
+	        read(fid, '(A)')line_fmt
+	        if(keyword=='SOLID')then
+#if(PRINT_ON==1)
+				print_fmt = '(1x, "Element id:", i4, 1x, "type:", i4)'
+				write(*, '(1x, "Print first 999 of elements.")')
+#endif	        
+	        	do j = 1, k
+	        		read(fid, trim(line_fmt))tmp(:i)
+	        		model_elem(j)%id = tmp(11)
+	        		model_elem(j)%etype = tmp_etype(tmp(2), 1)
+	        		model_elem(j)%matl_id = tmp(3)
+	        		tmp(99) = get_num_by_type(model_elem(j)%etype)
+	        		if(tmp(99)<1)then
+	        			write(*, '(1x, "Unsupported elemnt type: ", i4)')model_elem(j)%etype
+	        			exit
+	        		else
+	        			if(tmp(99)>8)then
+	        				read(fid, *)tmp(i+1:i+tmp(99)-8)
+	        			endif
+	        			model_elem(j)%node_list(1:tmp(99)) = tmp(12:11+tmp(99))
+	        		endif
+#if(PRINT_ON==1)
+					if(j<999)then
+						write(*, print_fmt)model_elem(j)%id, model_elem(j)%etype
+					endif
+#endif	        		
+	        	enddo
+	        else
+	        endif
         elseif(line(1:6)=='MPDATA')then
         ! read material
         	read(line(16:19), '(a4)')keyword(1:4)
-            read(line(21:), *)i, j, r_tmp(1), r_tmp(2), r_tmp(3)
+            read(line(21:), *)i, j, r_tmp(1)
             if(keyword(1:4)=='DENS')then
             ! Mass density.
             	model_matl(i)%val(1, 1) = r_tmp(1)
             elseif(keyword(1:4)=='DMPR')then
             ! Constant structural damping coefficient in full harmonic analysis
             ! or damping ratio in mode-superposition analysis.
+            	model_matl(i)%val(1, 5) = r_tmp(1)
             elseif(keyword(1:4)=='PRXY')then
             ! Major Poisson's ratios (also PRYZ, PRXZ).
+            	model_matl(i)%val(1, 3) = r_tmp(1)
+            elseif(keyword(1:4)=='PRYZ')then
+            elseif(keyword(1:4)=='PRXZ')then
             elseif(keyword(1:4)=='NUXY')then
             ! Minor Poisson's ratios (also NUYZ, NUXZ).
-			elseif(keyword(1:4)=='GXY')then
+            	model_matl(i)%val(1, 3) = r_tmp(1)
+			elseif(keyword(1:4)=='NUYZ')then
+			elseif(keyword(1:4)=='NUXZ')then
+			elseif(keyword(1:4)=='GXY ')then
 			! Shear moduli (also GYZ, GXZ).
+				model_matl(i)%val(1, 4) = r_tmp(1)
+			elseif(keyword(1:4)=='GYZ ')then
+			elseif(keyword(1:4)=='GXZ ')then
 			elseif(keyword(1:4)=='ALPD')then
 			! Mass matrix multiplier for damping.
+				model_matl(i)%val(1, 6) = r_tmp(1)
 			elseif(keyword(1:4)=='BETD')then
 			! Stiffness matrix multiplier for damping.
-			elseif(keyword(1:2)=='EX')then
+				model_matl(i)%val(1, 7) = r_tmp(1)
+			elseif(keyword(1:4)=='ALPX')then
+			! Secant coefficients of thermal expansion (also ALPY, ALPZ).
+			elseif(keyword(1:4)=='ALPY')then
+			elseif(keyword(1:4)=='ALPZ')then
+			elseif(keyword(1:4)=='KXX ')then
+			! Thermal conductivities (also KYY, KZZ).
+			elseif(keyword(1:4)=='KYY ')then
+			elseif(keyword(1:4)=='KZZ ')then
+			elseif(keyword(1:4)=='EX  ')then
 			! Elastic moduli (also EY, EZ).
+				model_matl(i)%val(1, 2) = r_tmp(1)
+			elseif(keyword(1:4)=='EY  ')then
+			elseif(keyword(1:4)=='EZ  ')then
 			else
-                write(*,*)'Unsupprot material keyword:',keyword(1:4)
-                cycle
+                write(*,'(1x, "Unsupprot material keyword: ", A)')keyword(1:4)
             endif
         elseif(line(1:2)=='D,')then
         ! read boundary
@@ -203,11 +256,42 @@ contains
 			elseif(keyword(1:4)=='WARP')then
 				model_node(node_id)%boundary(7) = -1
 			else
+				write(*, '(1x, "Unsupport boundary keyword: ", A)')keyword(1:4)
 			endif
         else
         endif
     enddo
     close(fid)
+    deallocate(tmp_etype)
     write(*, '(1x, "Finish read file.")')
 	end subroutine
+	
+	integer function get_num_by_type(et)
+	implicit none
+	integer, intent(in):: et
+
+	select case(et)
+	case(21)
+		get_num_by_type = 1
+		return
+	case(188, 16, 14, 288)
+		get_num_by_type = 2
+		return
+	case(18, 189, 289, 290)
+		get_num_by_type = 3
+		return
+	case(63, 181)
+		get_num_by_type = 4
+		return
+	case(185, 281)
+		get_num_by_type = 8
+		return
+	case(186)
+		get_num_by_type = 20
+		return
+	case default
+		get_num_by_type = -1
+		return
+	end select
+	end function
 end module
