@@ -92,8 +92,9 @@ contains
         		read(line(13:), *)num_etype
         		write(*, *)'Number of element types:', num_etype
         		if(allocated(tmp_etype))deallocate(tmp_etype)
-        		allocate(tmp_etype(num_etype, LEN_ARRAY))
-        		tmp_etype = -1
+        		allocate(tmp_etype(num_etype, LEN_ARRAY+1))
+        		tmp_etype(:, 1) = -1
+        		tmp_etype(:, 2:) = 0
         	elseif(line(8:11)=='REAL')then
         		read(line(13:), *)num_real
         		write(*, *)'Number of real constants:', num_real
@@ -132,7 +133,7 @@ contains
             endif
             read(fid, '(a)')line_fmt
 #if(PRINT_ON==1)
-			print_fmt = '(1x, "Node id:", i3, 1x, "XYZ:", *(F10.3))'
+			print_fmt = '(1x, "Node id:", i6, 1x, "XYZ:", *(F10.3))'
 			write(*, '(1x, a)')'Print first 99 of nodes.'
 #endif            
             do i = 1, k
@@ -159,13 +160,14 @@ contains
 	        read(fid, '(A)')line_fmt
 	        if(keyword=='SOLID')then
 #if(PRINT_ON==1)
-				print_fmt = '(1x, "Element id:", i4, 1x, "type:", i4)'
+				print_fmt = '(1x, "Element id:", i4, 1x, "type:", i4, 1x, "nodes: ", *(i6))'
 				write(*, '(1x, "Print first 999 of elements.")')
 #endif	        
 	        	do j = 1, k
 	        		read(fid, trim(line_fmt))tmp(:i)
 	        		model_elem(j)%id = tmp(11)
 	        		model_elem(j)%etype = tmp_etype(tmp(2), 1)
+	        		model_elem(j)%opt = tmp_etype(tmp(2), 2:)
 	        		model_elem(j)%matl_id = tmp(3)
 	        		tmp(99) = get_num_by_type(model_elem(j)%etype)
 	        		if(tmp(99)<1)then
@@ -179,7 +181,8 @@ contains
 	        		endif
 #if(PRINT_ON==1)
 					if(j<999)then
-						write(*, print_fmt)model_elem(j)%id, model_elem(j)%etype
+						write(*, print_fmt)model_elem(j)%id, model_elem(j)%etype, model_elem(j)%node_list(:tmp(99))
+						if(sum(model_elem(j)%opt)>0)write(*, '(1x, "Keyopt:", *(I2))')model_elem(j)%opt
 					endif
 #endif	        		
 	        	enddo
