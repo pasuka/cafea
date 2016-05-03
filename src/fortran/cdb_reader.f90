@@ -27,6 +27,18 @@ end type
 type(node_base), allocatable:: model_node(:)
 type(elem_base), allocatable:: model_elem(:)
 type(matl_base), allocatable:: model_matl(:)
+
+#ifndef PRINT_ON
+#define PRINT_ON 0
+#else
+character(len=256):: print_fmt
+logical:: group_flag(3)=[.false., .false., .false.]
+namelist /group_node/model_node, /group_elem/model_elem, /group_matl/model_matl
+namelist /group_node_elem/model_node, model_elem
+namelist /group_all/model_node, model_elem, model_matl	
+#endif
+
+
 contains
 	subroutine model_init()
 	implicit none
@@ -42,15 +54,11 @@ contains
 	! Internal variables
 	character(len=256):: line, line_fmt
 	character(len=5):: keyword
-	integer:: fid, fid_stat, i, j, k, node_id, csys, tmp(99)
+	integer:: fid, fid_stat, i, j, k, ii, node_id, csys, tmp(99)
 	integer:: num_node, num_elem, num_etype, num_real, num_mat, num_csys, num_secn
 	integer, allocatable:: tmp_etype(:, :)
 	real(kind=4):: r_xyz(6), r_tmp(10)
-#ifndef PRINT_ON
-#define PRINT_ON 0
-#else
-	character(len=256):: print_fmt
-#endif	
+
 	! Open cdb file
     open(newunit=fid, file=trim(fn), status='old', iostat=fid_stat)
 	write(*, *)
@@ -71,35 +79,20 @@ contains
         if(line(1:6)=='NUMOFF')then
         	if(line(8:11)=='NODE')then
         		read(line(13:), *)num_node
-        		write(*, *)'Number of nodes:', num_node
-        		allocate(model_node(num_node))
-        		do i = 1, num_node
-        		    model_node(i)%id = -1
-        			model_node(i)%boundary = 0
-        		enddo
+        		write(*, '(1x, "Max. id of nodes:", i6)')num_node
         	elseif(line(8:11)=='ELEM')then
         		read(line(13:), *)num_elem
-        		write(*, *)'Number of elements:', num_elem
-        		allocate(model_elem(num_elem))
-        		model_elem%id = -1
-        		model_elem%matl_id = -1
-        		model_elem%etype = -1
-        		do i = 1, num_elem
-        			model_elem(i)%opt = 0
-        			model_elem(i)%node_list = -1
-        		enddo
+        		write(*, '(1x, "Max. id of elements:", i6)')num_elem
         	elseif(line(8:11)=='TYPE')then
         		read(line(13:), *)num_etype
-        		write(*, *)'Number of element types:', num_etype
+        		write(*, *)'Max. id of element types:', num_etype
         		if(allocated(tmp_etype))deallocate(tmp_etype)
         		allocate(tmp_etype(num_etype, LEN_ARRAY+1))
         		tmp_etype(:, 1) = -1
         		tmp_etype(:, 2:) = 0
         	elseif(line(8:11)=='REAL')then
         		read(line(13:), *)num_real
-        		write(*, *)'Number of real constants:', num_real
-        		allocate(model_matl(num_real))
-        		model_matl%id = -1
+        		write(*, *)'Max. id of real constants:', num_real
         	elseif(line(8:11)=='CSYS')then
         		read(line(13:), *)num_csys
         		write(*, *)'Number of coordinate systems:', num_csys
@@ -111,11 +104,42 @@ contains
         		write(*, *)'Number of sections:', num_secn
         	elseif(line(8:11)=='MAT ')then
         		read(line(13:), *)num_mat
-        		write(*, *)'Number of materials:', num_mat
+        		write(*, *)'Max. id of materials:', num_mat
         	elseif(line(8:11)=='KP  ')then
         	elseif(line(8:11)=='CP  ')then
         	elseif(line(8:11)=='CE  ')then
         	else
+        	endif
+        elseif(line(1:5)=='MAT ,')then
+        	read(line(6:), *)ii
+        	if(ii/=num_mat)num_mat = ii
+        	if(allocated(model_matl))then
+        		if(size(model_matl)/=num_mat*num_real)then
+        			deallocate(model_matl)
+        			allocate(model_matl(num_mat*num_real))
+        		endif
+        	else
+        		allocate(model_matl(num_mat*num_real))
+        	endif
+        elseif(line(1:5)=='REAL,')then
+        	read(line(6:), *)ii
+        	if(ii/=num_real)num_real = ii
+        	if(allocated(model_matl))then
+        		if(size(model_matl)/=num_mat*num_real)then
+        			deallocate(model_matl)
+        			allocate(model_matl(num_mat*num_real))
+        		endif
+        	else
+        		allocate(model_matl(num_mat*num_real))
+        	endif
+        elseif(line(1:5)=='TYPE,')then
+        	read(line(6:), *)ii
+        	if(ii/=num_etype)then
+        		num_etype = ii
+        		deallocate(tmp_etype)
+        		allocate(tmp_etype(num_etype, LEN_ARRAY+1))
+        		tmp_etype(:, 1) = -1
+        		tmp_etype(:, 2:) = 0
         	endif
         elseif(line(1:3)=='ET,')then
 	        read(line(4:), *)i, tmp_etype(i, 1)
@@ -124,19 +148,31 @@ contains
         elseif(line(1:4)=='CSYS')then
         	read(line(6:), *)csys
         elseif(line(1:7)=='RLBLOCK')then
+        ! read real constants.
+        	read(line(9:), *)tmp(:4)
+        	if(tmp(1)>num_real)then
+        	else
+        		num_real = tmp(1)
+        	endif
+        	allocate(model_matl(num_real))
+        	model_matl%id = -1
         elseif(line(1:6)=='NBLOCK')then
-        ! read node block
+        ! read node block.
             read(line(8:), *)i, keyword, j, k
             if(k>num_node)then
             	write(*, *)'Number of nodes not match:', k, 'vs', num_node
             	exit
+            else
+            	num_node = k
+            	write(*, '(1x, "Number of nodes:", i6)')num_node
             endif
+            allocate(model_node(num_node))
+        	do i = 1, num_node
+        		model_node(i)%id = -1
+        		model_node(i)%boundary = 0
+        	enddo
             read(fid, '(a)')line_fmt
-#if(PRINT_ON==1)
-			print_fmt = '(1x, "Node id:", i6, 1x, "XYZ:", *(F10.3))'
-			write(*, '(1x, a)')'Print first 99 of nodes.'
-#endif            
-            do i = 1, k
+            do i = 1, num_node
 				r_xyz = 0.0E0
                 read(fid, trim(line_fmt))node_id, j, j, r_xyz(1:6)
                 model_node(i)%id = node_id
@@ -144,27 +180,31 @@ contains
                 model_node(i)%xyz = r_xyz(1:3)               
                 if(r_xyz(4).ne.0E0.or.r_xyz(5).ne.0E0.or.r_xyz(6).ne.0E0)then            	
 	                model_node(i)%rot = r_xyz(4:6)
-#if(PRINT_ON==1)	
-					if(i<=99)write(*, print_fmt)node_id, r_xyz(1:6)
-#endif  
 	            else
-	            	model_node(i)%rot = 1.81E2
-#if(PRINT_ON==1)
-					if(i<=99)write(*, print_fmt)node_id, r_xyz(1:3)
-#endif 	            	
+	            	model_node(i)%rot = 1.81E2            	
 	            endif
             end do
         elseif(line(1:6)=='EBLOCK')then
         ! read element block
-	        read(line(8:), *)i, keyword, j, k
+	        read(line(8:), *)ii, keyword, j, k
+	        if(k>num_elem)then
+	        	write(*, '(1x, "Number of elements not match:", i6, "vs", i6)')k, num_elem
+	        else
+	        	num_elem = k
+	        	write(*, '(1x, "Number of elements:", i6)')num_elem
+	        endif
+	        allocate(model_elem(num_elem))
+        	model_elem%id = -1
+        	model_elem%matl_id = -1
+        	model_elem%etype = -1
+        	do i = 1, num_elem
+        		model_elem(i)%opt = 0
+        		model_elem(i)%node_list = -1
+        	enddo
 	        read(fid, '(A)')line_fmt
-	        if(keyword=='SOLID')then
-#if(PRINT_ON==1)
-				print_fmt = '(1x, "Element id:", i4, 1x, "type:", i4, 1x, "nodes: ", *(i6))'
-				write(*, '(1x, "Print first 999 of elements.")')
-#endif	        
-	        	do j = 1, k
-	        		read(fid, trim(line_fmt))tmp(:i)
+	        if(keyword=='SOLID')then	        
+	        	do j = 1, num_elem
+	        		read(fid, trim(line_fmt))tmp(:ii)
 	        		model_elem(j)%id = tmp(11)
 	        		model_elem(j)%etype = tmp_etype(tmp(2), 1)
 	        		model_elem(j)%opt = tmp_etype(tmp(2), 2:)
@@ -178,13 +218,7 @@ contains
 	        				read(fid, *)tmp(i+1:i+tmp(99)-8)
 	        			endif
 	        			model_elem(j)%node_list(1:tmp(99)) = tmp(12:11+tmp(99))
-	        		endif
-#if(PRINT_ON==1)
-					if(j<999)then
-						write(*, print_fmt)model_elem(j)%id, model_elem(j)%etype, model_elem(j)%node_list(:tmp(99))
-						if(sum(model_elem(j)%opt)>0)write(*, '(1x, "Keyopt:", *(I2))')model_elem(j)%opt
-					endif
-#endif	        		
+	        		endif	        		
 	        	enddo
 	        else
 	        endif
@@ -239,7 +273,7 @@ contains
         elseif(line(1:2)=='D,')then
         ! read boundary
 	        read(line(3:), *)i, keyword, r_tmp(1:2)
-	        node_id = maxloc(model_node(:)%id, 1, model_node(:)%id==i)
+	        node_id = maxloc(model_node%id, 1, model_node%id==i)
 	        if(node_id==0)cycle
 	        if(keyword(1:2)=='UX')then
 	        	model_node(node_id)%boundary(1) = -1
@@ -266,7 +300,52 @@ contains
     enddo
     close(fid)
     deallocate(tmp_etype)
-    write(*, '(1x, "Finish read file.")')
+    
+#if(PRINT_ON==1)
+	if(allocated(model_node))then
+		write(*, '(1x, a)')'Print first 99 of nodes.'
+		print_fmt = '(1x, "Node id:", i6, 1x, "XYZ:", *(F10.3))'
+		do i = 1, min(99, num_node)
+			associate(pt=>model_node(i))
+			if(pt%rot(1)>1.8E2)then
+				write(*, print_fmt)pt%id, pt%xyz
+			else
+				write(*, print_fmt)pt%id, pt%xyz, pt%rot
+			endif
+			end associate
+		enddo
+	endif
+	if(allocated(model_elem))then
+		write(*, '(1x, "Print first 999 of elements.")')
+		print_fmt = '(1x, "Element id:", i4, 1x, "type:", i4, 1x, "nodes: ", *(i6))'
+		do j = 1, min(99, num_elem)
+			associate(pt=>model_elem(j))
+			write(*, print_fmt)pt%id, pt%etype, pt%node_list(:get_num_by_type(pt%etype))
+			if(sum(pt%opt)>0)write(*, '(1x, "Keyopt:", *(I2))')pt%opt
+			end associate
+		enddo
+	endif
+#endif    
+#if(PRINT_ON>1)
+   	open(newunit=fid, file='test_nml.txt')
+   	group_flag = [allocated(model_node), allocated(model_elem), allocated(model_matl)]
+#if(PRINT_ON==2)   	
+   	if(group_flag(1))write(fid, nml=group_node)
+#elif(PRINT_ON==3)
+	if(group_flag(2))write(fid, nml=group_elem)
+#elif(PRINT_ON==4)
+	if(group_flag(3))write(fid, nml=group_matl)
+#elif(PRINT_ON==5)
+	if(all(group_flag(1:2)))write(fid, nml=group_node_elem)
+#elif(PRINT_ON==6)
+	if(all(group_flag))write(fid, nml=group_all)
+#else
+#endif
+	close(fid)
+#endif
+	! Clear variables.    
+	call model_init()
+	write(*, '(1x, "Finish read file.")')	
 	end subroutine
 	
 	integer function get_num_by_type(et)
