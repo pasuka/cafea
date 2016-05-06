@@ -19,7 +19,7 @@ end type
 type, bind(c):: elem_base
 integer(c_int):: id=-1
 integer(c_int):: etype=0!> Type of element.
-!! Only supported 14/16/18/21 now.
+!! Only supported No.14/16/18/21 element now.
 integer(c_int):: prop_id(2)=0!> Array of material and real constant number.
 integer(c_int):: opt(LEN_ARRAY)=0!> Option of element.
 integer(c_int):: node_list(MAX_NODES_PER_ELEM)=-1
