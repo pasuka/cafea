@@ -352,6 +352,20 @@ contains
 	write(*, '(1x, "Finish read file.")')	
 	end subroutine
 	
+	subroutine get_model_info(arrb) bind(c, name='get_model_info')
+	!> Get informations of model.
+	!! @param [out] parameter array.
+	implicit none
+	integer(c_int), intent(out):: arrb(10)
+	
+	arrb = 0
+	if(allocated(model_node))arrb(1) = size(model_node)
+	if(allocated(model_elem))arrb(2) = size(model_elem)
+	if(allocated(model_matl))arrb(3) = size(model_matl)
+	if(allocated(model_real))arrb(4) = size(model_real)
+	return
+	end subroutine
+	
 	integer function get_num_by_type(et)
 	!> Get number of nodes by element type.
 	!! @param [in] et element type.

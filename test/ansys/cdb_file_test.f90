@@ -23,7 +23,7 @@ do
 	if(fid_stat==iostat_end)exit
 	i = len_trim(fn)
 	if(fn(i-3:i)=='.cdb')then
-		call cdb_reader('./ansys/'//fn)
+		call cdb_reader(fn)
 	endif
 enddo
 end program
