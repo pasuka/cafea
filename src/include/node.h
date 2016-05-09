@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include <Eigen/Dense>
-#include "cppformat/format.h"
+#include "fmt/format.h"
 
 #include "base.h"
 #include "boundary.h"

@@ -9,7 +9,7 @@ INCLUDE += -I../cppformat -I../Catch/single_include
 ASTERISK = "*********************************************"
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
-SRC = ../cppformat/cppformat/format.o ../src/core/coord_tran.o
+SRC = ../cppformat/fmt/format.o ../src/core/coord_tran.o
 
 %.o: %.cc
 	$(COMMENT)

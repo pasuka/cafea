@@ -4,7 +4,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "cppformat/format.h"
+#include "fmt/format.h"
 
 #include "base.h"
 
