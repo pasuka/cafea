@@ -13,7 +13,7 @@ if(arg_cnt>0)then
 		call get_command_argument(i, fn)
 		j = len_trim(fn) 
 		if(fn(j-3:j)=='.cdb')then
-			call cdb_reader(fn)
+			call cdb_reader(fn, .false.)
 		endif
 	enddo
 endif
@@ -23,7 +23,7 @@ do
 	if(fid_stat==iostat_end)exit
 	i = len_trim(fn)
 	if(fn(i-3:i)=='.cdb')then
-		call cdb_reader(fn)
+		call cdb_reader(fn, .false.)
 	endif
 enddo
 end program

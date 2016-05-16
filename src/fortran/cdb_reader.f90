@@ -31,10 +31,10 @@ integer(c_int):: sect=0
 real(c_float):: val(LEN_ARRAY)=0.0E0
 end type
 ! Global variables.
-type(node_base), allocatable:: model_node(:)
-type(elem_base), allocatable:: model_elem(:)
-type(matl_base), allocatable:: model_matl(:)
-type(matl_base), allocatable:: model_real(:)
+type(node_base), target, allocatable:: model_node(:)
+type(elem_base), target, allocatable:: model_elem(:)
+type(matl_base), target, allocatable:: model_matl(:)
+type(matl_base), target, allocatable:: model_real(:)
 
 #ifndef PRINT_ON
 #define PRINT_ON 0
@@ -64,12 +64,14 @@ contains
 	if(allocated(model_real))deallocate(model_real)
 	end subroutine
 	
-	subroutine cdb_reader(fn)
+	subroutine cdb_reader(fn, is_keep)
 	!> @fn Read cdb files.
 	!! @param fn file path of cdb file.
+	!! @param is_keep decide cdb data will be kept in module, default is true.
 	implicit none
 	! Input variable.
-	character(len=*),intent(in):: fn
+	character(len=*), intent(in):: fn
+	logical, intent(in), optional:: is_keep
 	! Internal variables.
 	character(len=256):: line, line_fmt, line_fmt2
 	character(len=5):: keyword
@@ -348,21 +350,53 @@ contains
 	close(fid)
 #endif
 	! Clear variables.    
-	call model_init()
+	if(present(is_keep))then
+		if(.not.is_keep)call model_init()
+	endif
 	write(*, '(1x, "Finish read file.")')	
 	end subroutine
 	
-	subroutine get_model_info(arrb) bind(c, name='get_model_info')
-	!> Get informations of model.
-	!! @param [out] parameter array.
+	subroutine test_interface(str2, flen) bind(c, name='test_f_interface')
 	implicit none
-	integer(c_int), intent(out):: arrb(10)
+	character(c_char), intent(in):: str2(*)
+	integer(c_int), value, intent(in):: flen
+	integer:: fid_stat
+	integer:: i
+	character(len=256):: fn
 	
-	arrb = 0
-	if(allocated(model_node))arrb(1) = size(model_node)
-	if(allocated(model_elem))arrb(2) = size(model_elem)
-	if(allocated(model_matl))arrb(3) = size(model_matl)
-	if(allocated(model_real))arrb(4) = size(model_real)
+	write(*, *)str2(:flen)
+	do
+		read(input_unit, '(A)', iostat=fid_stat)fn
+		if(fid_stat==iostat_end)exit
+		i = len_trim(fn)
+		if(fn(i-3:i)=='.cdb')then
+			call cdb_reader(fn)
+		endif
+	enddo
+	return
+	end subroutine
+
+	subroutine get_model_data(m_node, m_elem, m_matl, m_real, n1, n2, n3, n4) bind(c, name='get_model_data')
+	implicit none
+	integer(c_int):: n1, n2, n3, n4
+	type(c_ptr), intent(out)::m_node, m_elem, m_matl, m_real
+	
+	n1 = -1
+	n2 = -1
+	n3 = -1
+	n4 = -1
+!	m_node = c_null_ptr
+!	m_elem = c_null_ptr
+!	m_matl = c_null_ptr
+!	m_real = c_null_ptr
+	if(allocated(model_node))then
+		n1 = size(model_node)
+		m_node = c_loc(model_node(1))
+	endif
+	if(allocated(model_elem))then
+		n2 = size(model_elem)
+		m_elem = c_loc(model_elem(1))
+	endif
 	return
 	end subroutine
 	

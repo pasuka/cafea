@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 FC = gfortran
-CXXFLAGS = -std=c++14 -O3
+CXXFLAGS = -std=c++14 -O3 -lgfortran
 FFLAGS = -cpp
 INCLUDE = -I../src/include -I../eigen
 INCLUDE += -I../cppformat -I../Catch/single_include
@@ -31,11 +31,18 @@ test_node: $(SRC) ./node_basic_test.o
 	
 test_cdb: ../src/fortran/cdb_reader.o ./ansys/cdb_file_test.o
 	$(COMMENT)	
-	@echo "Begin cdb test"
+	@echo "Begin cdb test in fortran"
 	$(COMMENT)
 	$(FC) $(notdir $^) -o test_cdb
 	ls ./ansys | sed 's:^:./ansys/:' | ./test_cdb
-
+	
+test_cdb_cpp: $(SRC) ../src/fortran/cdb_reader.o ./ansys/cdb_test_simple.o
+	$(COMMENT)
+	@echo "Begin cdb test in cpp"
+	$(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_cdb
+	ls ./ansys | sed 's:^:./ansys/:' | ./test_cdb
+	
 clean:
 	@echo "Clean files"
 	- $(RM) $(CLEAN) *.o *.mod test_*
