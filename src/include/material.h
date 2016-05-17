@@ -48,7 +48,7 @@ class Material: public ObjectBase {
 		using ObjectBase::ObjectBase;
 		//* Default constructor.
 		Material(){};
-		// Destructor.
+		//! Destructor.
 		~Material(){};
 		/**
 		 *  \brief Initialize with material id type section.

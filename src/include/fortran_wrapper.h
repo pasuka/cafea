@@ -3,6 +3,8 @@
 
 namespace cafea
 {
+namespace wrapper_ 
+{
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,11 +32,13 @@ struct matl_f {
 	int sect_{0};
 	REAL4 val_[LEN_ARRAY_]={0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0};
 };
-
-void get_model_data(node_f**, elem_f**, matl_f**, matl_f**, int*, int*, int*, int*);
-void test_f_interface(const char*, int);
+void load_cdb_file(const char*, int);
+void model_data_clean();
+void model_data_ptr(node_f**, elem_f**, matl_f**, matl_f**, int*, int*, int*, int*);
+void test_multi_f();
 #ifdef __cplusplus
 }
 #endif
+}
 }
 #endif

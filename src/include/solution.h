@@ -50,7 +50,7 @@ class SolutionBase {
 		
 		SparseMat<ResultScalar> mat_global_;//!< Global stiffness and mass matrix.
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
-		matrix_<ResultScalar> natural_freq_;//! Natural frequencies and errors.
+		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
 };
 
 /**

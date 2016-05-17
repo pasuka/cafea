@@ -55,7 +55,7 @@ namelist /group_node_elem/model_node, model_elem
 namelist /group_all/model_node, model_elem, model_matl, model_real
 #endif
 contains
-	subroutine model_init()
+	subroutine model_init() bind(c, name='model_data_clean')
 	!> @fn Clear global variables.
 	implicit none
 	if(allocated(model_node))deallocate(model_node)
@@ -356,15 +356,12 @@ contains
 	write(*, '(1x, "Finish read file.")')	
 	end subroutine
 	
-	subroutine test_interface(str2, flen) bind(c, name='test_f_interface')
+	subroutine test_multiple_file() bind(c, name='test_multi_f')
+	!> @fn Test read multiple cdb files.
 	implicit none
-	character(c_char), intent(in):: str2(*)
-	integer(c_int), value, intent(in):: flen
-	integer:: fid_stat
-	integer:: i
+	integer:: i, fid_stat
 	character(len=256):: fn
 	
-	write(*, *)str2(:flen)
 	do
 		read(input_unit, '(A)', iostat=fid_stat)fn
 		if(fid_stat==iostat_end)exit
@@ -373,22 +370,49 @@ contains
 			call cdb_reader(fn)
 		endif
 	enddo
+	
 	return
 	end subroutine
 
-	subroutine get_model_data(m_node, m_elem, m_matl, m_real, n1, n2, n3, n4) bind(c, name='get_model_data')
+	subroutine test_single_file(fn, str_len) bind(c, name='load_cdb_file')
+	!> @fn Read single cdb file of C wrapper.
+	!! @param [in] cdb file path.
+	!! @param [in] str_len length of string.
 	implicit none
-	integer(c_int):: n1, n2, n3, n4
+	character(c_char), intent(in):: fn(*)
+	integer(c_int), intent(in), value:: str_len
+	
+	character(len=256):: fname
+	integer:: i
+	do i = 1, str_len
+		fname(i:i) = fn(i)
+	enddo
+	call cdb_reader(fname(:str_len))
+	return
+	end subroutine
+	
+	subroutine get_model_data(m_node, m_elem, m_matl, m_real, n1, n2, n3, n4) bind(c, name='model_data_ptr')
+	!> @fn Get cdb file data from Fortran.
+	!! @param [out] m_node pointer of node array.
+	!! @param [out] m_elem pointer of element array.
+	!! @param [out] m_matl pointer of material array.
+	!! @param [out] m_real pointer of real constant array.
+	!! @param [out] n1 number of nodes.
+	!! @param [out] n2 number of elements.
+	!! @param [out] n3 number of materials.
+	!! @param [out] n4 number of real constants.
+	implicit none
+	integer(c_int), intent(out):: n1, n2, n3, n4
 	type(c_ptr), intent(out)::m_node, m_elem, m_matl, m_real
 	
 	n1 = -1
 	n2 = -1
 	n3 = -1
 	n4 = -1
-!	m_node = c_null_ptr
-!	m_elem = c_null_ptr
-!	m_matl = c_null_ptr
-!	m_real = c_null_ptr
+	m_node = c_null_ptr
+	m_elem = c_null_ptr
+	m_matl = c_null_ptr
+	m_real = c_null_ptr
 	if(allocated(model_node))then
 		n1 = size(model_node)
 		m_node = c_loc(model_node(1))
@@ -396,6 +420,14 @@ contains
 	if(allocated(model_elem))then
 		n2 = size(model_elem)
 		m_elem = c_loc(model_elem(1))
+	endif
+	if(allocated(model_matl))then
+		n3 = size(model_matl)
+		m_matl = c_loc(model_matl(1))
+	endif
+	if(allocated(model_real))then
+		n4 = size(model_real)
+		m_real = c_loc(model_real(1))
 	endif
 	return
 	end subroutine
