@@ -52,4 +52,4 @@ all:
 	./test_node
 	$(MAKE) clean
 	
-.PHONY: clean test_node test_cdb all
+.PHONY: clean test_node test_cdb test_cdb_cpp all

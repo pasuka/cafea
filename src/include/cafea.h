@@ -6,4 +6,5 @@
 #include "node.h"
 #include "material.h"
 #include "fortran_wrapper.h"
+#include "mesh_reader.h"
 #endif

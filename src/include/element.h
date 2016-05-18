@@ -52,7 +52,7 @@ class Element: public ObjectBase {
 		 *  \param [in] nodes list of nodes id.
 		 */
 		Element(int id, ElementType et, int mp, init_list_<int> nodes):
-			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp),
+			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp)
 		{
 			assert(id_>0&&matl_>0);
 			for(const auto& it: nodes){
@@ -75,7 +75,7 @@ class Element: public ObjectBase {
 		//! Get raw pointer of mass matrix.
 		T *get_mass_ptr() const {return mass_.data();};
 		//! Get raw pointer of transpose matrix.
-		T *get_tran_ptr() const {return tran_.data():};
+		T *get_tran_ptr() const {return tran_.data();};
 		//! Get raw pointer of right-hand side matrix.
 		T *get_rhs_ptr() const {return rhs_.data();};
 		

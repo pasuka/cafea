@@ -30,11 +30,11 @@ class AnsysCdbReader{
 		//! Print model information.
 		friend std::ostream& operator<<(std::ostream& cout, const AnsysCdbReader &a)
 		{
-			cout << fmt::format("File: {}\n", file_);
+			cout << fmt::format("File: {}\n", a.file_);
 			return cout;
 		}
 	protected:
-		string file_;
+		std::string file_;
 };	
 }
 
