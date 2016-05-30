@@ -9,6 +9,7 @@
 #include "node.h"
 #include "element.h"
 #include "material.h"
+#include "section.h"
 #include "boundary.h"
 #include "sparse_matrix.h"
 
@@ -46,9 +47,10 @@ class SolutionBase {
 		bool lump_{false};//!< Lump mass matrix.
 		FileReader<Scalar> file_parser_;//!< Input file loader.
 		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
-		std::vector<Boundary> boundary_group_;//!< Boundary dictionary.
+		dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
+		std::vector<Boundary> bc_group_;//!< Boundary dictionary.
 		
-		SparseMat<ResultScalar> mat_global_;//!< Global stiffness and mass matrix.
+		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
 };
@@ -66,11 +68,12 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		//! Initialize environment.
 		void init_model()
 		{
-			if(!mat_global_.empty())matl_group_.clear();
-			if(!boundary_group_.empty())boundary_group_.clear();
+			if(!matl_group_.empty())matl_group_.clear();
+			if(!sect_group_.empty())sect_group_.clear();
+			if(!bc_group_.empty())bc_group_.clear();
 			if(!node_group_.empty())node_group_.clear();
 			if(!elem_group_.empty())elem_group_.clear();
-			mat_global_.init_mat();
+			mat_pair_.init_mat();
 			mode_shape_.resize(0, 0);
 			natural_freq_.resize(0, 0);
 		};
@@ -104,11 +107,12 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! Initialize environment.
 		void init_model()
 		{
-			if(!mat_global_.empty())matl_group_.clear();
-			if(!boundary_group_.empty())boundary_group_.clear();
+			if(!matl_group_.empty())matl_group_.clear();
+			if(!sect_group_.empty())sect_group_.clear();
+			if(!bc_group_.empty())bc_group_.clear();
 			if(!node_group_.empty())node_group_.clear();
 			if(!elem_group_.empty())elem_group_.clear();
-			mat_global_.init_mat();
+			mat_pair_.init_mat();
 			mode_shape_.resize(0, 0);
 			natural_freq_.resize(0, 0);
 			damping_.resize(0);

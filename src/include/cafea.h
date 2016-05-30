@@ -5,6 +5,7 @@
 #include "boundary.h"
 #include "node.h"
 #include "material.h"
+#include "section.h"
 #include "fortran_wrapper.h"
 #include "mesh_reader.h"
 #endif

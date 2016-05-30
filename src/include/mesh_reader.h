@@ -26,7 +26,19 @@ class AnsysCdbReader{
 		//! Check model data.
 		int check_model();
 		//! Load cdb file.
-		int load_model();
+		int load_model(const std::string fn) 
+		{
+			file_ = fn;
+			wrapper_::load_cdb_file(fn.c_str(), fn.size());
+			return 0;
+		};
+		//! Load cdb file.
+		int load_model(const char* fn)
+		{
+			file_ = std::string(fn);
+			wrapper_::load_cdb_file(file_.c_str(), file_.size());
+			return 0;
+		}
 		//! Print model information.
 		friend std::ostream& operator<<(std::ostream& cout, const AnsysCdbReader &a)
 		{
