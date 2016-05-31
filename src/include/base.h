@@ -44,7 +44,7 @@ using varargout_3_ = std::tuple<T, matrix_<T>, matrix_<T> >;
 template <class T>
 using init_list_ = std::initializer_list<T>;
 //! Dictionary.
-template <typename T>
+template <class T>
 using dict_ = std::unordered_map<int, T>;
 //! REAL(kind=4) in Fortran iso_c_binding.
 using REAL4 = float;
