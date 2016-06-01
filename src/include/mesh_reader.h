@@ -14,6 +14,18 @@
 
 namespace cafea
 {
+class FeaModel;
+struct FileReaderBase {
+	//! Load input file.
+	virtual int load_model(std::string fn, FeaModel &arch) = 0;
+	//! Print.
+	friend std::ostream& operator<<(std::ostream& cout, const FileReaderBase &a)
+	{
+		cout << "This is base of mesh file reader.\n";
+		return cout;
+	}
+};
+
 template <class T=float>
 class AnsysCdbReader{
 	public:
