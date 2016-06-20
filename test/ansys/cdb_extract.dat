@@ -1,0 +1,85 @@
+/prep7
+
+fn_dir = 'E:\cpp_code\cafea\test\ansys\'
+fn = 'pipe_demo_03'
+
+/input, %fn%, cdb, %fn_dir%
+
+*get,num_node,node,0,count
+*dim,node_list,array,num_node,7
+*get,node_iter,node,0,num,min
+*do,i,1,num_node,1
+	node_list(i, 1) = node_iter
+	node_list(i, 2) = nx(node_iter)
+	node_list(i, 3) = ny(node_iter)
+	node_list(i, 4) = nz(node_iter)
+	*get,node_list(i, 5),node,node_iter,ang,xy
+	*get,node_list(i, 6),node,node_iter,ang,yz
+	*get,node_list(i, 7),node,node_iter,ang,zx
+	node_iter = ndnext(node_iter)
+*enddo
+
+*get,num_elem,elem,0,count
+*dim,elem_list,array,num_elem,25
+*get,elem_iter,elem,0,num,min
+*set,tmp,0
+*do,i,1,num_elem,1
+	elem_list(i, 1) = elem_iter
+	*get,elem_list(i, 2),elem,elem_iter,attr,mat
+	*get,elem_list(i, 3),elem,elem_iter,attr,type
+	*get,elem_list(i, 4),elem,elem_iter,attr,real
+	*get,elem_list(i, 5),elem,elem_iter,attr,secn
+	*do,j,1,20,1
+		tmp = nelem(elem_iter, j)
+		*if,tmp,gt,0,then
+			elem_list(i,5+j) = tmp
+		*else
+		*exit
+		*endif
+	*enddo
+	elem_iter = elnext(elem_iter)
+*enddo
+
+*get,num_etype,etyp,0,num,max
+*dim,etype_list,array,num_etype,13
+*do,i,1,num_etype,1
+	etype_list(i, 1) = i
+	*get,etype_list(i, 2),etyp,i,attr,enam
+	*get,etype_list(i, 3),etyp,i,attr,kop1
+	*get,etype_list(i, 4),etyp,i,attr,kop2
+	*get,etype_list(i, 5),etyp,i,attr,kop3
+	*get,etype_list(i, 6),etyp,i,attr,kop4
+	*get,etype_list(i, 7),etyp,i,attr,kop5
+	*get,etype_list(i, 8),etyp,i,attr,kop6
+	*get,etype_list(i, 9),etyp,i,attr,kop7
+	*get,etype_list(i,10),etyp,i,attr,kop8
+	*get,etype_list(i,11),etyp,i,attr,kop9
+	*get,etype_list(i,12),etyp,i,attr,ko10
+	*get,etype_list(i,13),etyp,i,attr,ko11
+*enddo
+
+*cfopen, %fn_dir%%fn%,dat
+*vwrite
+('$NODE')
+*vwrite,num_node
+%8I
+*vwrite,node_list(1,1),node_list(1,2),node_list(1,3),node_list(1,4),node_list(1,5),node_list(1,6),node_list(1,7)
+%8I,%12.5G,%12.5G,%12.5G,%7.2F,%7.2F,%7.2F
+*vwrite
+('$ENDNODE')
+*vwrite
+('$ELEMENT')
+*vwrite,num_elem
+%8I
+*vwrite,elem_list(1,1),elem_list(1,2),elem_list(1,3),elem_list(1,4),elem_list(1,5),elem_list(1,6),elem_list(1,7),elem_list(1,8),elem_list(1,9),elem_list(1,10),elem_list(1,11),elem_list(1,12),elem_list(1,13)
+%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I
+*vwrite
+('$ENDELEMENT')
+*vwrite
+('$TYPE')
+*vwrite,etype_list(1,1),etype_list(1,2),etype_list(1,3),etype_list(1,4),etype_list(1,5),etype_list(1,6),etype_list(1,7),etype_list(1,8),etype_list(1,9),etype_list(1,10),etype_list(1,11),etype_list(1,12),etype_list(1,13)
+%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I
+*vwrite
+('$ENDTYPE')
+*cfclose
+finish

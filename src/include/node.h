@@ -190,7 +190,7 @@ class NodeBase: public ObjectBase {
 		//! Set xyz values with 1d array.
 		void set_xyz(Scalar val[3]) {xyz_ << val[0], val[1], val[2];};
 		//! Set xyz values with list.
-		void set_xyz(std::initializer_list<Scalar> val)
+		void set_xyz(init_list_<Scalar> val)
 		{
 			assert(val.size()==3);
 			xyz_ << val[0], val[1], val[2];

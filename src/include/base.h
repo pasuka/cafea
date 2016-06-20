@@ -82,7 +82,7 @@ class ObjectBase {
 		 *  a.set_group({1,3,4,5,8,2});
 		 *  \endcode
 		 */
-		void set_group(std::initializer_list<int> abc)
+		void set_group(init_list_<int> abc)
 		{
 			assert(abc.size()<=8);
 			int i{0};
