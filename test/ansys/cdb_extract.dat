@@ -1,64 +1,107 @@
-/prep7
-
 fn_dir = 'E:\cpp_code\cafea\test\ansys\'
-fn = 'pipe_demo_03'
 
-/input, %fn%, cdb, %fn_dir%
+*create, export_cafea,
 
-*get,num_node,node,0,count
-*dim,node_list,array,num_node,7
-*get,node_iter,node,0,num,min
-*do,i,1,num_node,1
+/prep7
+/nopr
+/input, ARG1, cdb, %fn_dir%
+
+*get, num_node, node, 0, count
+*get, num_elem, elem, 0, count
+*get, num_matp,  mat, 0, num, max
+*get, num_etyp, etyp, 0, num, max
+*get, num_rcon, rcon, 0, num, max
+
+*dim, node_list, array, num_node, 7
+*dim, elem_list, array, num_elem, 25
+*dim, etyp_list, array, num_etyp, 13
+*dim, matp_list, array, num_matp, 6
+*dim, rcon_list, array, num_rcon, 14
+
+*get, node_iter, node, 0, num, min
+*do, i, 1, num_node, 1
 	node_list(i, 1) = node_iter
 	node_list(i, 2) = nx(node_iter)
 	node_list(i, 3) = ny(node_iter)
 	node_list(i, 4) = nz(node_iter)
-	*get,node_list(i, 5),node,node_iter,ang,xy
-	*get,node_list(i, 6),node,node_iter,ang,yz
-	*get,node_list(i, 7),node,node_iter,ang,zx
+	*get, node_list(i, 5), node, node_iter, ang, xy
+	*get, node_list(i, 6), node, node_iter, ang, yz
+	*get, node_list(i, 7), node, node_iter, ang, zx
 	node_iter = ndnext(node_iter)
 *enddo
 
-*get,num_elem,elem,0,count
-*dim,elem_list,array,num_elem,25
-*get,elem_iter,elem,0,num,min
-*set,tmp,0
-*do,i,1,num_elem,1
+
+
+*get, elem_iter, elem, 0, num, min
+*set, tmp, 0
+*do, i, 1, num_elem, 1
 	elem_list(i, 1) = elem_iter
-	*get,elem_list(i, 2),elem,elem_iter,attr,mat
-	*get,elem_list(i, 3),elem,elem_iter,attr,type
-	*get,elem_list(i, 4),elem,elem_iter,attr,real
-	*get,elem_list(i, 5),elem,elem_iter,attr,secn
-	*do,j,1,20,1
+	*get, elem_list(i, 2), elem, elem_iter, attr, mat
+	*get, elem_list(i, 3), elem, elem_iter, attr, type
+	*get, elem_list(i, 4), elem, elem_iter, attr, real
+	*get, elem_list(i, 5), elem, elem_iter, attr, secn
+	*do, j, 1, 20, 1
 		tmp = nelem(elem_iter, j)
-		*if,tmp,gt,0,then
-			elem_list(i,5+j) = tmp
+		*if, tmp, gt, 0, then
+			elem_list(i, 5+j) = tmp
 		*else
 		*exit
 		*endif
 	*enddo
+	matp_list(elem_list(i, 2), 1) = 1
+	etyp_list(elem_list(i, 3), 1) = 1
+	rcon_list(elem_list(i, 4), 1) = 1
 	elem_iter = elnext(elem_iter)
 *enddo
 
-*get,num_etype,etyp,0,num,max
-*dim,etype_list,array,num_etype,13
-*do,i,1,num_etype,1
-	etype_list(i, 1) = i
-	*get,etype_list(i, 2),etyp,i,attr,enam
-	*get,etype_list(i, 3),etyp,i,attr,kop1
-	*get,etype_list(i, 4),etyp,i,attr,kop2
-	*get,etype_list(i, 5),etyp,i,attr,kop3
-	*get,etype_list(i, 6),etyp,i,attr,kop4
-	*get,etype_list(i, 7),etyp,i,attr,kop5
-	*get,etype_list(i, 8),etyp,i,attr,kop6
-	*get,etype_list(i, 9),etyp,i,attr,kop7
-	*get,etype_list(i,10),etyp,i,attr,kop8
-	*get,etype_list(i,11),etyp,i,attr,kop9
-	*get,etype_list(i,12),etyp,i,attr,ko10
-	*get,etype_list(i,13),etyp,i,attr,ko11
+
+
+*do, i, 1, num_etyp, 1
+	*if, etyp_list(i, 1), ne, 1, then
+		*cycle
+	*endif
+	etyp_list(i, 1) = i
+	*get, etyp_list(i,  2), etyp, i, attr, enam
+	*get, etyp_list(i,  3), etyp, i, attr, kop1
+	*get, etyp_list(i,  4), etyp, i, attr, kop2
+	*get, etyp_list(i,  5), etyp, i, attr, kop3
+	*get, etyp_list(i,  6), etyp, i, attr, kop4
+	*get, etyp_list(i,  7), etyp, i, attr, kop5
+	*get, etyp_list(i,  8), etyp, i, attr, kop6
+	*get, etyp_list(i,  9), etyp, i, attr, kop7
+	*get, etyp_list(i, 10), etyp, i, attr, kop8
+	*get, etyp_list(i, 11), etyp, i, attr, kop9
+	*get, etyp_list(i, 12), etyp, i, attr, ko10
+	*get, etyp_list(i, 13), etyp, i, attr, ko11
 *enddo
 
-*cfopen, %fn_dir%%fn%,dat
+
+
+*do, i, 1, num_matp, 1
+	*if, matp_list(i, 1), ne, 1, then
+		*cycle
+	*endif
+	matp_list(i, 1) = i
+	*get, matp_list(i, 2), dens, i
+	*get, matp_list(i, 3), ex  , i
+	*get, matp_list(i, 4), gxy , i
+	*get, matp_list(i, 5), nuxy, i
+	*get, matp_list(i, 6), prxy, i
+*enddo
+
+
+
+*do, i, 1, num_rcon, 1
+	*if, rcon_list(i, 1), ne, 1, then
+		*cycle
+	*endif
+	rcon_list(i, 1) = i
+	*do, j, 1, 13, 1
+		*get, rcon_list(i, j+1), rcon, i, const, j
+	*enddo
+*enddo
+
+*cfopen, %fn_dir%%ARG1%, dat
 *vwrite
 ('$NODE')
 *vwrite,num_node
@@ -77,9 +120,45 @@ fn = 'pipe_demo_03'
 ('$ENDELEMENT')
 *vwrite
 ('$TYPE')
-*vwrite,etype_list(1,1),etype_list(1,2),etype_list(1,3),etype_list(1,4),etype_list(1,5),etype_list(1,6),etype_list(1,7),etype_list(1,8),etype_list(1,9),etype_list(1,10),etype_list(1,11),etype_list(1,12),etype_list(1,13)
+*do, i, 1, num_etyp, 1
+	*if, etyp_list(i, 1), eq, 0, then
+		*cycle
+	*endif
+	*vwrite,etyp_list(i,1),etyp_list(i,2),etyp_list(i,3),etyp_list(i,4),etyp_list(i,5),etyp_list(i,6),etyp_list(i,7),etyp_list(i,8),etyp_list(i,9),etyp_list(i,10),etyp_list(i,11),etyp_list(i,12),etyp_list(i,13)
 %8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I,%8I
+*enddo
 *vwrite
 ('$ENDTYPE')
+*vwrite
+('$MATERIAL')
+*vwrite,matp_list(1,1),matp_list(1,2),matp_list(1,3),matp_list(1,4),matp_list(1,5),matp_list(1,6)
+%8I,%16.9E,%16.9E,%16.9E,%16.9E,%16.9E
+*vwrite
+('$ENDMATERIAL')
+*vwrite
+('$RCONST')
+*vwrite,rcon_list(1,1),rcon_list(1,2),rcon_list(1,3),rcon_list(1,4),rcon_list(1,5),rcon_list(1,6),rcon_list(1,7)
+%8I,%16.9E,%16.9E,%16.9E,%16.9E,%16.9E,%16.9E
+*vwrite
+('$ENDRCONST')
 *cfclose
-finish
+
+num_node =
+num_elem =
+num_matp =
+num_etyp =
+num_node =
+num_rcon =
+
+node_list(1) =
+elem_list(1) =
+etyp_list(1) =
+matp_list(1) =
+rcon_list(1) =
+
+*end
+
+*use, export_cafea, 'pipe_demo_01'
+*use, export_cafea, 'pipe_demo_02'
+*use, export_cafea, 'pipe_demo_03'
+*use, export_cafea, 'nrc1677_1_6'
