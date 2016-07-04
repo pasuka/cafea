@@ -176,7 +176,7 @@
 !**********************************************************************
 !**********************************************************************
 /clear, nostart
-fn_dir = 'E:\fortran_code\'
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea, 'pipe_demo_01', 'cafea\test\ansys\', fn_dir
 *use, export_cafea, 'pipe_demo_02', 'cafea\test\ansys\', fn_dir
 *use, export_cafea, 'pipe_demo_03', 'cafea\test\ansys\', fn_dir

@@ -109,20 +109,20 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id coordinate and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
 		 *  \param [in] csys coordinate system type.
-		 *  \param [in] x value of x-axis.
-		 *  \param [in] y value of y-axis.
-		 *  \param [in] z value of z-axis.
-		 *  \param [in] rotx value of rotate x-axis.
-		 *  \param [in] roty value of rotate y-axis.
-		 *  \param [in] rotz value of rotate z-axis.
+		 *  \param [in] value of 1-axis.
+		 *  \param [in] value of 2-axis.
+		 *  \param [in] value of 3-axis.
+		 *  \param [in] value of rotate 1-axis.
+		 *  \param [in] value of rotate 2-axis.
+		 *  \param [in] value of rotate 3-axis.
 		 */
-		NodeBase(int id, CoordinateSystem csys, Scalar x, Scalar y, Scalar z,
-			Scalar rotx, Scalar roty, Scalar rotz):csys_(csys),
+		NodeBase(int id, CoordinateSystem csys, Scalar u1, Scalar u2, Scalar u3,
+			Scalar ur1, Scalar ur2, Scalar ur3):csys_(csys),
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(id_>0);
-			xyz_ << x, y, z;
-			angle_ << rotx, roty, rotz;
+			xyz_ << u1, u2, u3;
+			angle_ << ur1, ur2, ur3;
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate system and values.
@@ -131,8 +131,7 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}, csys_(csys)
 		{
 			assert(val.size()==3);
-			int i{0};
-			for(const auto it: val)xyz_(i++) = it;
+			xyz_ << val[0], val[1], val[2];
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate values.
@@ -142,8 +141,7 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3);
-			int i{0};
-			for(const auto it: val)xyz_(i++) = it;
+			xyz_ << val[0], val[1], val[2];
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
@@ -153,9 +151,8 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
-			int i{0}, j{0};
-			for(const auto it: val)xyz_(i++) = it;
-			for(const auto it: val2)angle_(j++) = it;
+			xyz_ << val[0], val[1], val[2];
+			angle_ << val2[0], val2[1], val2[2];
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.		
@@ -165,9 +162,8 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
-			int i{0}, j{0};
-			for(const auto it: val)xyz_(i++) = it;
-			for(const auto it: val2)angle_(j++) = it;
+			xyz_ << val[0], val[1], val[2];
+			angle_ << val2[0], val2[1], val2[2];
 		};
 		//! Destructor.
 		~NodeBase(){};
@@ -210,8 +206,7 @@ class NodeBase: public ObjectBase {
 		void set_angle(init_list_<Scalar> val)
 		{
 			assert(val.size()==3);
-			int i{0};
-			for(const auto it: val)angle_(i++) = it;
+			angle_ << val[0], val[1], val[2];
 		};
 		//! Get Euler angle values.
 		Scalar get_rot_x() const {return angle_(0)>Scalar(180) ? Scalar(0): angle_(0);};
@@ -250,10 +245,18 @@ class NodeBase: public ObjectBase {
 				cout << "Cylindrical\n";
 				break;
 			default:
-				cout << "Unkown\n";
+				cout << "Unknown\n";
 			}
 			cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.get_x(), a.get_y(), a.get_z());
-			cout << fmt::format("Euler angle Yaw:{0}\tPitch:{1}\tRoll:{2}\n", a.get_rot(0), a.get_rot(1), a.get_rot(2));
+			if(!(angle_.array()>Scalar(180)).any())
+			{
+				std::array<std::string, 3> tmp = {"Yaw", "Pitch", "Roll"};
+				cout << "Euler angle ";
+				for(int i=0; i<3; i++){
+					cout << fmt::format("{0}:{1} ", tmp[i], a.get_rot(i));
+				}
+				cout << "\n";
+			}
 			return cout;
 		};
 	protected:
@@ -302,6 +305,7 @@ class Node: public NodeBase<Scalar> {
 		};
 		
 	private:
+		
 		std::vector<int> dofs_;//!< Storage of Degree of freedoms.
 		
 		matrix_<ResultScalar> pres_;//!< Storage of pressure.
