@@ -3,15 +3,15 @@
 
 #include <cstddef>
 #include <cassert>
+
 #include <string>
 #include <vector>
-#include <iostream>
+#include <ostream>
 
 #include <Eigen/Dense>
 #include "fmt/format.h"
 
 #include "base.h"
-#include "boundary.h"
 
 namespace cafea
 {
@@ -38,7 +38,7 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] id an integer must bigger than zero.
 		 */
 		NodeBase(int id):ObjectBase{id, fmt::format("Node#{0}", id)}, 
-			csys_(CoordinateSystem::CARTESIAN) {assert(id_>0);};
+			csys_(CoordinateSystem::CARTESIAN) {};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
 		 *  \param [in] id an integer must bigger than zero.
@@ -64,11 +64,7 @@ class NodeBase: public ObjectBase {
 		 */
 		NodeBase(int id, Scalar x, Scalar y, Scalar z):
 			ObjectBase{id, fmt::format("Node#{0}", id)},
-			csys_(CoordinateSystem::CARTESIAN)
-		{
-				assert(id_>0);
-				xyz_ << x, y, z;
-		};
+			csys_(CoordinateSystem::CARTESIAN) { xyz_ << x, y, z;};
 		/**
 		 *  \brief Initialize with node's id coordinate system and values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -79,11 +75,7 @@ class NodeBase: public ObjectBase {
 		 */
 		NodeBase(int id, CoordinateSystem csys,
 			Scalar u1, Scalar u2, Scalar u3):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)}
-		{
-			assert(id_>0);
-			xyz_ << u1, u2, u3;
-		};
+			ObjectBase{id, fmt::format("Node#{0}", id)} { xyz_ << u1, u2, u3;};
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
@@ -101,7 +93,6 @@ class NodeBase: public ObjectBase {
 			csys_(CoordinateSystem::CARTESIAN),
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
-			assert(id_>0);
 			xyz_ << x, y, z;
 			angle_ << rotx, roty, rotz;
 		};
@@ -120,7 +111,6 @@ class NodeBase: public ObjectBase {
 			Scalar ur1, Scalar ur2, Scalar ur3):csys_(csys),
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
-			assert(id_>0);
 			xyz_ << u1, u2, u3;
 			angle_ << ur1, ur2, ur3;
 		};
@@ -166,7 +156,7 @@ class NodeBase: public ObjectBase {
 			angle_ << val2[0], val2[1], val2[2];
 		};
 		//! Destructor.
-		~NodeBase(){};
+		virtual ~NodeBase(){};
 		//! Get coordinate system.
 		CoordinateSystem get_csys() const {return csys_;};
 		//! Set coordinate system.

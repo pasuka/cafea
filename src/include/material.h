@@ -2,8 +2,13 @@
 #define MATERIAL_H
 
 #include <cassert>
+
 #include <array>
 #include <string>
+#include <iostream>
+#include <algorithm>
+
+#include "fmt/format.h"
 
 #include "base.h"
 
@@ -18,26 +23,33 @@ enum struct MaterialType {
 };
 
 /**
+ *  Enum of material property.
+ */
+enum struct MaterialProp {
+	DENS,//!< Mass density.
+	YOUNG, EX, EY, EZ,//!< Elastic modulus.
+	GXY, GYZ, GXZ,//!< Shear elastic modulus.
+	NU, NUXY, NUYZ, NUXZ,//!< Minor Poisson's ratios. 
+	PRXY, PRYZ, PRXZ,//!< Major Poisson's ratios.
+	DMPR,//!< Constant structural damping coefficient in full harmonic analysis or damping ratio in mode-superposition analysis.
+	ALPD,//!< Mass matrix multiplier for damping.
+	BETD,//!< Stiffness matrix multiplier for damping.
+};
+
+/**
  *  Material definition.
  */
 template <class Scalar=float>
 class Material: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;
-		//* Default constructor.
-		Material(){};
-		//! Destructor.
-		~Material(){};
 		/**
 		 *  \brief Initialize with material id type section.
 		 *  \param [in] id material's id.
 		 *  \param [in] mtype material type.
 		 */
 		Material(int id, MaterialType mtype):mtype_(mtype),
-			ObjectBase{id, fmt::format("Material#{0}", id)}
-		{
-			assert(id_>0);
-		};
+			ObjectBase{id, fmt::format("Material#{0}", id)}{};
 		/**
 		 *  \brief Initialize with material id type section and parameters.
 		 *  \param [in] id material's id.
@@ -47,10 +59,8 @@ class Material: public ObjectBase {
 		Material(int id, MaterialType mtype, init_list_<Scalar> val):mtype_(mtype),
 			ObjectBase{id, fmt::format("Material#{0}", id)}
 		{
-			assert(id>0);
 			assert(val.size()>0&&val.size()<=10);
-			int i{0};
-			for(const auto &it: val)param_[i++] = it;
+			std::copy(val.begin(), val.end(), param_.begin());
 		};
 		/**
 		 *  \brief Initialize with material id type section and parameters.
@@ -63,18 +73,23 @@ class Material: public ObjectBase {
 			init_list_<Scalar> val2):mtype_(mtype),
 			ObjectBase{id, fmt::format("Material#{0}", id)}
 		{
-			assert(id>0);
 			assert(val.size()>0&&val.size()<=10);
 			assert(val2.size()>0&&val2.size()<=10);
-			int i{0}, j{0};
-			for(const auto& it: val)param_[i++] = it;
-			for(const auto& it: val2)param2_[j++] = it;
+			std::copy(val.begin(), val.end(), param_.begin());
+			std::copy(val2.begin(), val2.end(), param2_.begin());
 		};
-		
+		//! Destructor.
+		~Material(){};
 		//! Get type of material.
 		MaterialType get_material_type() const {return mtype_;};
 		//! Set type of material.
 		void set_material_type(MaterialType mt) {mtype_ = mt;};
+		
+		//! Set property of material.
+		void set_material_prop(MaterialProp mp, Scalar val);
+		//! Get property of material.
+		Scalar get_material_prop(MaterialProp mp) const;
+		
 		//! Print material info.
 		friend std::ostream& operator<<(std::ostream& cout, const Material &a)
 		{

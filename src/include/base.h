@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
+#include <algorithm>
 
 #include "utils.h"
 
@@ -18,14 +19,16 @@ class ObjectBase {
 		//! Constructor.
 		ObjectBase(){};
 		//! Another constructor.
-		ObjectBase(int id, std::string s):id_(id), name_(s){
+		ObjectBase(int id, std::string s):id_(id), name_(s)
+		{
 			assert(id_>0);
-			for(auto &p: group_)p = 0;
+			group_.fill(0);
 		};
 		//! Another constructor.
-		ObjectBase(int id):id_(id){
+		ObjectBase(int id):id_(id)
+		{
 			assert(id_>0);
-			for(auto &p: group_)p = 0;
+			group_.fill(0);
 		};
 		//! A destructor.
 		virtual ~ObjectBase(){};
@@ -47,8 +50,7 @@ class ObjectBase {
 		void set_group(init_list_<int> abc)
 		{
 			assert(abc.size()<=10);
-			int i{0};
-			for(auto const &it: abc)group_[i++] = it;
+			std::copy(abc.begin(), abc.end(), group_.begin());
 		};
 		//! Set object's group via C-style.
 		void set_group(const int y[], int n)
