@@ -32,7 +32,7 @@ class NodeBase: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//! Default constructor.
-		NodeBase(){};
+		NodeBase()=delete;
 		/**
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
@@ -263,7 +263,7 @@ class Node: public NodeBase<Scalar> {
 	public:
 		using NodeBase<Scalar>::NodeBase;// Inherit Base's constructors.
 		//! Default constructor.
-		Node(){};
+		Node()=delete;
 		//! Destructor.
 		~Node(){
 			dofs_.clear();

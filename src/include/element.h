@@ -33,7 +33,7 @@ class Element: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//* Default constructor.
-		Element(){};
+		Element()=delete;
 		//* Destructor.
 		~Element(){
 			nodes_.clear();
@@ -41,20 +41,19 @@ class Element: public ObjectBase {
 			stif_.resize(0, 0);
 			tran_.resize(0, 0);
 			rhs_.resize(0, 0);
-			stress_.resize(0, 0);
-			reaction_force_.resize(0, 0);
 		};
 		/**
 		 *  \brief Initialize with element id type material type and node list.
 		 *  \param [in] id an integer must bigger than zero.
 		 *  \param [in] et number of element type.
 		 *  \param [in] mp number of material type.
+		 *  \param [in] st number of section type.
 		 *  \param [in] nodes list of nodes id.
 		 */
-		Element(int id, ElementType et, int mp, init_list_<int> nodes):
-			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp)
+		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes):
+			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp), sect_(st)
 		{
-			assert(id_>0&&matl_>0);
+			assert(sect_>0&&matl_>0);
 			for(const auto& it: nodes){
 				assert(it>0);
 				nodes_.push_back(it);
@@ -106,12 +105,16 @@ class Element: public ObjectBase {
 		//! Set type of element.
 		void set_element_type(int x){etype_ = x;};
 		//! Set material id.
-		void set_material_id(int x){matl_ = x;};		
+		void set_material_id(int x){matl_ = x;};
+		//! Set section id.
+		void set_section_id(int x){sect_ = x;};
 		//! set type of element.
 		void set_element_type(ElementType et){etype_ = et;};
 		
 		//! Get material id.
 		int get_material_id() const {return matl_;};
+		//! Get section id.
+		int get_section_id() const {return sect_;};
 		//! Get type of element.
 		ElementType get_element_type() const {return etype_;};
 		//! Get id of element.
@@ -128,6 +131,7 @@ class Element: public ObjectBase {
  	private:
 		ElementType etype_{ElementType::UNKNOWN};//!< Type of element.
 		int matl_{-1};//!< Material id.
+		int sect_{-1};//!< Section id.
 		std::array<int, 8> keyopt_{-1, -1, -1, -1, -1, -1, -1, -1};//!< Parameters of element.
 		std::vector<int> nodes_;//!< Array of node list.
 		
@@ -136,8 +140,6 @@ class Element: public ObjectBase {
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		matrix_<T> rhs_;//!< Right-hand side of element.
 		
-		matrix_<U> stress_;//!< Stress of element.
-		matrix_<U> reaction_force_;//!< Reaction force of element.
 };
 }
 #endif

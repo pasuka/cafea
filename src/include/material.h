@@ -43,6 +43,8 @@ template <class Scalar=float>
 class Material: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;
+		//! Default constructor.
+		Material()=delete;
 		/**
 		 *  \brief Initialize with material id type section.
 		 *  \param [in] id material's id.
