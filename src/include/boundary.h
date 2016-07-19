@@ -1,7 +1,6 @@
 #ifndef BOUNDARY_H
 #define BOUNDARY_H
 
-#include <cassert>
 #include <iostream>
 
 #include "fmt/format.h"
@@ -19,30 +18,39 @@ enum struct BoundaryType {
 	FIX_UR_ALL,
 	FIX_UX, FIX_UY, FIX_UZ,
 	FIX_URX, FIX_URY, FIX_URZ,
+	UX, UY, UZ, URX, URY, URZ,
 	UNKNOWN,
 };
 
 /**
  *  Boundary definition.
  */
+template <class T=float>
 class Boundary: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;// Inherit Base's constructors.
-		//! A constructor.
-		Boundary(){};
+		Boundary()=delete;
 		/**
 		 *  \brief Constructor with id boundary type.
 		 *  \param [in] id boundary's id.
 		 *  \param [in] type boundary's type.
 		 */
-		Boundary(int id, BoundaryType bc):val_(bc),
-			ObjectBase{id, fmt::format("Boundary#{0}", id)} {assert(id_>0);};
+		Boundary(int id, BoundaryType bc): bc_(bc),
+			ObjectBase{id, fmt::format("Boundary#{0}", id)}{};
+		/**
+		 *  \brief Constructor with id boundary type values.
+		 *  \param [in] id boundary's id.
+		 *  \param [in] type boundary's type.
+		 *  \param [in] value of boundary.
+		 */
+		Boundary(int id, BoundaryType bc, T val): bc_(bc), val_(val),
+			ObjectBase{id, fmt::format("Boundary#{0}", id)}{};
 		//! A destructor.
 		~Boundary(){};
 		//! Set boundary type.
-		void set_boundary_type(BoundaryType bc) {val_ = bc;};
+		void set_boundary_type(BoundaryType bc) {bc_ = bc;};
 		//! Get boundary type.
-		BoundaryType get_boundary_type() const {return val_;};
+		BoundaryType get_boundary_type() const {return bc_;};
 		//! Print boundary.
 		friend std::ostream& operator<<(std::ostream& cout, const Boundary &a)
 		{
@@ -75,13 +83,32 @@ class Boundary: public ObjectBase {
 			case BoundaryType::FIX_UZ:
 				cout << "Fix uz.";
 				break;
+			case BoundaryType::UX:
+				cout << fmt::format("Forced:{0} value:{1}", "ux", val_);
+				break;
+			case BoundaryType::UY:
+				cout << fmt::format("Forced:{0} value:{1}", "uy", val_);
+				break;
+			case BoundaryType::UZ:
+				cout << fmt::format("Forced:{0} value:{1}", "uz", val_);
+				break;
+			case BoundaryType::URX:
+				cout << fmt::format("Forced:{0} value:{1}", "urx", val_);
+				break;
+			case BoundaryType::URY:
+				cout << fmt::format("Forced:{0} value:{1}", "ury", val_);
+				break;
+			case BoundaryType::URZ:
+				cout << fmt::format("Forced:{0} value:{1}", "urz", val_);
+				break;
 			default:
 				cout << "Unkown.";
 			}
 			return cout << "\n";
 		};
 	private:
-		BoundaryType val_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
+		BoundaryType bt_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
+		T val_ = T(0.0);//!< Value of boundary.
 };
 }
 #endif

@@ -12,6 +12,9 @@
 #include "fmt/format.h"
 
 #include "base.h"
+#include "dof_handler.h"
+#include "element.h"
+#include "boundary.h"
 
 namespace cafea
 {
@@ -265,29 +268,14 @@ class Node: public NodeBase<Scalar> {
 		//! Default constructor.
 		Node()=delete;
 		//! Destructor.
-		~Node(){
-			dofs_.clear();
-			vel_.resize(0, 0);
-			disp_.resize(0, 0);
-			pres_.resize(0, 0);
-			accel_.resize(0, 0);
-			stress_.resize(0, 0);
-		};
-		//! Inquire if this node is used in FE analysis.
-		bool is_active() const {return !dofs_.empty();}; 
-		//! Get size of dofs vector.
-		size_t get_dofs_size() const {return dofs_.size();};
-		//! Get dofs vector. 
-		std::vector<int> get_dofs() const {return dofs_;};
-		//! Get dofs vector's data pointer.
-		int* get_dofs_ptr() const {return dofs_.data();};
-		//! Append dofs vector.
-		void append_dofs(int i) {dofs_.push_back(i);};
-		//! Clear dofs vector.
-		void clear_dofs() {dofs_.clear();};
-		//! Constraint dofs vector.
-		void constraint_dofs(BoundaryType bt);
-		//! Print information.
+		~Node(){};
+		//! DOF manager init.
+		void dof_init(ElementType et);
+		//! DOF accumulate.
+		void dof_accum(int *it);
+		//! DOF apply boundary and load.
+		void dof_apply(BoundaryType bc);
+		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const Node &a)
 		{
 			cout << "This Node information\n";
@@ -295,10 +283,8 @@ class Node: public NodeBase<Scalar> {
 		};
 		
 	private:
+		DofHandler dof_mgr_;//!< Dof manager.
 		
-		std::vector<int> dofs_;//!< Storage of Degree of freedoms.
-		
-		matrix_<ResultScalar> pres_;//!< Storage of pressure.
 		matrix_<ResultScalar> disp_;//!< Storage of displacement.
 		matrix_<ResultScalar> vel_;//!< Storage of velocity.
 		matrix_<ResultScalar> accel_;//!< Storage of acceleration.
