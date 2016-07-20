@@ -6,6 +6,7 @@
 #include "fmt/format.h"
 
 #include "base.h"
+#include "dof_handler.h"
 
 namespace cafea
 {
@@ -13,12 +14,8 @@ namespace cafea
  *  Boundary type enum.
  */
 enum struct BoundaryType {
-	FIX_ALL,
-	FIX_U_ALL,
-	FIX_UR_ALL,
-	FIX_UX, FIX_UY, FIX_UZ,
-	FIX_URX, FIX_URY, FIX_URZ,
-	UX, UY, UZ, URX, URY, URZ,
+	FIXED,
+	INIT_VAL,
 	UNKNOWN,
 };
 
@@ -33,9 +30,10 @@ class Boundary: public ObjectBase {
 		/**
 		 *  \brief Constructor with id boundary type.
 		 *  \param [in] id boundary's id.
-		 *  \param [in] type boundary's type.
+		 *  \param [in] bc boundary's type.
+		 *  \param [in] dl dof label.
 		 */
-		Boundary(int id, BoundaryType bc): bc_(bc),
+		Boundary(int id, BoundaryType bc, DofLabel dl): bc_(bc), dl_(dl),
 			ObjectBase{id, fmt::format("Boundary#{0}", id)}{};
 		/**
 		 *  \brief Constructor with id boundary type values.
@@ -43,71 +41,50 @@ class Boundary: public ObjectBase {
 		 *  \param [in] type boundary's type.
 		 *  \param [in] value of boundary.
 		 */
-		Boundary(int id, BoundaryType bc, T val): bc_(bc), val_(val),
-			ObjectBase{id, fmt::format("Boundary#{0}", id)}{};
+		Boundary(int id, BoundaryType bc, DofLabel dl, T val): bc_(bc), dl_(dl),
+			val_(val), ObjectBase{id, fmt::format("Boundary#{0}", id)}{};
 		//! A destructor.
 		~Boundary(){};
 		//! Set boundary type.
 		void set_boundary_type(BoundaryType bc) {bc_ = bc;};
 		//! Get boundary type.
 		BoundaryType get_boundary_type() const {return bc_;};
+		//! Set dof label.
+		void set_dof_label(DofLabel t) {dl_ = t;};
+		//! Get dof label.
+		DofLabel get_dof_label() const {return dl_;};
+		//! Set boundary value.
+		void set_boundary_val(T bv) {val_ = bv;};
+		//! Get boundary value.
+		T get_boundary_val() const {return val_;};
 		//! Print boundary.
 		friend std::ostream& operator<<(std::ostream& cout, const Boundary &a)
 		{
 			cout << a.get_name() << "\t";
+			
+			switch(a.dl_){
+			case DofLabel::UX: cout << "UX"; break;
+			case DofLabel::UY: cout << "UY"; break;
+			case DofLabel::UZ: cout << "UZ"; break;
+			case DofLabel::URX: cout << "URX"; break;
+			case DofLabel::URY: cout << "URY"; break;
+			case DofLabel::URZ: cout << "URZ"; break;
+			case DofLabel::U_ALL: cout << "UX UY UZ"; break;
+			case DofLabel::UR_ALL: cout << "URX URY URZ"; break;
+			case DofLabel::ALL: cout << "ALL dofs"; break;
+			default: cout << "Unknown.";
+			}
+			
 			switch(a.get_boundary_type()){
-			case BoundaryType::FIX_ALL:
-				cout << "Fix all dofs.";
-				break;
-			case BoundaryType::FIX_U_ALL:
-				cout << "Fix ux uy uz.";
-				break;
-			case BoundaryType::FIX_UR_ALL:
-				cout << "Fix rotx roty rotz.";
-				break;
-			case BoundaryType::FIX_URX:
-				cout << "Fix rotx.";
-				break;
-			case BoundaryType::FIX_URY:
-				cout << "Fix roty.";
-				break;
-			case BoundaryType::FIX_URZ:
-				cout << "Fix rotz.";
-				break;
-			case BoundaryType::FIX_UX:
-				cout << "Fix ux.";
-				break;
-			case BoundaryType::FIX_UY:
-				cout << "Fix uy.";
-				break;
-			case BoundaryType::FIX_UZ:
-				cout << "Fix uz.";
-				break;
-			case BoundaryType::UX:
-				cout << fmt::format("Forced:{0} value:{1}", "ux", val_);
-				break;
-			case BoundaryType::UY:
-				cout << fmt::format("Forced:{0} value:{1}", "uy", val_);
-				break;
-			case BoundaryType::UZ:
-				cout << fmt::format("Forced:{0} value:{1}", "uz", val_);
-				break;
-			case BoundaryType::URX:
-				cout << fmt::format("Forced:{0} value:{1}", "urx", val_);
-				break;
-			case BoundaryType::URY:
-				cout << fmt::format("Forced:{0} value:{1}", "ury", val_);
-				break;
-			case BoundaryType::URZ:
-				cout << fmt::format("Forced:{0} value:{1}", "urz", val_);
-				break;
-			default:
-				cout << "Unkown.";
+			case BoundaryType::FIXED: cout << "Fixed "; break;
+			case BoundaryType::INIT_VAL: cout << "Initial value " << val_; break;
+			default: cout << "Unknown.";
 			}
 			return cout << "\n";
 		};
 	private:
 		BoundaryType bt_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
+		DofLabel dl_ = DofLabel::UNKNOWN;//!< Enumerate of dof label.
 		T val_ = T(0.0);//!< Value of boundary.
 };
 }

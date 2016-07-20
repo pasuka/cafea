@@ -15,6 +15,7 @@ enum struct DofType {
 	MASTER,
 	SLAVE,
 	FORCED,
+	UNKNOWN,
 };
 /**
  *  DOF label enum.
@@ -23,6 +24,8 @@ enum struct DofLabel {
 	UX=0, UY, UZ,
 	URX, URY, URZ,
 	WARP,
+	U_ALL, UR_ALL, ALL,
+	UNKNOWN,
 };
 /**
  *  DOF handler
@@ -33,10 +36,6 @@ class DofHandler{
 		size_t get_num_dofs() const {return dofs_.size();};
 		//! Set number of DOF.
 		void set_num_dofs(int val);
-		//! Activate DOF handler.
-		void activate(bool stat=true){activate_ = stat;if(!stat)dofs_.clear();};
-		//! Check status of DOF handler.
-		bool is_activated()const{return activate_;};
 		//! Clear.
 		void clear(){dofs_.clear();};
 		//! Get DOF vector.
@@ -44,7 +43,7 @@ class DofHandler{
 		
 	private:
 		std::vector<int> dofs_;//!< Storage of dofs.
-		bool activate_{false};//!< Status of dof handler.
+		DofType dt_ = DofType::UNKNOWN;//!< Type of dof.
 };
 }
 #endif

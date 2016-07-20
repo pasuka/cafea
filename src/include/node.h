@@ -274,7 +274,11 @@ class Node: public NodeBase<Scalar> {
 		//! DOF accumulate.
 		void dof_accum(int *it);
 		//! DOF apply boundary and load.
-		void dof_apply(BoundaryType bc);
+		void dof_apply(Boundary<Scalar> bc);
+		//! Activate node.
+		void activate(bool stat=true){activate_ = stat;};
+		//! Check status of node.
+		bool is_activated()const{return activate_;};
 		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const Node &a)
 		{
@@ -284,6 +288,7 @@ class Node: public NodeBase<Scalar> {
 		
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
+		bool activate_{false};//!< Status of node.
 		
 		matrix_<ResultScalar> disp_;//!< Storage of displacement.
 		matrix_<ResultScalar> vel_;//!< Storage of velocity.
