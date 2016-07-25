@@ -83,7 +83,7 @@ class Section: public ObjectBase {
 		 */
 		Section(int id, SectionType sect, init_list_<Scalar> val,
 			init_list_<Scalar> val2):sect_(sect),
-			ObjectBase{id, fmt::format("Material#{0}", id)}
+			ObjectBase{id, fmt::format("Section#{0}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
 			assert(val2.size()>0&&val2.size()<=10);

@@ -78,10 +78,10 @@ class Element: public ObjectBase {
 		//! Get raw pointer of right-hand side matrix.
 		T *get_rhs_ptr() const {return rhs_.data();};
 		
-		//! Get stress matrix.
+		/* //! Get stress matrix.
 		matrix_<U> get_stress() const {return stress_;};
 		//! Get raw pointer of stress matrix.
-		U *get_stress_ptr() const {return stress_.data();};
+		U *get_stress_ptr() const {return stress_.data();}; */
 		
 		//! Post process.
 		void post_stress();

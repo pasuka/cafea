@@ -107,7 +107,7 @@
 *enddo
 
 ! Write output file.
-*cfopen, %ARG3%%ARG2%%ARG1%, txt
+*cfopen, %ARG3%%ARG2%%ARG1%, dat
 *vwrite
 ('$NODE')
 *vwrite,num_node

@@ -13,7 +13,7 @@ namespace cafea
 struct SparseCell {
 	size_t row, col;//!< Row and Column index.
 	//! Default constructor.
-	SparseCell(){};
+	SparseCell()=delete;
 	//! Default deconstructor.
 	~SparseCell(){};
 	//! Constructor with row and column index.
@@ -49,8 +49,9 @@ bool compare_pair(const SparseCell&, const SparseCell&);
  */
 template <class T=double>
 struct SparseMat {
-	std::string storge("CSR");//!< Storage method.
+	std::string storge{"CSR"};//!< Storage method.
 	bool is_sym{true};//!< Symmetry matrix.
+	bool is_full{true};//!< Full of matrix is storged.
 	size_t dim{0};//!< Dimension of matrix.
 	size_t nnz{0};//!< Non-zeros of matrix.
 	std::vector<SparseCell> row_col;//!< Row and column index.

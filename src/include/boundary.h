@@ -77,13 +77,13 @@ class Boundary: public ObjectBase {
 			
 			switch(a.get_boundary_type()){
 			case BoundaryType::FIXED: cout << "Fixed "; break;
-			case BoundaryType::INIT_VAL: cout << "Initial value " << val_; break;
+			case BoundaryType::INIT_VAL: cout << "Initial value " << a.val_; break;
 			default: cout << "Unknown.";
 			}
 			return cout << "\n";
 		};
 	private:
-		BoundaryType bt_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
+		BoundaryType bc_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
 		DofLabel dl_ = DofLabel::UNKNOWN;//!< Enumerate of dof label.
 		T val_ = T(0.0);//!< Value of boundary.
 };

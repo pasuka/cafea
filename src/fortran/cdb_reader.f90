@@ -10,7 +10,7 @@ integer, parameter:: LEN_ARRAY=16!> Set length of array.
 type, bind(c):: node_base
 integer(c_int):: id=-1
 integer(c_int):: csys=0!> Coordinate system.
-integer(c_int):: boundary(LEN_ARRAY)=0!> Boundary conditions.
+!integer(c_int):: boundary(LEN_ARRAY)=0!> Boundary conditions.
 !! Only supported fixed boundary.
 real(c_float):: xyz(3)=0.0E0
 real(c_float):: rot(3)=1.81E2!> Euler angles if needed.
@@ -277,29 +277,29 @@ contains
             endif
         elseif(line(1:2)=='D,')then
         ! read boundary.
-	        read(line(3:), *)i, keyword, r_tmp(1:2)
-	        node_id = maxloc(model_node%id, 1, model_node%id==i)
-	        if(node_id==0)cycle
-	        if(keyword(1:2)=='UX')then
-	        	model_node(node_id)%boundary(1) = -1
-			elseif(keyword(1:2)=='UY')then
-				model_node(node_id)%boundary(2) = -1
-			elseif(keyword(1:2)=='UZ')then
-				model_node(node_id)%boundary(3) = -1
-			elseif(keyword(1:3)=='ALL')then
-				model_node(node_id)%boundary(:) = -1
-			elseif(keyword(1:4)=='ROTX')then
-				model_node(node_id)%boundary(4) = -1
-			elseif(keyword(1:4)=='ROTY')then
-				model_node(node_id)%boundary(5) = -1
-			elseif(keyword(1:4)=='ROTZ')then
-				model_node(node_id)%boundary(6) = -1
-			elseif(keyword(1:4)=='SECT')then
-			elseif(keyword(1:4)=='WARP')then
-				model_node(node_id)%boundary(7) = -1
-			else
-				write(*, '(1x, "Unsupport boundary keyword: ", A)')keyword(1:4)
-			endif
+!	        read(line(3:), *)i, keyword, r_tmp(1:2)
+!	        node_id = maxloc(model_node%id, 1, model_node%id==i)
+!	        if(node_id==0)cycle
+!	        if(keyword(1:2)=='UX')then
+!	        	model_node(node_id)%boundary(1) = -1
+!			elseif(keyword(1:2)=='UY')then
+!				model_node(node_id)%boundary(2) = -1
+!			elseif(keyword(1:2)=='UZ')then
+!				model_node(node_id)%boundary(3) = -1
+!			elseif(keyword(1:3)=='ALL')then
+!				model_node(node_id)%boundary(:) = -1
+!			elseif(keyword(1:4)=='ROTX')then
+!				model_node(node_id)%boundary(4) = -1
+!			elseif(keyword(1:4)=='ROTY')then
+!				model_node(node_id)%boundary(5) = -1
+!			elseif(keyword(1:4)=='ROTZ')then
+!				model_node(node_id)%boundary(6) = -1
+!			elseif(keyword(1:4)=='SECT')then
+!			elseif(keyword(1:4)=='WARP')then
+!				model_node(node_id)%boundary(7) = -1
+!			else
+!				write(*, '(1x, "Unsupport boundary keyword: ", A)')keyword(1:4)
+!			endif
         else
         endif
     enddo
@@ -376,7 +376,7 @@ contains
 
 	subroutine test_single_file(fn, str_len) bind(c, name='load_cdb_file')
 	!> @fn Read single cdb file of C wrapper.
-	!! @param [in] cdb file path.
+	!! @param [in] fn cdb file path.
 	!! @param [in] str_len length of string.
 	implicit none
 	character(c_char), intent(in):: fn(*)

@@ -1,8 +1,8 @@
 #ifndef DOF_HANDLER_H
 #define DOF_HANDLER_H
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 namespace cafea
 {

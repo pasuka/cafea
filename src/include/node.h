@@ -13,8 +13,8 @@
 
 #include "base.h"
 #include "dof_handler.h"
-#include "element.h"
 #include "boundary.h"
+#include "element.h"
 
 namespace cafea
 {
@@ -22,10 +22,10 @@ namespace cafea
  *  Coordinate system enum.
  */
 enum struct CoordinateSystem {
-	CARTESIAN,
+	CARTESIAN=0,
 	CYLINDRICAL,
 	SPHERICAL,
-	UNKNOWN,
+	UNKNOWN=-1,
 };
 /**
  *  Basic node object definition.
@@ -55,7 +55,7 @@ class NodeBase: public ObjectBase {
 		 *  |Spherical  |2       |
 		 */
 		NodeBase(int id, CoordinateSystem csys):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {assert(id_>0);};
+			ObjectBase{id, fmt::format("Node#{0}", id)} {};
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -124,7 +124,8 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}, csys_(csys)
 		{
 			assert(val.size()==3);
-			xyz_ << val[0], val[1], val[2];
+			int i{0};
+			for(auto &it: val)xyz_[i++] = it;
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate values.
@@ -134,7 +135,8 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3);
-			xyz_ << val[0], val[1], val[2];
+			int i{0};
+			for(auto &it: val)xyz_[i++] = it;
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
@@ -144,8 +146,9 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
-			xyz_ << val[0], val[1], val[2];
-			angle_ << val2[0], val2[1], val2[2];
+			int i{0}, j{0};
+			for(auto &it: val)xyz_[i++] = it;
+			for(auto &it: val2)angle_[j++] = it;
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.		
@@ -155,8 +158,9 @@ class NodeBase: public ObjectBase {
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
-			xyz_ << val[0], val[1], val[2];
-			angle_ << val2[0], val2[1], val2[2];
+			int i{0}, j{0};
+			for(auto &it: val)xyz_[i++] = it;
+			for(auto &it: val2)angle_[j++] = it;
 		};
 		//! Destructor.
 		virtual ~NodeBase(){};
@@ -241,7 +245,7 @@ class NodeBase: public ObjectBase {
 				cout << "Unknown\n";
 			}
 			cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.get_x(), a.get_y(), a.get_z());
-			if(!(angle_.array()>Scalar(180)).any())
+			if(!(a.angle_.array()>Scalar(180)).any())
 			{
 				std::array<std::string, 3> tmp = {"Yaw", "Pitch", "Roll"};
 				cout << "Euler angle ";
@@ -290,10 +294,10 @@ class Node: public NodeBase<Scalar> {
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
 		
-		matrix_<ResultScalar> disp_;//!< Storage of displacement.
-		matrix_<ResultScalar> vel_;//!< Storage of velocity.
-		matrix_<ResultScalar> accel_;//!< Storage of acceleration.
-		matrix_<ResultScalar> stress_;//!< Storage of stress.	
+		// matrix_<ResultScalar> disp_;//!< Storage of displacement.
+		// matrix_<ResultScalar> vel_;//!< Storage of velocity.
+		// matrix_<ResultScalar> accel_;//!< Storage of acceleration.
+		// matrix_<ResultScalar> stress_;//!< Storage of stress.	
 };
 
 //! Coordinate transform for 2-node pipe element.

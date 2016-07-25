@@ -39,7 +39,11 @@ class ObjectBase {
 		void set_name(std::string s){name_ = s;};
 		void set_name(const char *cs){name_ = cs;};
 		//! Set object's id.
-		void set_id(int x){id_ = x;};
+		void set_id(int x)
+		{
+			assert(x>0);
+			id_ = x;
+		};
 		//! Set object's group via C++11. 
 		/**
 		 *  \code{.cpp}

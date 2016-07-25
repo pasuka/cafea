@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <vector>
+#include <ostream>
 
 #include <Eigen/Eigen>
 
@@ -43,12 +44,17 @@ class SolutionBase {
 		void set_lump(bool val) {lump_ = val;};
 		//! Get mass matrix lumped info.
 		bool get_lump() const {return lump_;};
+		//! Print information.
+		friend std::ostream& operator<<(std::ostream& cout, const SolutionBase &a)
+		{
+			return cout << "This is base of solution.\n";
+		};
 	protected:
 		bool lump_{false};//!< Lump mass matrix.
-		FileReader<Scalar> file_parser_;//!< Input file loader.
+		FileReader file_parser_;//!< Input file loader.
 		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
 		dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
-		std::vector<Boundary> bc_group_;//!< Boundary dictionary.
+		std::vector<Boundary<>> bc_group_;//!< Boundary dictionary.
 		
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
@@ -66,17 +72,7 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		//! Destructor.
 		~SolutionModal() {init_model();};
 		//! Initialize environment.
-		void init_model()
-		{
-			if(!matl_group_.empty())matl_group_.clear();
-			if(!sect_group_.empty())sect_group_.clear();
-			if(!bc_group_.empty())bc_group_.clear();
-			if(!node_group_.empty())node_group_.clear();
-			if(!elem_group_.empty())elem_group_.clear();
-			mat_pair_.init_mat();
-			mode_shape_.resize(0, 0);
-			natural_freq_.resize(0, 0);
-		};
+		void init_model(){};
 		//! Load input file.
 		void load_file(const char* file_name);
 		//! Check input model data.
@@ -89,6 +85,11 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		void solve();
 		//! Post process.
 		void post_process();
+		//! Print information.
+		friend std::ostream& operator<<(std::ostream& cout, const SolutionModal &a)
+		{
+			return cout << "This is solution of modal analysis.\n";
+		};
 	protected:
 		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
 		dict_<Element<ResultScalar, ResultScalar>> elem_group_;//!< Element dictionary.	
@@ -105,19 +106,7 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! Destructor.
 		~SolutionHarmonic() {init_model();};
 		//! Initialize environment.
-		void init_model()
-		{
-			if(!matl_group_.empty())matl_group_.clear();
-			if(!sect_group_.empty())sect_group_.clear();
-			if(!bc_group_.empty())bc_group_.clear();
-			if(!node_group_.empty())node_group_.clear();
-			if(!elem_group_.empty())elem_group_.clear();
-			mat_pair_.init_mat();
-			mode_shape_.resize(0, 0);
-			natural_freq_.resize(0, 0);
-			damping_.resize(0);
-			freq_range_.resize(0);
-		};
+		void init_model(){};
 		//! Load input file.
 		void load_file(const char* file_name);
 		//! Check input model data.
@@ -130,6 +119,11 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		void solve();
 		//! Post process.
 		void post_process();
+		//! Print information.
+		friend std::ostream& operator<<(std::ostream& cout, const SolutionHarmonic &a)
+		{
+			return cout << "This is solution of harmonic analysis.\n";
+		};
 	protected:
 		dict_<Node<Scalar, std::complex<ResultScalar>>> node_group_;//!< Node dictionary.
 		dict_<Element<ResultScalar, std::complex<ResultScalar>>> elem_group_;//!< Element dictionary.

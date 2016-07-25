@@ -49,7 +49,7 @@ class Load: public ObjectBase {
 		 *  \param [in] n length of load array.
 		 */
 		Load(int id, LoadType lt, LoadDomain ld, DofLabel df, const T val[],
-			const U range[], int n):lt_(bc), ld_(ld), df_(df),
+			const U range[], int n):lt_(lt), ld_(ld), df_(df),
 			ObjectBase{id, fmt::format("Load#{0}", id)}
 		{
 			assert(n>0);
