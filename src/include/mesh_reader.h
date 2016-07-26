@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <functional>
 
 #include "fortran_wrapper.h"
 
@@ -16,10 +17,15 @@ class AnsysCdbReader{
 	public:
 		//! A constructor.
 		AnsysCdbReader(){};
+		/**
+		 *  \brief Initilize with file path.
+		 *  \param[in] fn cdb file path.
+		 */
+		AnsysCdbReader(const std::string fn):file_(fn){};
+		//! Initilize with file path.
+		AnsysCdbReader(const char *fn):file_(fn){};
 		//! Destructor.
 		~AnsysCdbReader() { clean_model();};
-		//! Clear model data in memory.
-		void clean_model() { wrapper_::model_data_clean();};
 		//! Check model data.
 		int check_model();
 		//! Load cdb file.
@@ -35,13 +41,24 @@ class AnsysCdbReader{
 			file_ = std::string(fn);
 			wrapper_::load_cdb_file(file_.c_str(), file_.size());
 			return 0;
-		}
+		};
 		//! Print model information.
 		friend std::ostream& operator<<(std::ostream& cout, const AnsysCdbReader &a)
 		{
-			cout << "File: " << a.file_ << ".\n";
-			return cout;
-		}
+			cout << "File: " << a.file_;
+			return cout << ".\n";
+		};
+		// //! Clear model data in memory.
+		// void clean_model() { wrapper_::model_data_clean();};
+		//! Clear model data in memory.
+		std::function<void()> clean_model = std::bind(wrapper_::model_data_clean);
+		//! Get model data pointer.
+		std::function<void(wrapper_::node_f**, wrapper_::elem_f**,
+			wrapper_::matl_f**, wrapper_::matl_f**, int*, int*, int*,
+			int*)> get_data_ptr = std::bind(wrapper_::model_data_ptr,
+			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+			std::placeholders::_4, std::placeholders::_5, std::placeholders::_6,
+			std::placeholders::_7, std::placeholders::_8);
 	protected:
 		std::string file_;
 };	

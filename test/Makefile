@@ -10,6 +10,7 @@ ASTERISK = "*********************************************"
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
 SRC = ../cppformat/fmt/format.o ../src/core/coord_tran.o
+SRC += ../src/solution/modal_analysis.o
 
 %.o: %.cc
 	$(COMMENT)

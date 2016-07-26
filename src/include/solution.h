@@ -25,36 +25,31 @@ class SolutionBase {
 		//! Default constructor.
 		SolutionBase(){};
 		//! Destructor.
-		virtual ~SolutionBase(){};
+		virtual ~SolutionBase()=0;
 		//! Initialize environment.
-		virtual init_model();
+		virtual void init();
+		//! Clear model data.
+		virtual void clear();
 		//! Load input file.
-		virtual void load_file(const char* file_name);
+		virtual void load(const char* fn);
 		//! Check input model data.
-		virtual void check_model();
-		//! Analyze sparse pattern.
-		virtual void analyze_pattern();
+		virtual void check();
 		//! Assemble global matrix.
-		virtual void assemble_matrix();
+		virtual void assembly();
 		//! Solve.
 		virtual void solve();
 		//! Post process.
 		virtual void post_process();
-		//! Set mass matrix in lumped.
-		void set_lump(bool val) {lump_ = val;};
-		//! Get mass matrix lumped info.
-		bool get_lump() const {return lump_;};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const SolutionBase &a)
 		{
 			return cout << "This is base of solution.\n";
 		};
 	protected:
-		bool lump_{false};//!< Lump mass matrix.
 		FileReader file_parser_;//!< Input file loader.
 		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
 		dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
-		std::vector<Boundary<>> bc_group_;//!< Boundary dictionary.
+		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary dictionary.
 		
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
@@ -70,17 +65,15 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		//! Default constructor.
 		SolutionModal(){};
 		//! Destructor.
-		~SolutionModal() {init_model();};
+		~SolutionModal() { init();};
 		//! Initialize environment.
-		void init_model(){};
+		void init();
 		//! Load input file.
-		void load_file(const char* file_name);
+		void load(const char* file_name);
 		//! Check input model data.
-		void check_model();
-		//! Analyze sparse pattern.
-		void analyze_pattern();
+		void check();
 		//! Assemble global matrix.
-		void assemble_matrix();
+		void assembly();
 		//! Solve.
 		void solve();
 		//! Post process.
@@ -104,17 +97,15 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! Default constructor.
 		SolutionHarmonic(){};
 		//! Destructor.
-		~SolutionHarmonic() {init_model();};
+		~SolutionHarmonic();
 		//! Initialize environment.
-		void init_model(){};
+		void init();
 		//! Load input file.
-		void load_file(const char* file_name);
+		void load(const char* file_name);
 		//! Check input model data.
-		void check_model();
-		//! Analyze sparse pattern.
-		void analyze_pattern();
+		void check();
 		//! Assemble global matrix.
-		void assemble_matrix();
+		void assembly();
 		//! Solve.
 		void solve();
 		//! Post process.

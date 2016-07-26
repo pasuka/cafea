@@ -61,9 +61,9 @@ struct SparseMat {
 	//! Default constructor.
 	SparseMat(){};
 	//! Deconstructor.
-	~SparseMat() {init_mat();};
+	~SparseMat() {clear();};
 	//! Initialize.
-	void init_mat()
+	void clear()
 	{
 		if(!row_col.empty())row_col.clear();
 		if(!aux.empty())aux.clear();
