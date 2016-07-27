@@ -41,6 +41,21 @@ void test_multi_f();
 #ifdef __cplusplus
 }
 #endif
+
+template <class Scalar, class ResultScalar>
+Node<Scalar, ResultScalar> convert2node(const node_f*);
+template <class Scalar, class ResultScalar>
+Element<Scalar, ResultScalar> convert2elem(const elem_f*);
+template <class Scalar>
+Material<Scalar> convert2matl(const matl_f*);
+template <class Scalar>
+Section<Scalar> convert2sect(const matl_f*);
+
+//! Specialization
+extern template Node<REAL4, REAL8> convert2node(const node_f*);
+extern template Element<REAL8, REAL8> convert2elem(const elem_f*);
+extern template Material<REAL4> convert2matl(const matl_f*);
+extern template Section<REAL4> convert2sect(const matl_f*);
 }
 }
 #endif

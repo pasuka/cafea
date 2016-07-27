@@ -2,10 +2,13 @@
 #define SOLUTION_H
 
 #include <complex>
+#include <cstddef>
+#include <array>
 #include <vector>
 #include <ostream>
 
 #include <Eigen/Eigen>
+#include "fmt/format.h"
 
 #include "node.h"
 #include "element.h"
@@ -13,6 +16,7 @@
 #include "section.h"
 #include "boundary.h"
 #include "sparse_matrix.h"
+#include "mesh_reader.h"
 
 namespace cafea
 {
@@ -25,21 +29,21 @@ class SolutionBase {
 		//! Default constructor.
 		SolutionBase(){};
 		//! Destructor.
-		virtual ~SolutionBase()=0;
+		virtual ~SolutionBase(){};
 		//! Initialize environment.
-		virtual void init();
+		virtual void init(){};
 		//! Clear model data.
-		virtual void clear();
+		virtual void clear(){};
 		//! Load input file.
-		virtual void load(const char* fn);
+		virtual void load(const char* fn){};
 		//! Check input model data.
-		virtual void check();
+		virtual void check(){};
 		//! Assemble global matrix.
-		virtual void assembly();
+		virtual void assembly(){};
 		//! Solve.
-		virtual void solve();
+		virtual void solve(){};
 		//! Post process.
-		virtual void post_process();
+		virtual void post_process(){};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const SolutionBase &a)
 		{
@@ -78,6 +82,8 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		void solve();
 		//! Post process.
 		void post_process();
+		//! 
+		std::array<size_t, 5> get_info()const;
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const SolutionModal &a)
 		{
@@ -123,5 +129,9 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		vecX_<Scalar> freq_range_;//!< Frequency range.
 		
 };
+
+//!
+template class SolutionBase<AnsysCdbReader<float>>;
+template class SolutionModal<AnsysCdbReader<float>>;
 }
 #endif

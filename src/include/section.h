@@ -54,7 +54,7 @@ class Section: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;
 		//! Default constructor.
-		Section()=delete;
+		Section(){};
 		/**
 		 *  \brief Initialize with section id type.
 		 *  \param [in] id section's id.

@@ -11,9 +11,11 @@
 #include "section.h"
 #include "load.h"
 #include "sparse_matrix.h"
-#include "solution.h"
-
 #include "fortran_wrapper.h"
 #include "mesh_reader.h"
+#include "solution.h"
 
+#ifndef PRINT_ON
+#define PRINT_ON 0
+#endif
 #endif

@@ -10,13 +10,15 @@ ASTERISK = "*********************************************"
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
 SRC = ../cppformat/fmt/format.o ../src/core/coord_tran.o
-SRC += ../src/solution/modal_analysis.o
+SRC += ../src/solution/modal_analysis.o ../src/io/simple_convert.o
+
+SRC_F90 = ../src/fortran/cdb_reader.o 
 
 %.o: %.cc
 	$(COMMENT)
 	@echo -ne "\033[41;33mBegin compile\033[0m\t\033[35m"$<"\033[0m\n"
 	$(COMMENT)
-	$(CXX) -c $(CXXFLAGS) $(INCLUDE) $<
+	$(CXX) -c $(CXXFLAGS) $(INCLUDE) $< $(args)
 
 %.o: %.f90
 	$(COMMENT)
@@ -43,6 +45,13 @@ test_cdb_cpp: $(SRC) ../src/fortran/cdb_reader.o ./ansys/cdb_test_simple.o
 	$(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_cdb
 	ls ./ansys | sed 's:^:./ansys/:' | ./test_cdb
+
+test_solution: $(SRC) $(SRC_F90) ./solution_basic_test.o
+	$(COMMENT)
+	@echo "Begin solution test in c++"
+	$(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_solution
+	./test_solution
 	
 clean:
 	@echo "Clean files"
@@ -53,4 +62,4 @@ all:
 	./test_node
 	$(MAKE) clean
 	
-.PHONY: clean test_node test_cdb test_cdb_cpp all
+.PHONY: clean test_node test_cdb test_cdb_cpp test_solution all

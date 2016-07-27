@@ -5,6 +5,7 @@
 #include <array>
 #include <tuple>
 #include <vector>
+#include <algorithm>
 #include <initializer_list>
 
 #include <Eigen/Dense>
@@ -33,7 +34,7 @@ class Element: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//* Default constructor.
-		Element()=delete;
+		Element(){};
 		//* Destructor.
 		~Element(){
 			nodes_.clear();
@@ -59,6 +60,14 @@ class Element: public ObjectBase {
 				nodes_.push_back(it);
 			}
 		}
+		/**
+		 *  \brief Initialize with element id material.
+		 *  \param [in] id an positive integer.
+		 *  \param [in] mp number of material type.
+		 *  \param [in] st number of section type.
+		 */
+		Element(int id, int mp, int st):ObjectBase{id, fmt::format("Elem#{0}",
+			id)}, matl_(mp), sect_(st) {assert(sect_>0&&matl_>0);};
 		//! Generate stifness mass matrix of element.
 		void form_matrix();
 		//! Get stiffness matrix.
@@ -100,6 +109,18 @@ class Element: public ObjectBase {
 			if(!nodes_.empty())nodes_.clear();
 			for(const auto& it: a)nodes_.push_back(it);
 		};
+		//! Set element option. 
+		void set_option(init_list_<int> a)
+		{
+			assert(0<a.size()&&a.size()<=10);
+			std::copy(a.begin(), a.end(), keyopt_.begin());
+		};
+		//! Set element option.
+		void set_option(const int a[], int m)
+		{
+			assert(0<m&&m<=10);
+			for(int i=0; i<m; i++)keyopt_[i] = a[i];
+		};
 		//! Set id of element.
 		void set_element_id(int x){id_ = x;};
 		//! Set type of element.
@@ -115,6 +136,8 @@ class Element: public ObjectBase {
 		int get_material_id() const {return matl_;};
 		//! Get section id.
 		int get_section_id() const {return sect_;};
+		//! Get option.
+		std::array<int, 10> get_option() const {return keyopt_;};
 		//! Get type of element.
 		ElementType get_element_type() const {return etype_;};
 		//! Get id of element.
@@ -132,7 +155,7 @@ class Element: public ObjectBase {
 		ElementType etype_{ElementType::UNKNOWN};//!< Type of element.
 		int matl_{-1};//!< Material id.
 		int sect_{-1};//!< Section id.
-		std::array<int, 8> keyopt_{-1, -1, -1, -1, -1, -1, -1, -1};//!< Parameters of element.
+		std::array<int, 10> keyopt_{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};//!< Parameters of element.
 		std::vector<int> nodes_;//!< Array of node list.
 		
 		matrix_<T> stif_;//!< Stiffness matrix of element.
