@@ -74,6 +74,8 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		void init();
 		//! Load input file.
 		void load(const char* file_name);
+		//! Load input file.
+		void load(std::string fn) { load(fn.c_str());};
 		//! Check input model data.
 		void check();
 		//! Assemble global matrix.

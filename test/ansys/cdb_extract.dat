@@ -8,7 +8,7 @@
 /nopr
 
 ! Load CDB file.
-/input, ARG1, cdb, %ARG3%%ARG2%
+/input, %ARG1%, cdb, %ARG3%%ARG2%
 
 ! Get parameter of variables.
 *get, num_node, node, 0, count
@@ -109,6 +109,12 @@
 ! Write output file.
 *cfopen, %ARG3%%ARG2%%ARG1%, dat
 *vwrite
+('$COUNT')
+*vwrite,num_node,num_elem,num_matp,num_rcon,num_etyp
+%8I,%8I,%8I,%8I,%8I
+*vwrite
+('$ENDCOUNT')
+*vwrite
 ('$NODE')
 *vwrite,num_node
 %8I
@@ -153,22 +159,41 @@
 ('$ENDRCONST')
 *cfclose
 
-*del, num_node
-*del, num_elem
-*del, num_matp
-*del, num_etyp
-*del, num_node
-*del, num_rcon
+num_node=
+num_elem=
+num_matp=
+num_etyp=
+num_node=
+num_rcon=
 
-*del, n_matp
-*del, n_etyp
-*del, n_rcon
+n_matp=
+n_etyp=
+n_rcon=
 
-*del, node_list
-*del, elem_list
-*del, etyp_list
-*del, matp_list
-*del, rcon_list
+node_list=
+elem_list=
+etyp_list=
+matp_list=
+rcon_list=
+
+
+!*del, all
+!*del, num_node
+!*del, num_elem
+!*del, num_matp
+!*del, num_etyp
+!*del, num_node
+!*del, num_rcon
+!
+!*del, n_matp
+!*del, n_etyp
+!*del, n_rcon
+!
+!*del, node_list
+!*del, elem_list
+!*del, etyp_list
+!*del, matp_list
+!*del, rcon_list
 
 ! End of marco.
 *end
@@ -178,13 +203,31 @@
 /clear, nostart
 fn_dir = 'E:\cpp_code\'
 *use, export_cafea, 'pipe_demo_01', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea, 'pipe_demo_02', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea, 'pipe_demo_03', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea,  'nrc1677_1_1', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea,  'nrc1677_1_2', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea,  'nrc1677_1_3', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea,  'nrc1677_1_4', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea,  'nrc1677_1_5', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea,  'nrc1677_1_6', 'cafea\test\ansys\', fn_dir
+/clear, nostart
+fn_dir = 'E:\cpp_code\'
 *use, export_cafea,  'nrc1677_1_7', 'cafea\test\ansys\', fn_dir
 finish

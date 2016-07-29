@@ -9,7 +9,25 @@ TEST_CASE("Load cdb file", "[Solution Basic]")
 	using cafea::SolutionModal;
 	using cafea::AnsysCdbReader;
 	
-	SolutionModal<AnsysCdbReader<float>, float, double> example01;
+	using SolutionSimple = SolutionModal<AnsysCdbReader<float>, float, double>;
+	
+	std::unordered_map<std::string, std::array<size_t, 5>> cdb_list{
+		{"./ansys/pipe_demo_01.cdb", {27, 12, 1, 1, 0}},
+		{"./ansys/pipe_demo_02.cdb", {43, 30, 2, 1, 0}},
+		{"./ansys/pipe_demo_03.cdb", { 1,  1, 1, 1, 1}},
+		{"./ansys/nrc1677_1_1.cdb", {,,,,}},
+		{"./ansys/nrc1677_1_6.cdb", {,,,,}},
+		{"./ansys/nrc1677_2_4.cdb", {,,,,}},
+		{"./ansys/nrc1677_1_2.cdb", {,,,,}},
+		{"./ansys/nrc1677_1_7.cdb", {,,,,}},
+		{"./ansys/nrc6645_1_1.cdb", {,,,,}},
+		{"./ansys/nrc1677_1_3.cdb", {,,,,}},
+		{"./ansys/nrc1677_2_1.cdb", {,,,,}},
+		{"./ansys/nrc1677_1_4.cdb", {,,,,}},
+		{"./ansys/nrc1677_2_2.cdb", {,,,,}},
+		{"./ansys/nrc1677_1_5.cdb", {,,,,}},
+		{"./ansys/nrc1677_2_3.cdb", {,,,,}},};
+	SolutionSimple example01;
 	
 	example01.load("./ansys/pipe_demo_02.cdb");
 	
