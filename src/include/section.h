@@ -83,12 +83,24 @@ class Section: public ObjectBase {
 		 */
 		Section(int id, SectionType sect, init_list_<Scalar> val,
 			init_list_<Scalar> val2):sect_(sect),
-			ObjectBase{id, fmt::format("Section#{0}", id)}
+			ObjectBase{id, fmt::format("Section#{}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
 			assert(val2.size()>0&&val2.size()<=10);
 			std::copy(val.begin(), val.end(), param_.begin());
 			std::copy(val2.begin(), val2.end(), param2_.begin());
+		};
+		/**
+		 *  \brief Initialize with section id and values.
+		 *  \param [in] id section's id.
+		 *  \param [in] val array of value.
+		 *  \param [in] n length of array.
+		 */
+		Section(int id, const Scalar val[], int n):ObjectBase{id, fmt::format("Section#{}", id)}
+		{
+			assert(0<n&&n<=10);
+			param_.fill(Scalar(0));
+			for(int i=0; i<n; i++)param_[i] = val[i];
 		};
 		//! Destructor.
 		~Section(){};
@@ -126,5 +138,9 @@ class Section: public ObjectBase {
 		std::array<Scalar, 10> param_;//!< 1st parameter array.
 		std::array<Scalar, 10> param2_;//!< 2nd parameter array.	
 };
+
+//! Specialization with float and double types.
+template class Section<REAL4>;
+template class Section<REAL8>;
 }
 #endif

@@ -111,5 +111,9 @@ class Material: public ObjectBase {
 		std::array<Scalar, 10> param_;//!< 1st parameter array.
 		std::array<Scalar, 10> param2_;//!< 2nd parameter array.	
 };
+
+//! Specialization with float and double types.
+template class Material<REAL4>;
+template class Material<REAL8>;
 }
 #endif

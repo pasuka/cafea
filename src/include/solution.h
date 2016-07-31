@@ -44,6 +44,11 @@ class SolutionBase {
 		virtual void solve(){};
 		//! Post process.
 		virtual void post_process(){};
+		virtual std::array<size_t, 5> get_info()const
+		{
+			std::array<size_t, 5> tmp{0, 0, 0, 0, 0};
+			return tmp;
+		};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const SolutionBase &a)
 		{
@@ -132,7 +137,7 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		
 };
 
-//!
+//! Specialization with float type.
 template class SolutionBase<AnsysCdbReader<float>>;
 template class SolutionModal<AnsysCdbReader<float>>;
 }

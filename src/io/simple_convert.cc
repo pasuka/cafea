@@ -56,7 +56,11 @@ Element<Scalar, ResultScalar> convert2elem(const elem_f *p_elem)
 template <class Scalar>
 Material<Scalar> convert2matl(const matl_f *p_matl)
 {
-	Material<Scalar> mp{p_matl->id_, MaterialType::LINEAR_ELASTIC};
+	Material<Scalar> mp(p_matl->id_, MaterialType::LINEAR_ELASTIC);
+	mp.set_material_prop(MaterialProp::DENS, p_matl->val_[0]);
+	mp.set_material_prop(MaterialProp::EX, p_matl->val_[1]);
+	mp.set_material_prop(MaterialProp::NU, p_matl->val_[2]);
+	mp.set_material_prop(MaterialProp::GXY, p_matl->val_[3]);
 	return mp;
 };
 /**
@@ -67,7 +71,7 @@ Material<Scalar> convert2matl(const matl_f *p_matl)
 template <class Scalar>
 Section<Scalar> convert2sect(const matl_f *p_sect)
 {
-	Section<Scalar> st{p_sect->id_, SectionType::UNKNOWN};
+	Section<Scalar> st(p_sect->id_, p_sect->val_, 10);
 	return st;
 };
 

@@ -12,6 +12,7 @@ ASTERISK = $(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
 SRC = ../cppformat/fmt/format.o ../src/core/coord_tran.o
+SRC += ../src/base/material.o ../src/base/section.o
 SRC += ../src/solution/modal_analysis.o ../src/io/simple_convert.o
 SRC += ../src/fortran/cdb_reader.o 
 

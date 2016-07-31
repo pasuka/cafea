@@ -58,7 +58,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 	wrapper_::matl_f *p_real{nullptr}, *p_matl{nullptr};
 	int a1{0}, a2{0}, a3{0}, a4{0};
 	(*this).file_parser_.get_data_ptr(
-		&p_node, &p_elem, &p_real, &p_matl, &a1, &a2, &a3, &a4);
+		&p_node, &p_elem, &p_matl, &p_real, &a1, &a2, &a3, &a4);
 	
 	assert(a1>0);
 	assert(a2>0);
@@ -91,7 +91,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 		}
 	}
 	
-	for(int i=0; i<a3; i++, p_real++){
+	for(int i=0; i<a4; i++, p_real++){
 		auto got = this->sect_group_.find(p_real->id_);
 		if(got==this->sect_group_.end()){
 			(*this).sect_group_[p_real->id_] = wrapper_::convert2sect<Scalar>(p_real);
@@ -100,7 +100,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 			fmt::print("Duplicated section id:{}\n", p_real->id_);
 		}
 	}
-	for(int i=0; i<a4; i++, p_matl++){
+	for(int i=0; i<a3; i++, p_matl++){
 		auto got = this->matl_group_.find(p_matl->id_);
 		if(got==this->matl_group_.end()){
 			(*this).matl_group_[p_matl->id_] = wrapper_::convert2matl<Scalar>(p_matl);
