@@ -16,7 +16,7 @@ const int MAX_NODES_PER_ELEM_{27};
 struct node_f {
 	int id_{-1};
 	int csys_{0};
-	// int boundary_[LEN_ARRAY_]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	int boundary_[LEN_ARRAY_]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	REAL4 xyz_[3]={0E0, 0E0, 0E0};
 	REAL4 rot_[3]={1.81E2, 1.81E2, 1.81E2};
 };

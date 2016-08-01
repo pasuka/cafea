@@ -1,18 +1,30 @@
-CC = gcc
-CXX = g++
-FC = gfortran
-CXXFLAGS = -std=c++14 -O3 -lgfortran
-FFLAGS = -cpp
-INCLUDE = -I../src/include -I../eigen
+CC := gcc
+CXX := g++
+FC := gfortran
+CXXFLAGS := -O3 -lgfortran
+FFLAGS := -cpp
+
+# Check version of gcc
+GCCVERSIONEQ5 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 5.0)
+GCCVERSIONEQ6 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 6.0)
+ifeq "$(GCCVERSIONEQ6)" "0"
+ifeq "$(GCCVERSIONEQ5)" "1"
+CXXFLAGS += -std=c++14
+else
+endif
+endif
+
+INCLUDE := -I../src/include -I../eigen
 INCLUDE += -I../cppformat -I../Catch/single_include
 
-ASTERISK4 = "****"
-ASTERISK16 = $(ASTERISK4)$(ASTERISK4)$(ASTERISK4)$(ASTERISK4)
-ASTERISK = $(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)
+ASTERISK4 := "****"
+ASTERISK16 := $(ASTERISK4)$(ASTERISK4)$(ASTERISK4)$(ASTERISK4)
+ASTERISK := $(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
 SRC = ../cppformat/fmt/format.o ../src/core/coord_tran.o
 SRC += ../src/base/material.o ../src/base/section.o
+SRC += ../src/element/element.o 
 SRC += ../src/solution/modal_analysis.o ../src/io/simple_convert.o
 SRC += ../src/fortran/cdb_reader.o 
 

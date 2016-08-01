@@ -41,7 +41,12 @@ std::array<size_t, 5> SolutionModal<FileReader, Scalar, ResultScalar>::get_info(
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::check()
 {
-	fmt::print("PASS\n");
+	if(this->node_group_.empty())fmt::print("None node in model\n");
+	if(this->elem_group_.empty())fmt::print("None element in model\n");
+	if(this->matl_group_.empty())fmt::print("None material in model\n");
+	if(this->sect_group_.empty())fmt::print("None section in model\n");
+	if(this->bc_group_.empty())fmt::print("None boundary in model\n");
+	fmt::print("Model has been checked!\n");
 };
 
 /**
@@ -75,6 +80,46 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 		if(got==(*this).node_group_.end()){
 			(*this).node_group_[p_node->id_] = wrapper_::convert2node<Scalar,
 				ResultScalar>(p_node);
+			std::vector<int> tmp(p_node->boundary_, p_node->boundary_+7);
+			if(std::any_of(tmp.cbegin(), tmp.cend(), [](int i){return i<0;})){
+				for(size_t j=0; j<tmp.size(); j++){
+					if(tmp[j]<0){
+						switch(j){
+						case 0: 
+							this->bc_group_.push_back({p_node->id_,
+								BoundaryType::FIXED, DofLabel::UX});
+							break;
+						case 1:
+							this->bc_group_.push_back({p_node->id_,
+								BoundaryType::FIXED, DofLabel::UY});
+							break;
+						case 2:
+							this->bc_group_.push_back({p_node->id_,
+								BoundaryType::FIXED, DofLabel::UZ});
+							break;
+						case 3:
+							this->bc_group_.push_back({p_node->id_,
+								BoundaryType::FIXED, DofLabel::URX});
+							break;
+						case 4:
+							this->bc_group_.push_back({p_node->id_,
+								BoundaryType::FIXED, DofLabel::URY});
+							break;
+						case 5:
+							this->bc_group_.push_back({p_node->id_,
+								BoundaryType::FIXED, DofLabel::URZ});
+							break;
+						case 6:
+							this->bc_group_.push_back({p_node->id_,
+								BoundaryType::FIXED, DofLabel::WARP});
+							break;
+						default:
+							fmt::print("Only support 6 dofs now\n");
+						}
+					}
+				}
+				// fmt::print("Boundary apply on node {}\n", p_node->id_);
+			}
 		}
 		else{
 			fmt::print("Duplicated node id:{}\n", p_node->id_);
@@ -112,10 +157,16 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 	(*this).file_parser_.clean_model();
 };
 
+/**
+ *  \brief Assembly Global matrix.
+ */
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 {
-	fmt::print("Empty\n");
+	for(const auto &it: (*this).elem_group_){
+		const auto &p_elem = it.second;
+		std::cout << p_elem;
+	}
 };
 
 template <class FileReader, class Scalar, class ResultScalar>

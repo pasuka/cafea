@@ -10,7 +10,7 @@ integer, parameter:: LEN_ARRAY=16!> Set length of array.
 type, bind(c):: node_base
 integer(c_int):: id=-1
 integer(c_int):: csys=0!> Coordinate system.
-!integer(c_int):: boundary(LEN_ARRAY)=0!> Boundary conditions.
+integer(c_int):: boundary(LEN_ARRAY)=0!> Boundary conditions.
 !! Only supported fixed boundary.
 real(c_float):: xyz(3)=0.0E0
 real(c_float):: rot(3)=1.81E2!> Euler angles if needed.
@@ -82,13 +82,14 @@ contains
 
 	! Open cdb file.
     open(newunit=fid, file=trim(fn), status='old', iostat=fid_stat)
-	write(*, *)
     if(fid_stat/=0)then
     	line_fmt = '(1x, "Open file: ", a, " Failed. Error code: ", i4)'
         write(*, line_fmt)trim(fn), fid_stat
         return
     else
+#if(PRINT_ON==1)    
     	write(*, '(1x, "Begin read file: ", a)')trim(fn)
+#endif
     endif
     ! initialize global variables.
     call model_init()
@@ -100,32 +101,46 @@ contains
         if(line(1:6)=='NUMOFF')then
         	if(line(8:11)=='NODE')then
         		read(line(13:), *)num_node
+#if(PRINT_ON==1)        		
         		write(*, '(1x, "Max. id of nodes:", i6)')num_node
+#endif        		
         	elseif(line(8:11)=='ELEM')then
         		read(line(13:), *)num_elem
+#if(PRINT_ON==1)        		
         		write(*, '(1x, "Max. id of elements:", i6)')num_elem
+#endif        		
         	elseif(line(8:11)=='TYPE')then
         		read(line(13:), *)num_etype
+#if(PRINT_ON==1)        		
         		write(*, '(1x, "Max. id of element types:", i3)')num_etype
+#endif        		
         		if(allocated(tmp_etype))deallocate(tmp_etype)
 	        	allocate(tmp_etype(num_etype, LEN_ARRAY+1))
     	    	tmp_etype(:, 1) = -1
     	    	tmp_etype(:, 2:) = 0
         	elseif(line(8:11)=='REAL')then
         		read(line(13:), *)num_real
+#if(PRINT_ON==1)        		
         		write(*, *)'Max. id of real constants:', num_real
+#endif        		
         	elseif(line(8:11)=='CSYS')then
         		read(line(13:), *)num_csys
+#if(PRINT_ON==1)        		
         		write(*, *)'Number of coordinate systems:', num_csys
+#endif        		
         	elseif(line(8:11)=='LINE')then
         	elseif(line(8:11)=='AREA')then
         	elseif(line(8:11)=='VOLU')then
         	elseif(line(8:11)=='SECN')then
         		read(line(13:), *)num_secn
+#if(PRINT_ON==1)        		
         		write(*, *)'Number of sections:', num_secn
+#endif        		
         	elseif(line(8:11)=='MAT ')then
         		read(line(13:), *)num_mat
+#if(PRINT_ON==1)        		
         		write(*, *)'Max. id of materials:', num_mat
+#endif        		
         		allocate(model_matl(num_mat))
         		do i = 1, num_mat
         			model_matl(i)%id = i
@@ -160,7 +175,9 @@ contains
         		write(*, '(1x, "Real constants not match.", i3, "vs", i3)')tmp(2), num_real
         	endif
         	num_real = tmp(1)
+#if(PRINT_ON==1)        	
         	write(*, '(1x, "Number of real constants:", i4)')num_real
+#endif        	
         	if(allocated(model_real))deallocate(model_real)
         	allocate(model_real(num_real))
         	read(fid, '(A)')line_fmt
@@ -180,7 +197,9 @@ contains
             	exit
             else
             	num_node = k
+#if(PRINT_ON==1)            	
             	write(*, '(1x, "Number of nodes:", i6)')num_node
+#endif            	
             endif
             allocate(model_node(num_node))
             read(fid, '(a)')line_fmt
@@ -201,7 +220,9 @@ contains
 	        	write(*, '(1x, "Number of elements not match:", i6, "vs", i6)')k, num_elem
 	        else
 	        	num_elem = k
+#if(PRINT_ON==1)	        	
 	        	write(*, '(1x, "Number of elements:", i6)')num_elem
+#endif	        	
 	        endif
 	        allocate(model_elem(num_elem))
 	        read(fid, '(A)')line_fmt
@@ -277,29 +298,29 @@ contains
             endif
         elseif(line(1:2)=='D,')then
         ! read boundary.
-!	        read(line(3:), *)i, keyword, r_tmp(1:2)
-!	        node_id = maxloc(model_node%id, 1, model_node%id==i)
-!	        if(node_id==0)cycle
-!	        if(keyword(1:2)=='UX')then
-!	        	model_node(node_id)%boundary(1) = -1
-!			elseif(keyword(1:2)=='UY')then
-!				model_node(node_id)%boundary(2) = -1
-!			elseif(keyword(1:2)=='UZ')then
-!				model_node(node_id)%boundary(3) = -1
-!			elseif(keyword(1:3)=='ALL')then
-!				model_node(node_id)%boundary(:) = -1
-!			elseif(keyword(1:4)=='ROTX')then
-!				model_node(node_id)%boundary(4) = -1
-!			elseif(keyword(1:4)=='ROTY')then
-!				model_node(node_id)%boundary(5) = -1
-!			elseif(keyword(1:4)=='ROTZ')then
-!				model_node(node_id)%boundary(6) = -1
-!			elseif(keyword(1:4)=='SECT')then
-!			elseif(keyword(1:4)=='WARP')then
-!				model_node(node_id)%boundary(7) = -1
-!			else
-!				write(*, '(1x, "Unsupport boundary keyword: ", A)')keyword(1:4)
-!			endif
+	        read(line(3:), *)i, keyword, r_tmp(1:2)
+	        node_id = maxloc(model_node%id, 1, model_node%id==i)
+	        if(node_id==0)cycle
+	        if(keyword(1:2)=='UX')then
+	        	model_node(node_id)%boundary(1) = -1
+			elseif(keyword(1:2)=='UY')then
+				model_node(node_id)%boundary(2) = -1
+			elseif(keyword(1:2)=='UZ')then
+				model_node(node_id)%boundary(3) = -1
+			elseif(keyword(1:3)=='ALL')then
+				model_node(node_id)%boundary(:) = -1
+			elseif(keyword(1:4)=='ROTX')then
+				model_node(node_id)%boundary(4) = -1
+			elseif(keyword(1:4)=='ROTY')then
+				model_node(node_id)%boundary(5) = -1
+			elseif(keyword(1:4)=='ROTZ')then
+				model_node(node_id)%boundary(6) = -1
+			elseif(keyword(1:4)=='SECT')then
+			elseif(keyword(1:4)=='WARP')then
+				model_node(node_id)%boundary(7) = -1
+			else
+				write(*, '(1x, "Unsupport boundary keyword: ", A)')keyword(1:4)
+			endif
         else
         endif
     enddo
@@ -353,7 +374,9 @@ contains
 	if(present(is_keep))then
 		if(.not.is_keep)call model_init()
 	endif
+#if(PRINT_ON==1)	
 	write(*, '(1x, "Finish read file.")')	
+#endif	
 	end subroutine
 	
 	subroutine test_multiple_file() bind(c, name='test_multi_f')
