@@ -164,9 +164,29 @@ template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 {
 	for(const auto &it: (*this).elem_group_){
-		const auto &p_elem = it.second;
-		std::cout << p_elem;
+		const auto &p_elem = it.second;//!< Get element ptr.
+		auto node_list = p_elem.get_node_list();
+		auto et = p_elem.get_element_type();
+		for(int i=0; i<p_elem.get_active_num_of_node(); i++){
+			auto got = this->node_group_.find(node_list[i]);
+			if(got!=this->node_group_.end()){
+				got->second.activate(true);
+				got->second.dof_init(et);
+			}
+		}
 	}
+	for(const auto &bc: (*this).bc_group_){
+		auto got = this->node_group_.find(bc.get_id());
+		if(got!=this->node_group_.end()){
+			got->second.dof_apply(bc);
+		}
+	}
+	int num{0};
+	for(auto &it: this->node_group_){
+		it.second.dof_accum(&num, DofType::NORMAL);
+	}
+	fmt::print("Total Dimension:{}\n", num);
+	for(const auto &it: this->node_group_)std::cout << it.second;
 };
 
 template <class FileReader, class Scalar, class ResultScalar>

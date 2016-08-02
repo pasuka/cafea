@@ -2,6 +2,7 @@
 #define ELEMENT_H
 
 #include <cassert>
+#include <cstddef>
 #include <array>
 #include <tuple>
 #include <vector>
@@ -96,8 +97,6 @@ class Element: public ObjectBase {
 		//! Post process.
 		void post_stress();
 		
-		//! Get node list.
-		std::vector<int> get_node_list() const {return nodes_;};
 		//! Set node list.
 		void set_node_list(const int a[], int m)
 		{
@@ -137,6 +136,8 @@ class Element: public ObjectBase {
 		int get_material_id() const {return matl_;};
 		//! Get section id.
 		int get_section_id() const {return sect_;};
+		//! Get node list.
+		std::vector<int> get_node_list() const {return nodes_;};
 		//! Get option.
 		std::array<int, 10> get_option() const {return keyopt_;};
 		//! Get type of element.
@@ -148,15 +149,15 @@ class Element: public ObjectBase {
 		//! Get dofs of each node.
 		int get_dofs_per_node() const;
 		//! Get total number of nodes.
-		int get_total_num_of_nodes() const {return nodes_.size();};
+		int get_total_num_of_node() const {return nodes_.size();};
 		//! Get active number of nodes.
-		int get_active_num_of_nodes() const;
+		int get_active_num_of_node() const;
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
 		{
 			cout << fmt::format("Element id:{}\t", a.id_);
-			cout << fmt::format("Num node:{}\t", a.get_total_num_of_nodes());
-			cout << fmt::format("Active node:{}\t", a.get_active_num_of_nodes());
+			cout << fmt::format("Num node:{}\t", a.get_total_num_of_node());
+			cout << fmt::format("Active node:{}\t", a.get_active_num_of_node());
 			cout << fmt::format("Order:{}\t", a.get_element_order());
 			cout << fmt::format("Dof per node:{}\t", a.get_dofs_per_node());
 			switch(a.etype_){
@@ -201,5 +202,11 @@ class Element: public ObjectBase {
 //! Specialization.
 template class Element<REAL8, REAL8>;
 template class Element<REAL8, COMPLEX8>;
+namespace element_attr_
+{
+size_t get_dofs_per_node(ElementType);
+size_t get_active_num_of_node(ElementType);
+size_t get_element_order(ElementType);
+}
 }
 #endif

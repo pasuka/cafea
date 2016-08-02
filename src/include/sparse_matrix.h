@@ -12,10 +12,6 @@ namespace cafea
  */
 struct SparseCell {
 	size_t row, col;//!< Row and Column index.
-	//! Default constructor.
-	SparseCell()=delete;
-	//! Default deconstructor.
-	~SparseCell(){};
 	//! Constructor with row and column index.
 	SparseCell(size_t ir, size_t jc):row(ir), col(jc){};
 	//! Compare ().
@@ -48,7 +44,22 @@ bool compare_pair(const SparseCell&, const SparseCell&);
  *  Struct for global matrix data storge.
  */
 template <class T=double>
-struct SparseMat {
+class SparseMat {
+	public:
+		//! Default constructor.
+		SparseMat(){};
+		//! Deconstructor.
+		~SparseMat(){clear();};
+		//! Initialize.
+		void clear()
+		{
+			if(!row_col.empty())row_col.clear();
+			if(!aux.empty())aux.clear();
+			if(!stif.empty())stif.clear();
+			if(!mass.empty())mass.clear();
+			if(!rhs.empty())rhs.clear();
+		};
+	private:
 	std::string storge{"CSR"};//!< Storage method.
 	bool is_sym{true};//!< Symmetry matrix.
 	bool is_full{true};//!< Full of matrix is storged.
@@ -58,19 +69,7 @@ struct SparseMat {
 	std::vector<size_t> aux;//!< Auxiliary index.
 	std::vector<T> stif, mass;//!< Global mass and stiffness values.
 	std::vector<T> rhs;//!< Global RHS values.
-	//! Default constructor.
-	SparseMat(){};
-	//! Deconstructor.
-	~SparseMat() {clear();};
-	//! Initialize.
-	void clear()
-	{
-		if(!row_col.empty())row_col.clear();
-		if(!aux.empty())aux.clear();
-		if(!stif.empty())stif.clear();
-		if(!mass.empty())mass.clear();
-		if(!rhs.empty())rhs.clear();
-	};
+	
 };
 }
 #endif

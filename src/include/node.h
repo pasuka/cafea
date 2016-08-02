@@ -276,7 +276,7 @@ class Node: public NodeBase<Scalar> {
 		//! DOF manager init.
 		void dof_init(ElementType et);
 		//! DOF accumulate.
-		void dof_accum(int *it);
+		void dof_accum(int *ij, DofType mt=DofType::NORMAL);
 		//! DOF apply boundary and load.
 		void dof_apply(Boundary<Scalar> bc);
 		//! Activate node.
@@ -286,19 +286,31 @@ class Node: public NodeBase<Scalar> {
 		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const Node &a)
 		{
-			cout << "This Node information\n";
-			return cout << static_cast<const NodeBase<Scalar>&>(a);
+			// cout << "This Node information\n";
+			if(a.activate_){
+				cout << fmt::format("Node:{} is used\t", a.get_id());
+				cout << fmt::format("Dofs:{}\n", a.dof_mgr_.get_num_dofs());
+			}
+			else{
+				cout << fmt::format("Node:{} is unused\n", a.get_id());
+			}
+			// return cout << static_cast<const NodeBase<Scalar>&>(a);
+			std::cout << a.dof_mgr_;
+			return cout;
 		};
 		
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
-		
 		// matrix_<ResultScalar> disp_;//!< Storage of displacement.
 		// matrix_<ResultScalar> vel_;//!< Storage of velocity.
 		// matrix_<ResultScalar> accel_;//!< Storage of acceleration.
 		// matrix_<ResultScalar> stress_;//!< Storage of stress.	
 };
+
+//! Specialization.
+template class Node<REAL4, REAL8>;
+template class Node<REAL4, COMPLEX8>;
 
 //! Coordinate transform for 2-node pipe element.
 template <class T> varargout_2_<T> coord_tran(
