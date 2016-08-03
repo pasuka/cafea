@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <cmath>
+#include <cstddef>
 
 #include <tuple>
 #include <limits>
@@ -52,6 +53,6 @@ using COMPLEX4 = std::complex<float>;
 using COMPLEX8 = std::complex<double>;
 
 //! Gauss integrate point and weight.
-std::tuple<Eigen::VectorXd, Eigen::VectorXd> gauss_quad(int);	
+std::tuple<Eigen::VectorXd, Eigen::VectorXd> gauss_quad(size_t);	
 }
 #endif

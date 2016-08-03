@@ -5,6 +5,10 @@
 #include <vector>
 #include <string>
 
+#include "fmt/format.h"
+
+#include "utils.h"
+
 namespace cafea
 {	
 /**
@@ -41,10 +45,33 @@ bool sort_by_col(const SparseCell&, const SparseCell&);
 bool compare_pair(const SparseCell&, const SparseCell&);
 
 /**
+ *  Enum of sparse matrix format.
+ */
+enum struct SpFmt{
+	CSC,//!< Compressed Sparse Column matrix.
+	CSR,//!< Compressed Sparse Row matrix.
+	COO,//!< COOrdinate sparse matrix.
+};
+/**
+ *  Enum of storge information.
+ */
+enum struct SpStorage{
+	FULL,//!< Whole matrix.
+	UP_TRIANGLE,//!< Up triangle of matrix.
+	LOW_TRIANGLE,//!< Low triangle of matrix.
+};
+/**
+ *  Enum of sparse matrix symmetric.
+ */
+enum struct SpSym{
+	SYMMETRIC,//!< Symmetry matrix.
+	UNSYMMETRIC,//!< unsymmetry matrix.
+};
+/**
  *  Struct for global matrix data storge.
  */
 template <class T=double>
-class SparseMat {
+class SparseMat{
 	public:
 		//! Default constructor.
 		SparseMat(){};
@@ -53,23 +80,66 @@ class SparseMat {
 		//! Initialize.
 		void clear()
 		{
-			if(!row_col.empty())row_col.clear();
-			if(!aux.empty())aux.clear();
-			if(!stif.empty())stif.clear();
-			if(!mass.empty())mass.clear();
-			if(!rhs.empty())rhs.clear();
+			dim_ = nnz_ = 0;
+			format_ = SpFmt::CSC;
+			storge_ = SpStorage::FULL;
+			sym_ = SpSym::SYMMETRIC;
+			if(!row_col_.empty())row_col_.clear();
+			if(!aux_.empty())aux_.clear();
+			if(!rhs_.empty())rhs_.clear();
+			if(!stif_.empty())stif_.clear();
+			if(!mass_.empty())mass_.clear();
 		};
+		//! Get dimension.
+		size_t get_dim() const {return dim_;};
+		//! Get Non-zeros.
+		size_t get_nnz() const {return nnz_;};
+		//! Get matrix format.
+		SpFmt get_format() const {return format_;};
+		//! Get stiffness matrix ptr.
+		const T* get_stif() const {return stif_.data();};
+		//! Get mass matrix ptr.
+		const T* get_mass() const {return mass_.data();};
+		//! Get rhs ptr.
+		const T* get_rhs() const {return rhs_.data();};
+		//! Inquire symmetric of matrix.
+		bool is_symmetric() const {return SpSym::SYMMETRIC==sym_;};
+		//! Inquire full storage of matrix.
+		bool is_full() const {return SpStorage::FULL==storge_;};
+		//! Set matrix format.
+		void set_format(SpFmt t) {format_ = t;};
+		//! Set symmetric.
+		void set_symmetric(bool val=true) {if(val)sym_ = SpSym::SYMMETRIC;};
+		//! Add index pair.
+		void append(SparseCell it){row_col_.push_back(it);};
+		void append(size_t ir, size_t jc){row_col_.push_back({ir, jc});};
+		//! Remove duplicated index pair.
+		void unique(SpFmt t=SpFmt::CSC);
+		//! Add stiffness mass and rhs value.
+		void add_matrix_data(SparseCell, T, T, T);
+		void add_matrix_data(size_t, size_t, T, T, T);
+		//! Add stiffness and mass value.
+		void add_matrix_data_KM(SparseCell, T, T);
+		void add_matrix_data_KM(size_t, size_t, T, T);
+		//! Add stiffness and rhs value.
+		void add_matrix_data_KF(SparseCell, T, T);
+		void add_matrix_data_KF(size_t, size_t, T, T);
+		
 	private:
-	std::string storge{"CSR"};//!< Storage method.
-	bool is_sym{true};//!< Symmetry matrix.
-	bool is_full{true};//!< Full of matrix is storged.
-	size_t dim{0};//!< Dimension of matrix.
-	size_t nnz{0};//!< Non-zeros of matrix.
-	std::vector<SparseCell> row_col;//!< Row and column index.
-	std::vector<size_t> aux;//!< Auxiliary index.
-	std::vector<T> stif, mass;//!< Global mass and stiffness values.
-	std::vector<T> rhs;//!< Global RHS values.
-	
+		SpFmt format_{SpFmt::CSC};//!< Storage method.
+		SpSym sym_{SpSym::SYMMETRIC};//!< Symmetry matrix.
+		SpStorage storge_{SpStorage::FULL};//!< Whole matrix.
+		size_t dim_{0};//!< Dimension of matrix.
+		size_t nnz_{0};//!< Non-zeros of matrix.
+		std::vector<SparseCell> row_col_;//!< Row and column index.
+		std::vector<size_t> aux_;//!< Auxiliary index.
+		std::vector<T> stif_, mass_;//!< Global mass and stiffness values.
+		std::vector<T> rhs_;//!< Global RHS values.
 };
+//!< Specialization
+template class SparseMat<REAL4>;
+template class SparseMat<REAL8>;
+template class SparseMat<COMPLEX4>;
+template class SparseMat<COMPLEX8>;
 }
 #endif
