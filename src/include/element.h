@@ -13,21 +13,12 @@
 #include <Eigen/Dense>
 
 #include "base.h"
+#include "node.h"
+#include "material.h"
+#include "section.h"
 
 namespace cafea
 {
-/**
- *  Enum of element types.
- */
-enum struct ElementType {
-	PIPE16, PIPE18,
-	BEAM188, BEAM189, B31, B32,
-	SOLID185, SOLID186, C3D4, C3D8, C3D20,
-	SHELL181, SHELL281, S3R, S4R, S8R, S9R,
-	MASS21, COMBIN14,
-	UNKNOWN,
-};
-
 /**
  * Element object definition. 
  */
@@ -71,7 +62,8 @@ class Element: public ObjectBase {
 		Element(int id, int mp, int st):ObjectBase{id, fmt::format("Elem#{0}",
 			id)}, matl_(mp), sect_(st) {assert(sect_>0&&matl_>0);};
 		//! Generate stifness mass matrix of element.
-		void form_matrix();
+		template <class Scalar=REAL4>
+		void form_matrix(const Node<Scalar, U> pt[], const Material<Scalar>&, const Section<Scalar>&);
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};
 		//! Get mass matrix.

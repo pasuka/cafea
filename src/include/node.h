@@ -1,11 +1,6 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include <cstddef>
-#include <cassert>
-
-#include <string>
-#include <vector>
 #include <ostream>
 
 #include <Eigen/Dense>
@@ -13,20 +8,9 @@
 
 #include "base.h"
 #include "dof_handler.h"
-#include "boundary.h"
-#include "element.h"
 
 namespace cafea
 {
-/**
- *  Coordinate system enum.
- */
-enum struct CoordinateSystem {
-	CARTESIAN=0,
-	CYLINDRICAL,
-	SPHERICAL,
-	UNKNOWN=-1,
-};
 /**
  *  Basic node object definition.
  */
@@ -279,6 +263,8 @@ class Node: public NodeBase<Scalar> {
 		void dof_accum(int *ij, DofType mt=DofType::NORMAL);
 		//! DOF apply boundary and load.
 		void dof_apply(Boundary<Scalar> bc);
+		//! DOF vector.
+		const std::vector<int> dof_list() const {return dof_mgr_.get_dofs();};
 		//! Activate node.
 		void activate(bool stat=true){activate_ = stat;};
 		//! Check status of node.
@@ -295,7 +281,7 @@ class Node: public NodeBase<Scalar> {
 				cout << fmt::format("Node:{} is unused\n", a.get_id());
 			}
 			// return cout << static_cast<const NodeBase<Scalar>&>(a);
-			std::cout << a.dof_mgr_;
+			cout << a.dof_mgr_;
 			return cout;
 		};
 		
@@ -313,32 +299,32 @@ template class Node<REAL4, REAL8>;
 template class Node<REAL4, COMPLEX8>;
 
 //! Coordinate transform for 2-node pipe element.
-template <class T> varargout_2_<T> coord_tran(
+template <class T> varargout_2_<REAL8> coord_tran(
 	const NodeBase<T>*, const NodeBase<T>*);
 //! Coordinate transform for 2-node beam element.
-template <class T> varargout_2_<T> coord_tran(
+template <class T> varargout_2_<REAL8> coord_tran(
 	const NodeBase<T>*, const NodeBase<T>*, const T[]);
 //! Coordinate transform for 3-node triangle element.
-template <class T> varargout_3_<T> coord_tran(
+template <class T> varargout_3_<REAL8> coord_tran(
 	const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*);
 //! Coordinate transform for 4-node quadrangle element.
-template <class T> varargout_3_<T> coord_tran(
+template <class T> varargout_3_<REAL8> coord_tran(
 	const NodeBase<T>*, const NodeBase<T>*,
 	const NodeBase<T>*, const NodeBase<T>*);
 
 //! Specialization coord_tran function with REAL4/float type.
 //! Avoid to compile more than one times.
 //! Extern template trick in C++11. 
-extern template varargout_2_<REAL4> coord_tran<REAL4>(
+extern template varargout_2_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
 //! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_2_<REAL4> coord_tran<REAL4>(
+extern template varargout_2_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const REAL4[]);
 //! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_3_<REAL4> coord_tran<REAL4>(
+extern template varargout_3_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const NodeBase<REAL4>*);
 //! Specialization coord_tran function with REAL4/float type.
-extern template varargout_3_<REAL4> coord_tran<REAL4>(
+extern template varargout_3_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*,
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
 	

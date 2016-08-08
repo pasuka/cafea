@@ -1,24 +1,12 @@
 #ifndef BOUNDARY_H
 #define BOUNDARY_H
 
-#include <iostream>
-
 #include "fmt/format.h"
 
 #include "base.h"
-#include "dof_handler.h"
 
 namespace cafea
 {
-/**
- *  Boundary type enum.
- */
-enum struct BoundaryType {
-	FIXED,
-	INIT_VAL,
-	UNKNOWN,
-};
-
 /**
  *  Boundary definition.
  */

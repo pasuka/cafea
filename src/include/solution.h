@@ -38,6 +38,8 @@ class SolutionBase {
 		virtual void load(const char* fn){};
 		//! Check input model data.
 		virtual void check(){};
+		//! Analyze pattern.
+		virtual void analyze(){};
 		//! Assemble global matrix.
 		virtual void assembly(){};
 		//! Solve.
@@ -83,6 +85,8 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		void load(std::string fn) { load(fn.c_str());};
 		//! Check input model data.
 		void check();
+		//! Analyze pattern.
+		void analyze();
 		//! Assemble global matrix.
 		void assembly();
 		//! Solve.
@@ -117,6 +121,8 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		void load(const char* file_name);
 		//! Check input model data.
 		void check();
+		//! Analyze pattern.
+		void analyze();
 		//! Assemble global matrix.
 		void assembly();
 		//! Solve.

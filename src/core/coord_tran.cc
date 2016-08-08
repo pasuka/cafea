@@ -1,10 +1,3 @@
-#include <tuple>
-#include <cmath>
-#include <cassert>
-#include <iostream>
-
-#include <Eigen/Dense>
-
 #include "cafea.h"
 
 using std::tuple;
@@ -17,28 +10,28 @@ namespace cafea
  *  \param [in] p1 Start node.
  *  \param [in] p2 End node. 
  */
-template <class Scalar>
-varargout_2_<Scalar> coord_tran(const NodeBase<Scalar> *p1, const NodeBase<Scalar> *p2)
+template <class T>
+varargout_2_<double> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2)
 {
-	Scalar length{0};
-	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
-	vec3_<Scalar> vxx, vxy, vyy, vzz;
+	double length{0};
+	matrix_<double> tran = matrix_<double>::Zero(3, 3);
+	vec3_<T> vxx, vxy, vyy, vzz;
 	
 	vxx = p2->get_xyz() - p1->get_xyz();
 	length = vxx.norm();
-	assert(length>(EPS<Scalar>()));
+	assert(length>(EPS<T>()));
 	vxx /= length;
 	
 	// auto A{sqrt(vxx(0)*vxx(0)+vxx(1)*vxx(1))};
 	auto A = hypot(vxx(0), vxx(1));
-	if(A<Scalar(1.e-6)){
+	if(A<T(1.e-6)){
 		tran(0, 2) = vxx(2)/fabs(vxx(2));
-		tran(1, 1) = Scalar(1);
+		tran(1, 1) = T(1);
 		tran(2, 0) = -vxx(2)/fabs(vxx(2));
 	}
 	else{
 		tran.row(0) << vxx(0), vxx(1), vxx(2);
-		tran.row(1) << -vxx(1)/A, vxx(0)/A, Scalar(0);
+		tran.row(1) << -vxx(1)/A, vxx(0)/A, T(0);
 		tran.row(2) << -vxx(0)*vxx(2)/A, -vxx(1)*vxx(2)/A, A;
 	}
 	
@@ -48,27 +41,25 @@ varargout_2_<Scalar> coord_tran(const NodeBase<Scalar> *p1, const NodeBase<Scala
 /**
  *  \brief Coordinate transform for 2-node beam with up-axis.
  */
-template <class Scalar>
-varargout_2_<Scalar> coord_tran(const NodeBase<Scalar> *p1, const NodeBase<Scalar> *p2, const Scalar up[])
+template <class T>
+varargout_2_<double> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const T up[])
 {
-	Scalar length{0};
-	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
-	vec3_<Scalar> vxx, vyy, vzz, vxy;
+	double length{0};
+	matrix_<double> tran = matrix_<double>::Zero(3, 3);
+	vec3_<T> vxx, vyy, vzz, vxy;
 	
 	vxx = p2->get_xyz() - p1->get_xyz();
 	vxy << up[0], up[1], up[2];
 	
 	length = vxx.norm();
 	
-	assert(length>(EPS<Scalar>()));
+	assert(length>(EPS<T>()));
 	
 	vxx /= length;
 	vxy /= vxy.norm();
 	
-	auto the{acos(vxx.dot(vxy))*Scalar(180)/PI<Scalar>()};
-	if(the<Scalar(1)){
-		vxy << Scalar(1), Scalar(0), Scalar(1);
-	}
+	auto the{acos(vxx.dot(vxy))*T(180)/PI<T>()};
+	if(the<T(1))vxy << T(1), T(0), T(1);
 	vzz = vxx.cross(vxy);
 	vyy = vzz.cross(vxx);
 	
@@ -85,16 +76,13 @@ varargout_2_<Scalar> coord_tran(const NodeBase<Scalar> *p1, const NodeBase<Scala
 /**
  *  \brief Coordinate transform for 3-node triangle element.
  */
-template <class Scalar>
-varargout_3_<Scalar> coord_tran(
-	const NodeBase<Scalar> *p1, 
-	const NodeBase<Scalar> *p2,
-	const NodeBase<Scalar> *p3)
+template <class T>
+varargout_3_<double> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const NodeBase<T> *p3)
 {
-	Scalar area{0};
-	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3);
-	matrix_<Scalar> xy = matrix_<Scalar>::Zero(3, 2);
-	vec3_<Scalar> vxx, vyy, vzz, vxy;
+	double area{0};
+	matrix_<double> tran = matrix_<double>::Zero(3, 3);
+	matrix_<double> xy = matrix_<double>::Zero(3, 2);
+	vec3_<T> vxx, vyy, vzz, vxy;
 	
 	vxx = p2->get_xyz() - p1->get_xyz();
 	vxy = p3->get_xyz() - p1->get_xyz();
@@ -102,8 +90,8 @@ varargout_3_<Scalar> coord_tran(
 	auto L12 = vxx.norm();
 	auto L13 = vxy.norm();
 	
-	assert(L12>(EPS<Scalar>()));
-	assert(L13>(EPS<Scalar>()));
+	assert(L12>(EPS<T>()));
+	assert(L13>(EPS<T>()));
 	
 	vxx /= L12;
 	vxy /= L13;
@@ -120,13 +108,13 @@ varargout_3_<Scalar> coord_tran(
 	vxy = p3->get_xyz() - p2->get_xyz();
 	auto L23 = vxy.norm();
 	
-	assert(L23>(EPS<Scalar>()));
-	auto cos_t = (L12*L12+L13*L13-L23*L23)/(Scalar(2)*L12*L13);
+	assert(L23>(EPS<T>()));
+	auto cos_t = (L12*L12+L13*L13-L23*L23)/(T(2)*L12*L13);
 	auto alpha = acos(cos_t);
 	
-	xy.row(1) << L12, Scalar(0);
+	xy.row(1) << L12, 0.0;
 	xy.row(2) << L13*cos_t, L13*sin(alpha);
-	area = L12*L13*sin(alpha)/Scalar(2);
+	area = L12*L13*sin(alpha)*0.5;
 	
 	return make_tuple(area, xy, tran);
 }
@@ -134,15 +122,14 @@ varargout_3_<Scalar> coord_tran(
 /**
  *  \brief Coordinate transform for 4-node quadrangle element.
  */
-template <class Scalar>
-varargout_3_<Scalar> coord_tran(
-	const NodeBase<Scalar> *p1, const NodeBase<Scalar> *p2,
-	const NodeBase<Scalar> *p3, const NodeBase<Scalar> *p4) 
+template <class T>
+varargout_3_<double> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2,
+	const NodeBase<T> *p3, const NodeBase<T> *p4) 
 {
-	Scalar area{0};
-	matrix_<Scalar> tran = matrix_<Scalar>::Zero(3, 3); 
-	matrix_<Scalar> xy = matrix_<Scalar>::Zero(4, 2);
-	vec3_<Scalar> vxx, vyy, vzz, vxy;
+	double area{0};
+	matrix_<double> tran = matrix_<double>::Zero(3, 3); 
+	matrix_<double> xy = matrix_<double>::Zero(4, 2);
+	vec3_<T> vxx, vyy, vzz, vxy;
 
 	vxx = p2->get_xyz() - p1->get_xyz();
 	vxy = p3->get_xyz() - p1->get_xyz();
@@ -150,8 +137,8 @@ varargout_3_<Scalar> coord_tran(
 	auto L12 = vxx.norm();
 	auto L13 = vxy.norm();
 	
-	assert(L12>(EPS<Scalar>()));
-	assert(L13>(EPS<Scalar>()));
+	assert(L12>(EPS<T>()));
+	assert(L13>(EPS<T>()));
 	
 	vxx /= L12;
 	vxy /= L13;
@@ -167,43 +154,43 @@ varargout_3_<Scalar> coord_tran(
 	vxy = p3->get_xyz() - p2->get_xyz();
 	auto L23 = vxy.norm();
 	
-	assert(L23>(EPS<Scalar>()));
+	assert(L23>(EPS<T>()));
 	
-	auto alpha213 = acos((L12*L12+L13*L13-L23*L23)/(Scalar(2)*L12*L13));
+	auto alpha213 = acos((L12*L12+L13*L13-L23*L23)/(2.0*L12*L13));
 	
 	vxy = p4->get_xyz() - p1->get_xyz();
 	auto L14 = vxy.norm();
 	
-	assert(L14>(EPS<Scalar>()));
+	assert(L14>(EPS<T>()));
 	
 	vxy = p4->get_xyz() - p3->get_xyz();
 	auto L34 = vxy.norm();
 	
-	assert(L34>(EPS<Scalar>()));
+	assert(L34>(EPS<T>()));
 	
-	auto alpha314 = acos((L13*L13+L14*L14-L34*L34)/(Scalar(2)*L13*L14));
-	auto alpha41y = PI<Scalar>()/Scalar(2) - alpha213 - alpha314;
+	auto alpha314 = acos((L13*L13+L14*L14-L34*L34)/(2.0*L13*L14));
+	auto alpha41y = PI<T>()*0.5 - alpha213 - alpha314;
 	
-	xy.row(0) << Scalar(0), Scalar(0);
-	xy.row(1) << L12, Scalar(0);
+	xy.row(0) << 0.0, 0.0;
+	xy.row(1) << L12, 0.0;
 	xy.row(2) << L13*cos(alpha213), L13*sin(alpha213);
 	xy.row(3) << L14*sin(alpha41y), L14*cos(alpha41y);
 	
-	area = (L12*L13*sin(alpha213)+L13*L14*sin(alpha314))/Scalar(2);
+	area = (L12*L13*sin(alpha213)+L13*L14*sin(alpha314))*0.5;
 
 	return make_tuple(area, xy, tran);
 }
 //! Specialization with REAL4/float type.
-template varargout_2_<REAL4> coord_tran<REAL4>(
+template varargout_2_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
 //! Specialization with REAL4/float type.	
-template varargout_2_<REAL4> coord_tran<REAL4>(
+template varargout_2_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const REAL4[]);
 //! Specialization with REAL4/float type.
-template varargout_3_<REAL4> coord_tran<REAL4>(
+template varargout_3_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const NodeBase<REAL4>*);
 //! Specialization with REAL4/float type.
-template varargout_3_<REAL4> coord_tran<REAL4>(
+template varargout_3_<REAL8> coord_tran<REAL4>(
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*,
 	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
 //! Specialization with REAL8/double type.

@@ -49,31 +49,26 @@ bool compare_pair(const SparseCell &a, const SparseCell &b)
 template <class T>
 void SparseMat<T>::unique(SpFmt sf)
 {
-	switch(sf){
-	case SpFmt::COO:
-	case SpFmt::CSC:
-		std::sort(this->row_col_.begin(), this->row_col_.end(), sort_by_col);
-		break;
-	case SpFmt::CSR:
-	default:
-		std::sort(this->row_col_.begin(), this->row_col_.end(), sort_by_row);
+	auto func = std::bind(sort_by_col, std::placeholders::_1, std::placeholders::_2);
+	auto func_eq = [](const SparseCell &a, const SparseCell &b){return a.col==b.col;};
+	if(sf==SpFmt::CSR){
+		auto func = std::bind(sort_by_row, std::placeholders::_1, std::placeholders::_2);
+		auto func_eq = [](const SparseCell &a, const SparseCell &b){return a.row==b.row;};
 	}
+	
+	std::sort(this->row_col_.begin(), this->row_col_.end(), func);
 	auto extr = std::unique(this->row_col_.begin(), this->row_col_.end(), compare_pair);
+	
 	this->row_col_.erase(extr, this->row_col_.end());
 	this->nnz_ = this->row_col_.size();
 	this->stif_.resize(this->nnz_, T(.0));
 	this->mass_.resize(this->nnz_, T(.0));
-	
-	if(sf==SpFmt::CSR){
-		auto func = std::bind(sort_by_row, std::placeholders::_1, std::placeholders::_2);
-	}
-	else{
-		auto func = std::bind(sort_by_col, std::placeholders::_1, std::placeholders::_2);
-	}
-	this->aux_.push_back(0);
+
 	size_t iter{0};
+	this->aux_.push_back(iter);
+	
 	for(size_t i=1; i<this->nnz_; i++){
-		if(sort_by_col(this->row_col_[i], this->row_col_[i-1])){
+		if(func_eq(this->row_col_[i], this->row_col_[i-1])){
 			iter++;
 		}
 		else{
@@ -83,6 +78,8 @@ void SparseMat<T>::unique(SpFmt sf)
 	}
 	this->aux_.push_back(iter);
 	for(size_t i=1; i<this->aux_.size(); i++)this->aux_[i] += this->aux_[i-1];
+	this->dim_ = this->aux_.size()-1;
+	this->rhs_.resize(this->dim_, T(.0));
 	
 };
 /**
@@ -95,6 +92,21 @@ void SparseMat<T>::unique(SpFmt sf)
 template <class T>
 void SparseMat<T>::add_matrix_data(SparseCell it, T val_k, T val_m, T val_rhs)
 {
+	std::array<size_t, 2> index_range;
+	if(this->get_format()==SpFmt::CSR){
+		index_range[0] = this->aux_[it.row];
+		index_range[1] = this->aux_[it.row+1];
+	}
+	else{
+		index_range[0] = this->aux_[it.col];
+		index_range[1] = this->aux_[it.col+1];
+	}
+	auto got = std::find(this->row_col_.begin()+index_range[0],
+		this->row_col_.begin()+index_range[1], it);
+	auto nn = std::distance(this->row_col_.begin(), got);
+	this->stif_[nn] += val_k;
+	this->mass_[nn] += val_m;
+	this->rhs_[it.row] += val_rhs;
 };
 /**
  *  \brief Add stiffness and massdata.

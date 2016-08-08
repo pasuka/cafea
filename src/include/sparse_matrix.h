@@ -24,14 +24,14 @@ struct SparseCell {
 		return a->row==b->row && a->col==b->col;
 	}
 	//! Compare <.
-	bool operator< (const SparseCell *a) const
+	bool operator< (const SparseCell &a) const
 	{
-		return this->row==a->row && this->col < a->col;
+		return this->row==a.row && this->col < a.col;
 	}
 	//! Compare .equal.
-	bool operator== (const SparseCell *a) const
+	bool operator== (const SparseCell &a) const
 	{
-		return this->row==a->row && this->col==a->col;
+		return this->row==a.row && this->col==a.col;
 	}
 };
 

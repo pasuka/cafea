@@ -79,7 +79,7 @@ TEST_CASE("Assembly global matrix", "[Solution Basic]")
 	for(const auto &it: cdb_list){
 		std::unique_ptr<Solution> example(new SolutionSimple);
 		example->load(it.first.c_str());
-		example->assembly();
+		example->analyze();
 	}
 }
 }

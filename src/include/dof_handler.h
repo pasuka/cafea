@@ -8,27 +8,6 @@
 namespace cafea
 {
 /**
- *  DOF type enum.
- */
-enum struct DofType {
-	ELIMINATE=-11,
-	CONSTRAINT=-12,
-	NORMAL=-1,
-	MASTER=-2,
-	SLAVE=-3,
-	UNKNOWN=-99,
-};
-/**
- *  DOF label enum.
- */
-enum struct DofLabel {
-	UX=0, UY, UZ,
-	URX, URY, URZ,
-	WARP,
-	U_ALL, UR_ALL, ALL,
-	UNKNOWN,
-};
-/**
  *  DOF handler
  */
 class DofHandler{
@@ -40,7 +19,7 @@ class DofHandler{
 		//! Clear.
 		void clear(){dofs_.clear();};
 		//! Get DOF vector.
-		std::vector<int> get_dofs() const {return dofs_;};
+		const std::vector<int> get_dofs() const {return dofs_;};
 		//! Apply constraint.
 		void set_constraint(DofLabel, DofType);
 		//! Accumalte.

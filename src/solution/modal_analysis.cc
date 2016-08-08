@@ -158,10 +158,10 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 };
 
 /**
- *  \brief Assembly Global matrix.
+ *  \brief Analyze pattern.
  */
 template <class FileReader, class Scalar, class ResultScalar>
-void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
+void SolutionModal<FileReader, Scalar, ResultScalar>::analyze()
 {
 	for(const auto &it: (*this).elem_group_){
 		const auto &p_elem = it.second;//!< Get element ptr.
@@ -182,13 +182,49 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 		}
 	}
 	int num{0};
-	for(auto &it: this->node_group_){
-		it.second.dof_accum(&num, DofType::NORMAL);
-	}
+	for(auto &it: this->node_group_)it.second.dof_accum(&num, DofType::NORMAL);
+	
 	fmt::print("Total Dimension:{}\n", num);
-	for(const auto &it: this->node_group_)std::cout << it.second;
+	
+	for(const auto &it: this->elem_group_){
+		const auto &p_elem = it.second;
+		auto node_list = p_elem.get_node_list();
+		auto num = p_elem.get_active_num_of_node();
+		for(int i=0; i<num; i++){
+			auto got_i = this->node_group_.find(node_list[i]);
+			if(got_i!=this->node_group_.end()){
+				auto dof_i = got_i->second.dof_list();
+				for(int j=0; j<num; j++){
+					auto got_j = this->node_group_.find(node_list[j]);
+						if(got_j!=this->node_group_.end()){
+							auto dof_j = got_j->second.dof_list();
+							for(auto ia: dof_i){
+								if(ia>=0){
+									for(auto ib: dof_j){
+										if(ib>=0)this->mat_pair_.append(ia, ib);
+									}
+								}
+							}
+						}
+				}
+			}
+		}
+	}
+	this->mat_pair_.unique();
+	fmt::print("Non Zeros: {}\n", this->mat_pair_.get_nnz());
+	fmt::print("Dimension: {}\n", this->mat_pair_.get_dim());
 };
 
+/**
+ *  \brief Assembly global matrix.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
+{
+	for(auto &it: this->elem_group_){
+		it.second.form_matrix();
+	}
+}
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 {

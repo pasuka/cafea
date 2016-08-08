@@ -13,24 +13,6 @@
 namespace cafea
 {
 /**
- *  Load type enum.
- */
-enum struct LoadType {
-	FORCE,
-	DISP,
-	VEL,
-	ACCEL,
-	PRES,
-};
-/**
- *  Load domain.
- */
-enum struct LoadDomain {
-	TIME,
-	FREQ,
-};
-
-/**
  *  Load definition.
  */
 template <class T=float, class U=float>

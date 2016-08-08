@@ -15,28 +15,6 @@
 namespace cafea
 {
 /**
- *  Enum of material type.
- */
-enum struct MaterialType {
-	LINEAR_ELASTIC,
-	UNKNOWN,
-};
-
-/**
- *  Enum of material property.
- */
-enum struct MaterialProp {
-	DENS,//!< Mass density.
-	YOUNG, EX, EY, EZ,//!< Elastic modulus.
-	GXY, GYZ, GXZ,//!< Shear elastic modulus.
-	NU, NUXY, NUYZ, NUXZ,//!< Minor Poisson's ratios. 
-	PRXY, PRYZ, PRXZ,//!< Major Poisson's ratios.
-	DMPR,//!< Constant structural damping coefficient in full harmonic analysis or damping ratio in mode-superposition analysis.
-	ALPD,//!< Mass matrix multiplier for damping.
-	BETD,//!< Stiffness matrix multiplier for damping.
-};
-
-/**
  *  Material definition.
  */
 template <class Scalar=float>

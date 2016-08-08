@@ -15,38 +15,6 @@
 namespace cafea
 {
 /**
- *  Enum of section type.
- */
-enum struct SectionType {
-	PIPE, 
-	SHELL,
-	SOLID,
-	SPRING,
-	MASS,
-	I_BEAM,//!< I-shaped beam section.
-	L_BEAM,//!< L-shaped beam section.
-	T_BEAM,//!< T-shaped beam section. 
-	Z_BEAM,//!< Z-shaped beam section.
-	RECT_BEAM,//!< Rectangle beam section.
-	CSOLID_BEAM,//!< Circular solid beam section.
-	CHAN_BEAM,//!< Channel beam section.
-	HATS_BEAM,//!< Hat-shaped beam section.
-	HREC_BEAM,//!< Hollow rectangle or box beam section.
-	CTUBE_BEAM,//!< Circular tube section.
-	UNKNOWN,
-};
-
-/**
- *  Enum of section property.
- */
-enum struct SectionProp {
-	OD,//!< Pipe outer diameter.
-	TKWALL,//!< Wall thickness.
-	RADCUR,//!< Radius of curvature.
-	DENSFL,//!< Internal fluid density.
-};
-
-/**
  *  Section definition.
  */
 template <class Scalar=float>
