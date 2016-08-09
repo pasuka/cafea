@@ -222,7 +222,43 @@ template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 {
 	for(auto &it: this->elem_group_){
-		it.second.form_matrix();
+		auto node_list = it.second.get_node_list();
+		auto mt = it.second.get_material_id();
+		auto st = it.second.get_section_id();
+		auto got_mt = this->matl_group_.find(mt);
+		auto got_st = this->sect_group_.find(st);
+		assert(got_mt!=this->matl_group_.end());
+		assert(got_st!=this->sect_group_.end());
+		Node<Scalar, ResultScalar> pt[node_list.size()];
+		for(size_t i=0; i<node_list.size(); i++){
+			auto got = this->node_group_.find(node_list[i]);
+			if(got!=this->node_group_.end())pt[i] = got->second;
+		}
+		it.second.form_matrix(pt, &(got_mt->second), &(got_st->second));
+		auto p_stif = it.second.get_stif();
+		auto p_mass = it.second.get_mass();
+		auto p_tran = it.second.get_tran();
+		p_stif = p_tran.transpose()*p_stif*p_tran;
+		p_mass = p_tran.transpose()*p_mass*p_tran;
+		auto nn = it.second.get_active_num_of_node();
+		auto ndof = it.second.get_dofs_per_node();
+		for(size_t ia=0; ia<nn; ia++){
+			auto va = pt[ia].dof_list();
+			for(auto ja=0; ja<ndof; ja++){
+				if(va[ja]<0)continue;
+				for(size_t ib=0; ib<nn; ib++){
+					auto vb = pt[ib].dof_list();
+					for(auto jb=0; jb<ndof; jb++){
+						if(vb[jb]<0)continue;
+						auto row_ = ia*ndof+ja;
+						auto col_ = ib*ndof+jb;
+						this->mat_pair_.add_matrix_data_KM(va[ja], vb[jb],
+							p_stif(row_, col_), p_mass(row_, col_));
+					}
+				}
+			}
+			
+		}
 	}
 }
 template <class FileReader, class Scalar, class ResultScalar>

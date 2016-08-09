@@ -33,27 +33,26 @@ int Element<T, U>::get_element_order()const
  *  \brief Form element matrix.
  */
 template <class T, class U>
-template <class Scalar>
-void Element<T, U>::form_matrix(const Node<Scalar, U> p[],
-	const Material<Scalar> &matl, const Section<Scalar> &sect)
+void Element<T, U>::form_matrix(const Node<REAL4, U> p[],
+	const Material<REAL4> *matl, const Section<REAL4> *sect)
 {
 	auto opt = this->get_option();
 	switch(this->etype_){
 	case ElementType::PIPE16:
 		using pipe_elem_lib::pipe16;
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = pipe16<Scalar>(&p[0], &p[1], &matl, &sect);
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = pipe16<REAL4>(&p[0], &p[1], matl, sect);
 		break;
 	case ElementType::PIPE18:
 		using pipe_elem_lib::pipe18;
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = pipe18<Scalar>(&p[0], &p[1], &p[2], &matl, &sect);
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = pipe18<REAL4>(&p[0], &p[1], &p[2], matl, sect);
 		break;
 	case ElementType::MASS21:
 		using additional_elem_lib::mass21;
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = mass21<Scalar>(&p[0], &matl, &sect, opt.data());
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = mass21<REAL4>(&p[0], matl, sect, opt.data());
 		break;
 	case ElementType::COMBIN14:
 		using additional_elem_lib::combin14;
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = combin14<Scalar>(&p[0], &p[1], &matl, &sect, opt.data());
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = combin14<REAL4>(&p[0], &p[1], matl, sect, opt.data());
 		break;
 	case ElementType::BEAM188:
 	case ElementType::B31:

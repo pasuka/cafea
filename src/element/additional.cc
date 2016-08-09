@@ -21,35 +21,24 @@ namespace
 using varargout = tuple<MatrixXd, MatrixXd, MatrixXd, VectorXd>;
 }
 template <class T>
-varargout mass21(const NodeBase<T> *p, const Material<T> &prop,
-	const Section<T> &sect, const int opt[])
+varargout mass21(const NodeBase<T> *p, const Material<T> *prop,
+	const Section<T> *sect, const int opt[])
 {
 	MatrixXd stif = MatrixXd::Zero(6, 6);
 	MatrixXd mass = MatrixXd::Zero(6, 6);
 	MatrixXd tran = MatrixXd::Identity(6, 6);
 	VectorXd rhs = VectorXd::Zero(6);
 	
-	size_t dofs;
-	auto dof_vec = p->dof_list();
-	if(!dof_vec.empty()){
-		// Mass on X Y Z direction
-		// Notice: mass element do not need transform in most cases.
-		if(opt[2]==2){
-			for(size_t i: {0, 1, 2})mass(i, i) = sect.get_sect_prop(SectionProp::ADDONMASS);
-		}
-		else{
-			dofs = 6>dof_vec.size() ? dof_vec.size(): 6;
-			for(size_t i=0; i<dofs; i++)mass(i, i) = sect.get_sect_prop(SectionProp::ADDONMASS);
-		}
-	}
-	else{}
-
+	//! Mass on X Y Z direction.
+	//! Notice: mass element do not need transform in most cases.
+	for(size_t i: {0, 1, 2})mass(i, i) = sect->get_sect_prop(SectionProp::ADDONMASS);
+	
 	return make_tuple(stif, mass, tran, rhs);
 }
 
 template <class T>
 varargout combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const Material<T> &prop, const Section<T> &sect, const int opt[])
+	const Material<T> *prop, const Section<T> *sect, const int opt[])
 {
 	MatrixXd stif = MatrixXd::Zero(12, 12);
 	MatrixXd mass = MatrixXd::Zero(12, 12);
@@ -99,21 +88,21 @@ varargout combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
 			tmp.row(2) << -sh*cb+ch*sp*sb, sb*sh+ch*sp*cb, ch*cp;
 			loc2gbl.block<3, 3>(6, 6) = loc2gbl.block<3, 3>(9, 9) = tmp;
 		}
-		size_t m{opt[1]-1};
-		assert(m<=5);
-		stif(m, m) = stif(m+6, m+6) = sect.get_sect_prop(SectionProp::ADDONSPRING);
+		int m{opt[1]-1};
+		assert(0<=m&&m<=5);
+		stif(m, m) = stif(m+6, m+6) = sect->get_sect_prop(SectionProp::ADDONSPRING);
 		stif(m+6, m) = stif(m, m+6) = -stif(m, m);
 	}
 		
 	return make_tuple(stif, mass, loc2gbl, rhs);
 }
-template varargout mass21<REAL4>(const NodeBase<REAL4>*, const Material<REAL4>&,
-	const Section<REAL4>&, const int[]);
-template varargout mass21<REAL8>(const NodeBase<REAL8>*, const Material<REAL8>&,
-	const Section<REAL8>&, const int[]);
+template varargout mass21<REAL4>(const NodeBase<REAL4>*, const Material<REAL4>*,
+	const Section<REAL4>*, const int[]);
+template varargout mass21<REAL8>(const NodeBase<REAL8>*, const Material<REAL8>*,
+	const Section<REAL8>*, const int[]);
 template varargout combin14<REAL4>(const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const Material<REAL4>&, const Section<REAL4>&, const int[]);
+	const Material<REAL4>*, const Section<REAL4>*, const int[]);
 template varargout combin14<REAL8>(const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const Material<REAL8>&, const Section<REAL8>&, const int[]);
+	const Material<REAL8>*, const Section<REAL8>*, const int[]);
 }
 }

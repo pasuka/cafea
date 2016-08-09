@@ -62,8 +62,8 @@ class Element: public ObjectBase {
 		Element(int id, int mp, int st):ObjectBase{id, fmt::format("Elem#{0}",
 			id)}, matl_(mp), sect_(st) {assert(sect_>0&&matl_>0);};
 		//! Generate stifness mass matrix of element.
-		template <class Scalar=REAL4>
-		void form_matrix(const Node<Scalar, U> pt[], const Material<Scalar>&, const Section<Scalar>&);
+		void form_matrix(const Node<REAL4, U> [], const Material<REAL4>*, const Section<REAL4>*);
+		void form_matrix(const Node<REAL8, U> [], const Material<REAL8>*, const Section<REAL8>*);
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};
 		//! Get mass matrix.
@@ -194,6 +194,7 @@ class Element: public ObjectBase {
 //! Specialization.
 template class Element<REAL8, REAL8>;
 template class Element<REAL8, COMPLEX8>;
+
 namespace element_attr_
 {
 size_t get_dofs_per_node(ElementType);

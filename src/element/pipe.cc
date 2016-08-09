@@ -34,7 +34,7 @@ using varargout = tuple<MatrixXd, MatrixXd, MatrixXd, VectorXd>;
  */
 template <class T>
 varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const Material<T> &prop, const Section<T> &sect)
+	const Material<T> *prop, const Section<T> *sect)
 {
 	MatrixXd stif = MatrixXd::Zero(12, 12);
 	MatrixXd mass = MatrixXd::Zero(12, 12);
@@ -45,14 +45,14 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	// float up[]={0.1, 0., 1.};
 	// return beam_elem_lib::beam188(p1, p2, prop2, up);
 	
-	double Ro{0.5*sect.get_sect_prop(SectionProp::OD)};
-	double Ri{Ro-sect.get_sect_prop(SectionProp::TKWALL)};
+	double Ro{0.5*sect->get_sect_prop(SectionProp::OD)};
+	double Ri{Ro-sect->get_sect_prop(SectionProp::TKWALL)};
 	double Ax{PI<>()*(Ro*Ro-Ri*Ri)};
 	double Jxx{0.5*PI<>()*(pow(Ro, 4.0)-pow(Ri, 4.0))};
 	double Izz{0.5*Jxx}, Iyy{Izz};
-	double v{prop.get_material_prop(MaterialProp::PRXY)};
-	double ES{prop.get_material_prop(MaterialProp::YOUNG)*Ax};
-	double GJx{prop.get_material_prop(MaterialProp::YOUNG)*Jxx*.5/(1.+v)};
+	double v{prop->get_material_prop(MaterialProp::PRXY)};
+	double ES{prop->get_material_prop(MaterialProp::YOUNG)*Ax};
+	double GJx{prop->get_material_prop(MaterialProp::YOUNG)*Jxx*.5/(1.+v)};
 	
 	int jj;
 	double Le;
@@ -62,7 +62,7 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	MatrixXd loc2gbl = MatrixXd::Zero(12, 12);
 	for(int i: {0, 1, 2, 3})loc2gbl.block<3, 3>(i*3, i*3) = tt;
 	
-	double Me{prop.get_material_prop(MaterialProp::DENS)*Ax*Le};
+	double Me{prop->get_material_prop(MaterialProp::DENS)*Ax*Le};
 	
 	stif(0, 0) = stif(6, 6) = ES/Le;
 	stif(6, 0) = stif(0, 6) = -stif(0, 0);
@@ -73,13 +73,13 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	int LUMP_MASS = 0;
 	if(LUMP_MASS>0){
 		mass(0, 0) = mass(6, 6) = Me/2.;
-		mass(3, 3) = mass(9, 9) = prop.get_material_prop(MaterialProp::DENS)*Jxx*Le/2.;
+		mass(3, 3) = mass(9, 9) = prop->get_material_prop(MaterialProp::DENS)*Jxx*Le/2.;
 	}
 	else{
 		mass(0, 0) = mass(6, 6) = Me/3.;
 		mass(0, 6) = mass(6, 0) = mass(0, 0)/2.;
 	
-		mass(3, 3) = mass(9, 9) = prop.get_material_prop(MaterialProp::DENS)*Jxx*Le/3.;
+		mass(3, 3) = mass(9, 9) = prop->get_material_prop(MaterialProp::DENS)*Jxx*Le/3.;
 		mass(3, 9) = mass(9, 3) = mass(3, 3)/2.;
 	}
 	
@@ -90,8 +90,8 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	double Ksy{2.4e1*(1.+v)*Iyy*alpha/(Ax*Le*Le)};
 	double Ksz{Ksy};
 	// double Ksz{2.4e1*(1.+v)*Izz*alpha/(Ax*Le*Le)};
-	double EIz{prop.get_material_prop(MaterialProp::YOUNG)*Izz};
-	double EIy{prop.get_material_prop(MaterialProp::YOUNG)*Iyy};
+	double EIz{prop->get_material_prop(MaterialProp::YOUNG)*Izz};
+	double EIy{prop->get_material_prop(MaterialProp::YOUNG)*Iyy};
 	
 	stif(1, 1) = stif(7, 7) = 12.*EIy/(Le*Le*Le*(1.+Ksy));
 	stif(5, 5) = stif(11, 11) = (4.+Ksy)*EIy/(Le*(1.+Ksy));
@@ -134,8 +134,8 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 		// mass(10, 4) = mass(4, 10) = t*(-Le*Le/140.-Le*Le*Ksy/60.-Le*Le*Ksy*Ksy/120.)+ry*(-Le/30.-Le*Ksy/6.+Le*Ksy*Ksy/6.);
 	// }
 	double t{Me};
-	double rz{prop.get_material_prop(MaterialProp::DENS)*Izz};
-	double ry{prop.get_material_prop(MaterialProp::DENS)*Iyy};
+	double rz{prop->get_material_prop(MaterialProp::DENS)*Izz};
+	double ry{prop->get_material_prop(MaterialProp::DENS)*Iyy};
 	
 	if(LUMP_MASS>0){
 		mass(1, 1) = mass(7, 7) = mass(2, 2) = mass(8, 8) = t/2.;
@@ -170,7 +170,7 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
  */
 template <class T>
 varargout pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const NodeBase<T> *cen, const Material<T> &prop, const Section<T> &sect)
+	const NodeBase<T> *cen, const Material<T> *prop, const Section<T> *sect)
 {
 	MatrixXd stif = MatrixXd::Zero(12, 12);
 	MatrixXd mass = MatrixXd::Zero(12, 12);
@@ -179,13 +179,13 @@ varargout pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	MatrixXd H = MatrixXd::Zero(6, 6);
 	MatrixXd sij = MatrixXd::Zero(6, 6);
 	
-	double Ro{0.5*sect.get_sect_prop(SectionProp::OD)};
-	double Ri{Ro-sect.get_sect_prop(SectionProp::TKWALL)};
-	double t{sect.get_sect_prop(SectionProp::TKWALL)}, Ax{PI<>()*(Ro*Ro-Ri*Ri)};
+	double Ro{0.5*sect->get_sect_prop(SectionProp::OD)};
+	double Ri{Ro-sect->get_sect_prop(SectionProp::TKWALL)};
+	double t{sect->get_sect_prop(SectionProp::TKWALL)}, Ax{PI<>()*(Ro*Ro-Ri*Ri)};
 	double Jxx{0.5*PI<>()*(pow(Ro, 4.0)-pow(Ri, 4.0))};
 	double Iyy{0.5*Jxx};
-	double R{sect.get_sect_prop(SectionProp::RADCUR)}, R2{R*R}, R3{R*R*R};
-	double v{prop.get_material_prop(MaterialProp::PRXY)};
+	double R{sect->get_sect_prop(SectionProp::RADCUR)}, R2{R*R}, R3{R*R*R};
+	double v{prop->get_material_prop(MaterialProp::PRXY)};
 	
 	MatrixXd tt = MatrixXd::Zero(3, 3);
 	
@@ -213,15 +213,15 @@ varargout pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	// double alpha{.54414+2.97294*Ri/Ro-1.51899*Ri*Ri/Ro/Ro};
 	// double alpha{1.885};
 	double alpha{2.};
-	double Me{prop.get_material_prop(MaterialProp::DENS)*Ax*l};
-	double EA{prop.get_material_prop(MaterialProp::YOUNG)*Ax};
-	double GA{prop.get_material_prop(MaterialProp::YOUNG)*Ax*0.5/(1.0+v)};
-	double EI{prop.get_material_prop(MaterialProp::YOUNG)*Iyy};
-	double GI{prop.get_material_prop(MaterialProp::YOUNG)*Iyy*0.5/(1.0+v)};
+	double Me{prop->get_material_prop(MaterialProp::DENS)*Ax*l};
+	double EA{prop->get_material_prop(MaterialProp::YOUNG)*Ax};
+	double GA{prop->get_material_prop(MaterialProp::YOUNG)*Ax*0.5/(1.0+v)};
+	double EI{prop->get_material_prop(MaterialProp::YOUNG)*Iyy};
+	double GI{prop->get_material_prop(MaterialProp::YOUNG)*Iyy*0.5/(1.0+v)};
 	double kp;
 	
 	{
-		double r{Ro-0.5*t}, h{t*R/(r*r)}, pr{sect.get_sect_prop(SectionProp::PRESIN)};
+		double r{Ro-0.5*t}, h{t*R/(r*r)}, pr{sect->get_sect_prop(SectionProp::PRESIN)};
 		double Xk;
 		if(1.7>(R/r)){
 			Xk = 0.;
@@ -229,7 +229,7 @@ varargout pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
 		else{
 			Xk = pow(r/t, 4./3.)*pow(R/r, 1./3.);
 		}
-		kp = 1.65/(h*(1.+6.*pr*Xk/(prop.get_material_prop(MaterialProp::YOUNG)*t)));
+		kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
 		
 		if(kp<1.)kp = 1.;
 	}
@@ -281,12 +281,12 @@ varargout pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
 }
 //! Specialization.
 template varargout pipe16<REAL4>(const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const Material<REAL4>&, const Section<REAL4>&);
+	const Material<REAL4>*, const Section<REAL4>*);
 template varargout pipe16<REAL8>(const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const Material<REAL8>&, const Section<REAL8>&);
+	const Material<REAL8>*, const Section<REAL8>*);
 template varargout pipe18<REAL4>(const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const Material<REAL4>&, const Section<REAL4>&);
+	const NodeBase<REAL4>*, const Material<REAL4>*, const Section<REAL4>*);
 template varargout pipe18<REAL8>(const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const Material<REAL8>&, const Section<REAL8>&);
+	const NodeBase<REAL8>*, const Material<REAL8>*, const Section<REAL8>*);
 }
 }

@@ -80,6 +80,7 @@ TEST_CASE("Assembly global matrix", "[Solution Basic]")
 		std::unique_ptr<Solution> example(new SolutionSimple);
 		example->load(it.first.c_str());
 		example->analyze();
+		example->assembly();
 	}
 }
 }

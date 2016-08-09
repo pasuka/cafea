@@ -266,9 +266,9 @@ class Node: public NodeBase<Scalar> {
 		//! DOF vector.
 		const std::vector<int> dof_list() const {return dof_mgr_.get_dofs();};
 		//! Activate node.
-		void activate(bool stat=true){activate_ = stat;};
+		void activate(bool stat=true) {activate_ = stat;};
 		//! Check status of node.
-		bool is_activated()const{return activate_;};
+		bool is_activated() const{return activate_;};
 		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const Node &a)
 		{
