@@ -16,6 +16,7 @@ endif
 
 INCLUDE := -I../src/include -I../eigen
 INCLUDE += -I../cppformat -I../Catch/single_include
+CXXFLAGS += $(INCLUDE)
 
 ASTERISK4 := "****"
 ASTERISK16 := $(ASTERISK4)$(ASTERISK4)$(ASTERISK4)$(ASTERISK4)
@@ -35,7 +36,7 @@ SRC += ../src/fortran/cdb_reader.o
 	$(COMMENT)
 	@echo -ne "\033[41;33mCompile C++ file\033[0m\t\033[35m"$<"\033[0m\n"
 	$(COMMENT)
-	$(CXX) -c $(CXXFLAGS) $(INCLUDE) $< $(EXTRA_ARGS)
+	$(CXX) -c $(CXXFLAGS) $< $(EXTRA_ARGS)
 
 %.o: %.f90
 	$(COMMENT)
@@ -47,7 +48,7 @@ test_node: $(SRC) ./node_basic_test.o
 	$(COMMENT)
 	@echo "Begin node test"
 	$(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_node
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_node
 	
 test_cdb: ../src/fortran/cdb_reader.o ./ansys/cdb_file_test.o
 	$(COMMENT)	
@@ -60,7 +61,7 @@ test_cdb_cpp: $(SRC) ./ansys/cdb_test_simple.o
 	$(COMMENT)
 	@echo "Begin cdb test in cpp"
 	$(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_cdb
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_cdb
 	$(COMMENT)
 	@echo "Begin test."
 	$(COMMENT)
@@ -70,11 +71,16 @@ test_solution: $(SRC) ./solution_basic_test.o
 	$(COMMENT)
 	@echo -ne "\033[33m"Test: Solution Case"\033[0m\n"
 	$(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) $(INCLUDE) -o test_solution
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_solution
 	$(COMMENT)
 	@echo -ne "\033[35m"Run test"\033[0m\n"
 	$(COMMENT)
 	./test_solution
+
+matio_lib:
+	@echo "MATIO Library"
+	$(MAKE) -f matio.mk libs
+	$(MAKE) -f matio.mk clean
 	
 clean:
 	@echo "Clean files"
@@ -85,4 +91,4 @@ all:
 	./test_node
 	$(MAKE) clean
 	
-.PHONY: clean test_node test_cdb test_cdb_cpp test_solution all
+.PHONY: clean test_node test_cdb test_cdb_cpp test_solution matio_lib all
