@@ -5,6 +5,8 @@
 #include <vector>
 #include <ostream>
 
+#include "base.h"
+
 namespace cafea
 {
 /**

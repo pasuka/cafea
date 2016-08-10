@@ -7,3 +7,6 @@
 [submodule "Catch"]
 	path = Catch
 	url = https://github.com/philsquared/Catch.git
+[submodule "matio"]
+	path = matio
+	url = https://github.com/tbeu/matio

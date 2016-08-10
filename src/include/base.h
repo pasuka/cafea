@@ -1,16 +1,14 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include <cassert>
-
 #include <array>
 #include <string>
 #include <vector>
 #include <ostream>
 #include <algorithm>
 
-#include "enum_lib.h"
 #include "utils.h"
+#include "enum_lib.h"
 
 namespace cafea
 {

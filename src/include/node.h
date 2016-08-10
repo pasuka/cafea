@@ -256,7 +256,19 @@ class Node: public NodeBase<Scalar> {
 		//! Default constructor.
 		Node(){};
 		//! Destructor.
-		~Node(){};
+		~Node()
+		{
+			disp_.resize(0, 0);
+			vel_.resize(0, 0);
+			accel_.resize(0, 0);
+			stress_.resize(0, 0);
+			disp_cmplx_.resize(0, 0);
+			vel_cmplx_.resize(0, 0);
+			accel_cmplx_.resize(0, 0);
+			stress_cmplx_.resize(0, 0);
+			range_.resize(0);
+			dof_mgr_.clear();
+		};
 		//! DOF manager init.
 		void dof_init(ElementType et);
 		//! DOF accumulate.
@@ -288,15 +300,23 @@ class Node: public NodeBase<Scalar> {
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
-		// matrix_<ResultScalar> disp_;//!< Storage of displacement.
-		// matrix_<ResultScalar> vel_;//!< Storage of velocity.
-		// matrix_<ResultScalar> accel_;//!< Storage of acceleration.
-		// matrix_<ResultScalar> stress_;//!< Storage of stress.	
+		
+		vecX_<ResultScalar> range_;//!< Range of result.
+		matrix_<ResultScalar> disp_;//!< Storage of displacement.
+		matrix_<ResultScalar> vel_;//!< Storage of velocity.
+		matrix_<ResultScalar> accel_;//!< Storage of acceleration.
+		matrix_<ResultScalar> stress_;//!< Storage of stress.
+		matrix_<std::complex<ResultScalar>> disp_cmplx_;//!< Storage of displacement in complex.
+		matrix_<std::complex<ResultScalar>> vel_cmplx_;//!< Storage of velocity in complex.
+		matrix_<std::complex<ResultScalar>> accel_cmplx_;//!< Storage of acceleration in complex.
+		matrix_<std::complex<ResultScalar>> stress_cmplx_;//!< Storage of stress in complex.
 };
 
 //! Specialization.
+template class Node<REAL4, REAL4>;
 template class Node<REAL4, REAL8>;
-template class Node<REAL4, COMPLEX8>;
+template class Node<REAL8, REAL8>;
+template class Node<REAL8, REAL4>;
 
 //! Coordinate transform for 2-node pipe element.
 template <class T> varargout_2_<REAL8> coord_tran(

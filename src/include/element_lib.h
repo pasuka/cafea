@@ -1,7 +1,9 @@
 #ifndef ELEMENT_LIB_H
 #define ELEMENT_LIB_H
 
-#include "solution.h"
+#include "node.h"
+#include "material.h"
+#include "section.h"
 
 namespace cafea
 {

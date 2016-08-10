@@ -35,6 +35,8 @@ class Element: public ObjectBase {
 			stif_.resize(0, 0);
 			tran_.resize(0, 0);
 			rhs_.resize(0, 0);
+			stress_.resize(0, 0);
+			stress_cmplx_.resize(0, 0);
 		};
 		/**
 		 *  \brief Initialize with element id type material type and node list.
@@ -189,12 +191,16 @@ class Element: public ObjectBase {
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		matrix_<T> rhs_;//!< Right-hand side of element.
 		
+		matrix_<T> stress_;//!< Stress of element.
+		matrix_<std::complex<T>> stress_cmplx_;//!< Stress of element in complex.
+		
 };
 
 //! Specialization.
+// template class Element<REAL4, REAL4>;
+// template class Element<REAL4, REAL8>;
 template class Element<REAL8, REAL8>;
-template class Element<REAL8, COMPLEX8>;
-
+// template class Element<REAL8, REAL4>;
 namespace element_attr_
 {
 size_t get_dofs_per_node(ElementType);

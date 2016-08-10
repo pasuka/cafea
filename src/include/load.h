@@ -8,7 +8,6 @@
 #include "fmt/format.h"
 
 #include "base.h"
-#include "dof_handler.h"
 
 namespace cafea
 {

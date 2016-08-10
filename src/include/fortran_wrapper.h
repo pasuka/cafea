@@ -1,7 +1,7 @@
 #ifndef FORTRAN_WRAPPER_H
 #define FORTRAN_WRAPPER_H
 
-#include "utils.h"
+#include "base.h"
 
 namespace cafea
 {

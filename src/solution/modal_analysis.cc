@@ -8,11 +8,11 @@ namespace cafea
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::init()
 {
-	if(!(*this).node_group_.empty())this->node_group_.clear();
-	if(!(*this).elem_group_.empty())this->elem_group_.clear();
-	if(!(*this).matl_group_.empty())this->matl_group_.clear();
-	if(!(*this).sect_group_.empty())this->sect_group_.clear();
-	if(!(*this).bc_group_.empty())this->bc_group_.clear();
+	if(!this->node_group_.empty())this->node_group_.clear();
+	if(!this->elem_group_.empty())this->elem_group_.clear();
+	if(!this->matl_group_.empty())this->matl_group_.clear();
+	if(!this->sect_group_.empty())this->sect_group_.clear();
+	if(!this->bc_group_.empty())this->bc_group_.clear();
 	this->mat_pair_.clear();
 	(*this).mode_shape_.resize(0, 0);
 	(*this).natural_freq_.resize(0, 0);
