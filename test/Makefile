@@ -1,7 +1,7 @@
 CC := gcc
 CXX := g++
 FC := gfortran
-CXXFLAGS := -lgfortran #-O3
+CXXFLAGS := -lgfortran -L./ -lmatio #-O3
 FFLAGS := -cpp
 
 # Check version of gcc
@@ -14,7 +14,7 @@ else
 endif
 endif
 
-INCLUDE := -I../src/include -I../eigen
+INCLUDE := -I../src/include -I../src/include/matio -I../matio/src -I../eigen
 INCLUDE += -I../cppformat -I../Catch/single_include
 CXXFLAGS += $(INCLUDE)
 

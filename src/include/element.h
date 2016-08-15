@@ -146,6 +146,8 @@ class Element: public ObjectBase {
 		int get_total_num_of_node() const {return nodes_.size();};
 		//! Get active number of nodes.
 		int get_active_num_of_node() const;
+		//! Get shape of element matrix.
+		std::array<size_t, 2> get_matrix_shape() const;
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
 		{

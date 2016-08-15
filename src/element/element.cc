@@ -72,5 +72,17 @@ void Element<T, U>::form_matrix(const Node<REAL4, U> p[],
 	case ElementType::UNKNOWN:
 	default: fmt::print("Unsupported element type\n");
 	}
-}
+};
+/**
+ *  \brief Get shape of element matrix.
+ *  \return shape array of element matrix.
+ */
+template <class T, class U>
+std::array<size_t, 2> Element<T, U>::get_matrix_shape() const
+{
+	std::array<size_t, 2> sz;
+	sz[0] = 0 < this->stif_.rows() ? this->stif_.rows() : 0;
+	sz[1] = 0 < this->stif_.cols() ? this->stif_.cols() : 0;
+	return sz;
+};
 }

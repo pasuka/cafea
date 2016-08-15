@@ -84,3 +84,18 @@ TEST_CASE("Assembly global matrix", "[Solution Basic]")
 	}
 }
 }
+
+TEST_CASE("Write to MAT file", "[Solution Basic]")
+{
+	std::unique_ptr<Solution> example(new SolutionSimple);
+	example->load("./ansys/pipe_demo_01.cdb");
+	example->analyze();
+	example->assembly();
+	example->write2mat("demo01.mat");
+	
+	example->init();
+	example->load("./ansys/pipe_demo_03.cdb");
+	example->analyze();
+	example->assembly();
+	example->write2mat("demo03.mat");
+}

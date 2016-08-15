@@ -124,8 +124,13 @@ class SparseMat{
 		//! Add stiffness and rhs value.
 		void add_matrix_data_KF(SparseCell, T, T);
 		void add_matrix_data_KF(size_t, size_t, T, T);
-		
-	private:
+		//! Get data pointer.
+		const T* get_stif_ptr() const {return stif_.data();}; 
+		const T* get_mass_ptr() const {return mass_.data();};
+		const T* get_rhs_ptr() const {return rhs_.data();};
+		const size_t* get_row_ptr() const {return &(row_col_.data()->row);};
+		const size_t* get_col_ptr() const {return aux_.data();};
+ 	private:
 		SpFmt format_{SpFmt::CSC};//!< Storage method.
 		SpSym sym_{SpSym::SYMMETRIC};//!< Symmetry matrix.
 		SpStorage storge_{SpStorage::FULL};//!< Whole matrix.

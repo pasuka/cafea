@@ -44,6 +44,8 @@ class SolutionBase {
 		virtual void assembly(){};
 		//! Solve.
 		virtual void solve(){};
+		//!
+		virtual void write2mat(const char* fn){};
 		//! Post process.
 		virtual void post_process(){};
 		virtual std::array<size_t, 5> get_info()const
@@ -93,7 +95,9 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		void solve();
 		//! Post process.
 		void post_process();
-		//! 
+		//! Save variables to MAT files.
+		void write2mat(const char*);
+		//! Get information.
 		std::array<size_t, 5> get_info()const;
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const SolutionModal &a)

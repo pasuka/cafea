@@ -29,3 +29,9 @@
 
 # Temporary files
 *.ans2
+
+# Matlab data files
+*.mat
+
+# Matlab auto save files
+*.asv
