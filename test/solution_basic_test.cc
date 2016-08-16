@@ -98,4 +98,10 @@ TEST_CASE("Write to MAT file", "[Solution Basic]")
 	example->analyze();
 	example->assembly();
 	example->write2mat("demo03.mat");
+	
+	example->init();
+	example->load("./ansys/nrc1677_1_1.cdb");
+	example->analyze();
+	example->assembly();
+	example->write2mat("nrc1677_1_1.mat");
 }
