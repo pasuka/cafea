@@ -7,7 +7,7 @@ namespace cafea
  *  \return number of active node.
  */
 template <class T, class U>
-int Element<T, U>::get_active_num_of_node()const
+size_t Element<T, U>::get_active_num_of_node()const
 {
 	return element_attr_::get_active_num_of_node(this->etype_);
 }
@@ -16,7 +16,7 @@ int Element<T, U>::get_active_num_of_node()const
  *  \return dofs of one node.
  */
 template <class T, class U>
-int Element<T, U>::get_dofs_per_node()const
+size_t Element<T, U>::get_dofs_per_node()const
 {
 	return element_attr_::get_dofs_per_node(this->etype_);
 }
@@ -25,7 +25,7 @@ int Element<T, U>::get_dofs_per_node()const
  *  \return polyonimal order of shape function.
  */
 template <class T, class U>
-int Element<T, U>::get_element_order()const
+size_t Element<T, U>::get_element_order()const
 {
 	return element_attr_::get_element_order(this->etype_);
 }
@@ -85,4 +85,12 @@ std::array<size_t, 2> Element<T, U>::get_matrix_shape() const
 	sz[1] = 0 < this->stif_.cols() ? this->stif_.cols() : 0;
 	return sz;
 };
+/**
+ *  \brief Get id of element type.
+ */
+template <class T, class U>
+size_t Element<T, U>::get_element_type_id() const
+{
+	return element_attr_::get_element_type_id(this->etype_);
+}
 }

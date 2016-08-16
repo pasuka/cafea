@@ -65,7 +65,7 @@ void SparseMat<T>::unique(SpFmt sf)
 	this->mass_.resize(this->nnz_, T(.0));
 
 	size_t iter{0};
-	this->aux_.push_back(iter);
+	this->aux_.push_back(iter++);
 	
 	for(size_t i=1; i<this->nnz_; i++){
 		if(func_eq(this->row_col_[i], this->row_col_[i-1])){
@@ -170,4 +170,50 @@ void SparseMat<T>::add_matrix_data_KF(size_t ir, size_t jc, T val_k, T val_rhs)
 	SparseCell it{ir, jc};
 	this->add_matrix_data_KF(it, val_k, val_rhs);
 };
+
+/**
+ *  \brief Get stiffness sparse matrix pointer to MAT.
+ *  \return
+ */
+template <class T>
+std::unique_ptr<mat_sparse_t> SparseMat<T>::get_stif_mat()
+{
+	std::unique_ptr<mat_sparse_t> stif(new mat_sparse_t);
+	stif->nir = stif->ndata = stif->nzmax = this->get_nnz();
+	stif->njc = this->get_dim() + 1;
+	stif->ir = new int[stif->nir]();
+	if(this->get_format()==SpFmt::CSR){
+		for(size_t i=0; i<stif->nir; i++)stif->ir[i] = this->row_col_[i].col;
+	}
+	else{
+		for(size_t i=0; i<stif->nir; i++)stif->ir[i] = this->row_col_[i].row;
+	}
+	stif->jc = new int[stif->njc]();
+	for(size_t i=0; i<stif->njc; i++)stif->jc[i] = this->aux_[i];
+	stif->data = (void*)(this->stif_.data());
+	return std::move(stif);
+}
+/**
+ *  \brief Get mass sparse matrix pointer to MAT.
+ *  \return
+ */
+template <class T>
+std::unique_ptr<mat_sparse_t> SparseMat<T>::get_mass_mat()
+{
+	std::unique_ptr<mat_sparse_t> mass(new mat_sparse_t);
+	mass->nir = mass->ndata = mass->nzmax = this->get_nnz();
+	mass->njc = this->get_dim() + 1;
+	mass->ir = new int[mass->nir]();
+	if(this->get_format()==SpFmt::CSR){
+		for(size_t i=0; i<mass->nir; i++)mass->ir[i] = this->row_col_[i].col;
+	}
+	else{
+		for(size_t i=0; i<mass->nir; i++)mass->ir[i] = this->row_col_[i].row;
+	}
+	mass->jc = new int[mass->njc]();
+	for(size_t i=0; i<mass->njc; i++)mass->jc[i] = this->aux_[i];
+	mass->data = (void*)(this->mass_.data());
+	return std::move(mass);
+}
+
 }

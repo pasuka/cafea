@@ -4,7 +4,9 @@
 #include <cstddef>
 #include <vector>
 #include <string>
+#include <algorithm>
 
+#include "matio.h"
 #include "fmt/format.h"
 
 #include "utils.h"
@@ -128,8 +130,11 @@ class SparseMat{
 		const T* get_stif_ptr() const {return stif_.data();}; 
 		const T* get_mass_ptr() const {return mass_.data();};
 		const T* get_rhs_ptr() const {return rhs_.data();};
-		const size_t* get_row_ptr() const {return &(row_col_.data()->row);};
-		const size_t* get_col_ptr() const {return aux_.data();};
+		const SparseCell* get_coord_ptr() const {return row_col_.data();};
+		const size_t* get_aux_ptr() const {return aux_.data();};
+		//! Export MAT sparse.
+		std::unique_ptr<mat_sparse_t> get_stif_mat();
+		std::unique_ptr<mat_sparse_t> get_mass_mat();
  	private:
 		SpFmt format_{SpFmt::CSC};//!< Storage method.
 		SpSym sym_{SpSym::SYMMETRIC};//!< Symmetry matrix.

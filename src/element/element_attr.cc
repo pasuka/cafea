@@ -94,5 +94,35 @@ size_t get_element_order(ElementType et)
 	default: return 0;
 	}
 }
+/**
+ *  \brief Get id of element type.
+ *  \return id of element type.
+ */
+size_t get_element_type_id(ElementType et)
+{
+	switch(et){
+	case ElementType::PIPE16: return 16;
+	case ElementType::BEAM188: 
+	case ElementType::B31: return 188;
+	case ElementType::PIPE18: return 18;
+	case ElementType::C3D8:
+	case ElementType::SOLID185: return 185;
+	case ElementType::S4R:
+	case ElementType::SHELL181: return 181;
+	case ElementType::BEAM189:
+	case ElementType::B32: return 189;
+	case ElementType::S8R:
+	case ElementType::SHELL281: return 281;
+	case ElementType::SOLID186: return 186;
+	case ElementType::C3D20: return 20;
+	case ElementType::MASS21: return 21;
+	case ElementType::COMBIN14: return 14;
+	case ElementType::S3R:
+	case ElementType::S9R:
+	case ElementType::C3D4:
+	case ElementType::UNKNOWN:
+	default: return 0;
+	}	
+}
 }
 }

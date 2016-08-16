@@ -136,16 +136,18 @@ class Element: public ObjectBase {
 		std::array<int, 10> get_option() const {return keyopt_;};
 		//! Get type of element.
 		ElementType get_element_type() const {return etype_;};
+		//! Get id element type.
+		size_t get_element_type_id() const;
 		//! Get id of element.
 		int get_element_id() const {return id_;};
 		//! Get order of element.
-		int get_element_order() const;
+		size_t get_element_order() const;
 		//! Get dofs of each node.
-		int get_dofs_per_node() const;
+		size_t get_dofs_per_node() const;
 		//! Get total number of nodes.
-		int get_total_num_of_node() const {return nodes_.size();};
+		size_t get_total_num_of_node() const {return nodes_.size();};
 		//! Get active number of nodes.
-		int get_active_num_of_node() const;
+		size_t get_active_num_of_node() const;
 		//! Get shape of element matrix.
 		std::array<size_t, 2> get_matrix_shape() const;
 		//! Print information.
@@ -208,6 +210,7 @@ namespace element_attr_
 size_t get_dofs_per_node(ElementType);
 size_t get_active_num_of_node(ElementType);
 size_t get_element_order(ElementType);
+size_t get_element_type_id(ElementType);
 }
 }
 #endif

@@ -273,6 +273,10 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::post_process()
 	fmt::print("Empty\n");
 };
 
+/**
+ *  \brief Write element matrix to MAT file.
+ *  \param[in] fname file name.
+ */
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fname)
 {
@@ -282,57 +286,71 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 		fmt::print("Error creating MAT file\n");
 		return;
 	}
-	
-	const char *fieldnames[7] = {"id", "etype", "mtype", "stype", "stif", "mass", "tran"};
+	const size_t nfields{8};
+	const char *fieldnames[nfields] = {"id", "etype", "mtype", "stype", "nodes",
+		"stif", "mass", "tran"};
 	size_t elem_dims[2] = {this->elem_group_.size(), 1};
-	matvar_t *struct_matvar = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames, 7);
+	matvar_t *elem_list = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames, nfields);
 	
-	size_t num{0}, dim1x1[2] = {1, 1};
+	size_t num{0}, dim_vec[2] = {1, 1}, dim1x1[2] = {1, 1};
 	double val[4];
 	for(const auto &it: this->elem_group_){
-		matvar_t *matvar[4];
+		matvar_t *matvar[nfields];
 		val[0] = double(it.second.get_element_id());
-		val[1] = 0.0;
+		val[1] = double(it.second.get_element_type_id());
 		val[2] = double(it.second.get_material_id());
 		val[3] = double(it.second.get_section_id());
 		for(size_t i=0; i<4; i++){
-			matvar[i] = Mat_VarCreate(fieldnames[i], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &val[i], 0);
-			Mat_VarSetStructFieldByName(struct_matvar, fieldnames[i], num, matvar[i]);
+			matvar[i] = Mat_VarCreate(fieldnames[i], MAT_C_DOUBLE, MAT_T_DOUBLE,
+				2, dim1x1, &val[i], 0);
 		}
+		auto nodes = it.second.get_node_list();
+		dim_vec[0] = nodes.size();
+		double nodes_d[dim_vec[0]];
+		for(size_t i=0; i<dim_vec[0]; i++)nodes_d[i] = double(nodes[i]);
+		matvar[4] = Mat_VarCreate(fieldnames[4], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			dim_vec, nodes_d, 0);
 		auto sz  = it.second.get_matrix_shape();
-		size_t dimXX[2] = {sz[0], sz[1]};
-		matvar_t *matvar_2d[3];
-		matvar_2d[0] = Mat_VarCreate(fieldnames[4], MAT_C_DOUBLE, MAT_T_DOUBLE,
-			2, dimXX, const_cast<double*>(it.second.get_stif_ptr()), MAT_F_DONT_COPY_DATA);
-		matvar_2d[1] = Mat_VarCreate(fieldnames[5], MAT_C_DOUBLE, MAT_T_DOUBLE,
-			2, dimXX, const_cast<double*>(it.second.get_mass_ptr()), MAT_F_DONT_COPY_DATA);
-		matvar_2d[2] = Mat_VarCreate(fieldnames[6], MAT_C_DOUBLE, MAT_T_DOUBLE,
-			2, dimXX, const_cast<double*>(it.second.get_tran_ptr()), MAT_F_DONT_COPY_DATA);
-		for(size_t i=0; i<3; i++){
-			Mat_VarSetStructFieldByName(struct_matvar, fieldnames[i+4], num, matvar_2d[i]);
+		matvar[5] = Mat_VarCreate(fieldnames[5], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			sz.data(), const_cast<double*>(it.second.get_stif_ptr()), MAT_F_DONT_COPY_DATA);
+		matvar[6] = Mat_VarCreate(fieldnames[6], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			sz.data(), const_cast<double*>(it.second.get_mass_ptr()), MAT_F_DONT_COPY_DATA);
+		matvar[7] = Mat_VarCreate(fieldnames[7], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			sz.data(), const_cast<double*>(it.second.get_tran_ptr()), MAT_F_DONT_COPY_DATA);
+		for(size_t i=0; i<nfields; i++){
+			Mat_VarSetStructFieldByName(elem_list, fieldnames[i], num, matvar[i]);
 		}
 		num++;
 	}
-	Mat_VarWrite(matfp, struct_matvar, MAT_COMPRESSION_ZLIB);
-	Mat_VarFree(struct_matvar);
-	
-	mat_sparse_t  sp_stif, sp_mass;
-	sp_stif.nzmax = sp_mass.nzmax = this->mat_pair_.get_nnz();
-    sp_stif.nir   = sp_mass.nir = this->mat_pair_.get_nnz();
-    sp_stif.ir    = sp_mass.ir = const_cast<size_t*>(this->mat_pair_.get_row_ptr());
-    sp_stif.njc   = sp_mass.njc = this->mat_pair_.get_dim()+1;
-    sp_stif.jc    = sp_mass.jc = const_cast<size_t*>(this->mat_pair_.get_col_ptr());
-    sp_stif.ndata = sp_mass.ndata = this->mat_pair_.get_nnz();
-    sp_stif.data = const_cast<double*>(this->mat_pair_.get_stif_ptr()); 
-	sp_mass.data = const_cast<double*>(this->mat_pair_.get_mass_ptr());
-	
-	size_t dims[2] = {this->mat_pair_.get_dim(), this->mat_pair_.get_dim()};
-	matvar_t *matvar_stif = Mat_VarCreate("stif", MAT_C_SPARSE, MAT_T_DOUBLE, 2,
-		dims, &sp_stif, MAT_F_DONT_COPY_DATA);
-	matvar_t *matvar_mass = Mat_VarCreate("mass", MAT_C_SPARSE, MAT_T_DOUBLE, 2,
-		dims, &sp_mass, MAT_F_DONT_COPY_DATA);
-	Mat_VarWrite(matfp, matvar_stif, MAT_COMPRESSION_ZLIB);
-	Mat_VarWrite(matfp, matvar_mass, MAT_COMPRESSION_ZLIB);
+	Mat_VarWrite(matfp, elem_list, MAT_COMPRESSION_ZLIB);
+	Mat_VarFree(elem_list);
+	auto coord = this->mat_pair_.get_coord_ptr();
+	auto pk = this->mat_pair_.get_stif_ptr();
+	auto pm = this->mat_pair_.get_mass_ptr();
+	size_t nn = this->mat_pair_.get_nnz();
+	size_t dims[2] = {nn, 4};
+	double xy[nn*4];
+	for(size_t i=0; i<nn; i++){
+		xy[i] = 1.0 + coord[i].row;
+		xy[nn+i] = 1.0 + coord[i].col;
+		xy[nn*2+i] = pk[i];
+		xy[nn*3+i] = pm[i];
+	}
+	matvar_t *ind = Mat_VarCreate("indexKM", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, xy, MAT_F_DONT_COPY_DATA);
+	Mat_VarWrite(matfp, ind, MAT_COMPRESSION_ZLIB);
+	Mat_VarFree(ind);
+	auto global_stif = this->mat_pair_.get_stif_mat();
+	dim_vec[0] = dim_vec[1] = this->mat_pair_.get_dim();
+	// fmt::print("Global matrix dimension:{}x{}\n", dim_vec[0], dim_vec[1]);
+	matvar_t *gk = Mat_VarCreate("stif", MAT_C_SPARSE, MAT_T_DOUBLE, 2, dim_vec,
+		global_stif.get(), MAT_F_DONT_COPY_DATA);
+	Mat_VarWrite(matfp, gk, MAT_COMPRESSION_ZLIB);
+	Mat_VarFree(gk);
+	auto global_mass = this->mat_pair_.get_mass_mat();
+	matvar_t *gm = Mat_VarCreate("mass", MAT_C_SPARSE, MAT_T_DOUBLE, 2, dim_vec,
+		global_mass.get(), MAT_F_DONT_COPY_DATA);
+	Mat_VarWrite(matfp, gm, MAT_COMPRESSION_ZLIB);
+	Mat_VarFree(gm);
 	Mat_Close(matfp);
 	return;
 };
