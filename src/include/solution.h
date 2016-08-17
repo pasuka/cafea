@@ -106,7 +106,7 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		};
 	protected:
 		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
-		dict_<Element<ResultScalar, ResultScalar>> elem_group_;//!< Element dictionary.	
+		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
 };
 
 /**
@@ -140,7 +140,7 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		};
 	protected:
 		dict_<Node<Scalar, std::complex<ResultScalar>>> node_group_;//!< Node dictionary.
-		dict_<Element<ResultScalar, std::complex<ResultScalar>>> elem_group_;//!< Element dictionary.
+		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.
 		
 		vecX_<Scalar> damping_;//!< Damping ratio.
 		vecX_<Scalar> freq_range_;//!< Frequency range.

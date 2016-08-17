@@ -27,10 +27,10 @@ Node<Scalar, ResultScalar> convert2node(const node_f *p_node)
  *  \param[in] p_elem element in Fortran/C.
  *  \return Element instance of c++.
  */
-template <class Scalar, class ResultScalar>
-Element<Scalar, ResultScalar> convert2elem(const elem_f *p_elem)
+template <class Scalar>
+Element<Scalar> convert2elem(const elem_f *p_elem)
 {
-	Element<Scalar, ResultScalar> elem = {p_elem->id_, p_elem->prop_[0],
+	Element<Scalar> elem = {p_elem->id_, p_elem->prop_[0],
 		p_elem->prop_[1]};
 	int nn{0};
 	switch(p_elem->etype_){
@@ -71,17 +71,26 @@ Material<Scalar> convert2matl(const matl_f *p_matl)
 template <class Scalar>
 Section<Scalar> convert2sect(const matl_f *p_sect)
 {
-	Section<Scalar> st(p_sect->id_, p_sect->val_, 10);
+	Section<Scalar> st(p_sect->id_, SectionType::UNKNOWN);
+	st.set_sect_prop(SectionProp::OD, p_sect->val_[0]);
+	st.set_sect_prop(SectionProp::TKWALL, p_sect->val_[1]);
+	st.set_sect_prop(SectionProp::RADCUR, p_sect->val_[2]);
 	return st;
 };
 
 //! Specialization
+template Node<REAL4, REAL4> convert2node(const node_f*);
+template Node<REAL8, REAL8> convert2node(const node_f*);
 template Node<REAL4, REAL8> convert2node(const node_f*);
+template Node<REAL8, REAL4> convert2node(const node_f*);
 //! Specialization
-template Element<REAL8, REAL8> convert2elem(const elem_f*);
+template Element<REAL8> convert2elem(const elem_f*);
+template Element<REAL4> convert2elem(const elem_f*);
 //! Specialization
 template Material<REAL4> convert2matl(const matl_f*);
+template Material<REAL8> convert2matl(const matl_f*);
 //! Specialization
 template Section<REAL4> convert2sect(const matl_f*);
+template Section<REAL8> convert2sect(const matl_f*);
 }
 }

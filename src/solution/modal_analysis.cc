@@ -128,8 +128,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 	for(int i=0; i<a2; i++, p_elem++){
 		auto got = (*this).elem_group_.find(p_elem->id_);
 		if(got==(*this).elem_group_.end()){
-			(*this).elem_group_[p_elem->id_] = wrapper_::convert2elem<ResultScalar,
-				ResultScalar>(p_elem);
+			(*this).elem_group_[p_elem->id_] = wrapper_::convert2elem<ResultScalar>(p_elem);
 		}
 		else{
 			fmt::print("Duplicated element id:{}\n", p_elem->id_);
@@ -336,7 +335,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 		xy[nn*2+i] = pk[i];
 		xy[nn*3+i] = pm[i];
 	}
-	matvar_t *ind = Mat_VarCreate("indexKM", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, xy, MAT_F_DONT_COPY_DATA);
+	matvar_t *ind = Mat_VarCreate("KM", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, xy, MAT_F_DONT_COPY_DATA);
 	Mat_VarWrite(matfp, ind, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(ind);
 	auto global_stif = this->mat_pair_.get_stif_mat();

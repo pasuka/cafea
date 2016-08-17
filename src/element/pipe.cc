@@ -20,7 +20,8 @@ namespace pipe_elem_lib
 {
 namespace
 {
-using varargout = tuple<MatrixXd, MatrixXd, MatrixXd, VectorXd>;
+template <class T>
+using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>>;
 }
 /**
  *  \brief Straight Pipe Element No.16
@@ -32,37 +33,37 @@ using varargout = tuple<MatrixXd, MatrixXd, MatrixXd, VectorXd>;
  *  
  *  \details Details
  */
-template <class T>
-varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
+template <class T, class U>
+varargout<U> pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	const Material<T> *prop, const Section<T> *sect)
 {
-	MatrixXd stif = MatrixXd::Zero(12, 12);
-	MatrixXd mass = MatrixXd::Zero(12, 12);
-	VectorXd rhs = VectorXd::Zero(12);
+	matrix_<U> stif = matrix_<U>::Zero(12, 12);
+	matrix_<U> mass = matrix_<U>::Zero(12, 12);
+	vecX_<U> rhs = vecX_<U>::Zero(12);
 	
 	// material prop2 = prop;
 	// prop2.mtype =21;
 	// float up[]={0.1, 0., 1.};
 	// return beam_elem_lib::beam188(p1, p2, prop2, up);
 	
-	double Ro{0.5*sect->get_sect_prop(SectionProp::OD)};
-	double Ri{Ro-sect->get_sect_prop(SectionProp::TKWALL)};
-	double Ax{PI<>()*(Ro*Ro-Ri*Ri)};
-	double Jxx{0.5*PI<>()*(pow(Ro, 4.0)-pow(Ri, 4.0))};
-	double Izz{0.5*Jxx}, Iyy{Izz};
-	double v{prop->get_material_prop(MaterialProp::PRXY)};
-	double ES{prop->get_material_prop(MaterialProp::YOUNG)*Ax};
-	double GJx{prop->get_material_prop(MaterialProp::YOUNG)*Jxx*.5/(1.+v)};
+	U Ro = 0.5*sect->get_sect_prop(SectionProp::OD);
+	const decltype(Ro) Ri = Ro - sect->get_sect_prop(SectionProp::TKWALL);
+	const decltype(Ro) Ax = PI<U>()*(Ro*Ro-Ri*Ri);
+	const decltype(Ro) Jxx = 0.5*PI<U>()*(pow(Ro, 4.0)-pow(Ri, 4.0));
+	const decltype(Ro) Izz = 0.5*Jxx;
+	const decltype(Ro) Iyy{Izz};
+	const decltype(Ro) v = prop->get_material_prop(MaterialProp::PRXY);
+	const decltype(Ro) ES = prop->get_material_prop(MaterialProp::YOUNG)*Ax;
+	const decltype(Ro) GJx = prop->get_material_prop(MaterialProp::YOUNG)*Jxx*0.5/(1.+v);
 	
-	int jj;
-	double Le;
-	MatrixXd tt = MatrixXd::Zero(3, 3);
-	tie(Le, tt) = coord_tran<T>(p1, p2);
+	decltype(Ro) Le;
+	matrix_<U> tt = matrix_<U>::Zero(3, 3);
+	tie(Le, tt) = coord_tran<T, U>(p1, p2);
 	
-	MatrixXd loc2gbl = MatrixXd::Zero(12, 12);
-	for(int i: {0, 1, 2, 3})loc2gbl.block<3, 3>(i*3, i*3) = tt;
+	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
+	for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
 	
-	double Me{prop->get_material_prop(MaterialProp::DENS)*Ax*Le};
+	const decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*Le;
 	
 	stif(0, 0) = stif(6, 6) = ES/Le;
 	stif(6, 0) = stif(0, 6) = -stif(0, 0);
@@ -86,12 +87,12 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	// ANSYS set 2
 	// frame3dd set .54414+2.97294*Ri/Ro-1.51899*Ri*Ri/Ro/Ro
 	// The Book "Gas Pulsation And Pipe Vibration Of Piston Compressor"(in Chinese) set 1.885
-	double alpha{2.};
-	double Ksy{2.4e1*(1.+v)*Iyy*alpha/(Ax*Le*Le)};
-	double Ksz{Ksy};
+	const decltype(Ro) alpha = 2.0;
+	const decltype(Ro) Ksy = 2.4e1*(1.+v)*Iyy*alpha/(Ax*Le*Le);
+	const decltype(Ro) Ksz = Ksy;
 	// double Ksz{2.4e1*(1.+v)*Izz*alpha/(Ax*Le*Le)};
-	double EIz{prop->get_material_prop(MaterialProp::YOUNG)*Izz};
-	double EIy{prop->get_material_prop(MaterialProp::YOUNG)*Iyy};
+	const decltype(Ro) EIz = prop->get_material_prop(MaterialProp::YOUNG)*Izz;
+	const decltype(Ro) EIy = prop->get_material_prop(MaterialProp::YOUNG)*Iyy;
 	
 	stif(1, 1) = stif(7, 7) = 12.*EIy/(Le*Le*Le*(1.+Ksy));
 	stif(5, 5) = stif(11, 11) = (4.+Ksy)*EIy/(Le*(1.+Ksy));
@@ -133,9 +134,9 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 		// mass(2, 8) = mass(8, 2) = t*(9./70.+3./10.*Ksy+Ksy*Ksy/6.)-ry*6./(5.*Le);
 		// mass(10, 4) = mass(4, 10) = t*(-Le*Le/140.-Le*Le*Ksy/60.-Le*Le*Ksy*Ksy/120.)+ry*(-Le/30.-Le*Ksy/6.+Le*Ksy*Ksy/6.);
 	// }
-	double t{Me};
-	double rz{prop->get_material_prop(MaterialProp::DENS)*Izz};
-	double ry{prop->get_material_prop(MaterialProp::DENS)*Iyy};
+	const decltype(Ro) t = Me;
+	const decltype(Ro) rz = prop->get_material_prop(MaterialProp::DENS)*Izz;
+	const decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
 	
 	if(LUMP_MASS>0){
 		mass(1, 1) = mass(7, 7) = mass(2, 2) = mass(8, 8) = t/2.;
@@ -168,61 +169,65 @@ varargout pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 /**
  *  
  */
-template <class T>
-varargout pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
+template <class T, class U>
+varargout<U> pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	const NodeBase<T> *cen, const Material<T> *prop, const Section<T> *sect)
 {
-	MatrixXd stif = MatrixXd::Zero(12, 12);
-	MatrixXd mass = MatrixXd::Zero(12, 12);
-	VectorXd rhs = VectorXd::Zero(12);
-	MatrixXd fij = MatrixXd::Zero(6, 6);
-	MatrixXd H = MatrixXd::Zero(6, 6);
-	MatrixXd sij = MatrixXd::Zero(6, 6);
+	matrix_<U> stif = matrix_<U>::Zero(12, 12);
+	matrix_<U> mass = matrix_<U>::Zero(12, 12);
+	vecX_<U> rhs = vecX_<U>::Zero(12);
 	
-	double Ro{0.5*sect->get_sect_prop(SectionProp::OD)};
-	double Ri{Ro-sect->get_sect_prop(SectionProp::TKWALL)};
-	double t{sect->get_sect_prop(SectionProp::TKWALL)}, Ax{PI<>()*(Ro*Ro-Ri*Ri)};
-	double Jxx{0.5*PI<>()*(pow(Ro, 4.0)-pow(Ri, 4.0))};
-	double Iyy{0.5*Jxx};
-	double R{sect->get_sect_prop(SectionProp::RADCUR)}, R2{R*R}, R3{R*R*R};
-	double v{prop->get_material_prop(MaterialProp::PRXY)};
+	matrix_<U> fij = matrix_<U>::Zero(6, 6);
+	matrix_<U> sij = matrix_<U>::Zero(6, 6);
+	matrix_<U> H = matrix_<U>::Zero(6, 6);
 	
-	MatrixXd tt = MatrixXd::Zero(3, 3);
 	
-	Vector3d vxx, vyy, vzz, vxy;
-	auto xy_ = cen->get_xyz() - p1->get_xyz();
-	vxy << xy_(0), xy_(1), xy_(2);
-	auto xx_ = p2->get_xyz() - p1->get_xyz();
-	vxx << xx_(0), xx_(0), xx_(2);
+	U Ro = 0.5*sect->get_sect_prop(SectionProp::OD);
+	const decltype(Ro) Ri = Ro-sect->get_sect_prop(SectionProp::TKWALL);
+	const decltype(Ro) t = sect->get_sect_prop(SectionProp::TKWALL);
+	const decltype(Ro) Ax = PI<U>()*(Ro*Ro-Ri*Ri);
+	const decltype(Ro) Jxx = 0.5*PI<U>()*(pow(Ro, 4.0)-pow(Ri, 4.0));
+	const decltype(Ro) Iyy = 0.5*Jxx;
+	const decltype(Ro) R = sect->get_sect_prop(SectionProp::RADCUR);
+	const decltype(Ro) R2 = R*R;
+	const decltype(Ro) R3 = R2*R;
+	const decltype(Ro) v = prop->get_material_prop(MaterialProp::PRXY);
 	
-	double la{vxx.norm()}, lb{vxy.norm()};
+	matrix_<U> tt = matrix_<U>::Zero(3, 3);
+	
+	vec3_<T> vxx, vyy, vzz, vxy;
+	vxy = cen->get_xyz() - p1->get_xyz();
+	vxx = p2->get_xyz() - p1->get_xyz();
+	
+	const decltype(Ro) la = vxx.norm(), lb = vxy.norm();
 	vxx /= vxx.norm();
 	vzz = vxx.cross(vxy);
 	vzz /= vzz.norm();
 	vyy = vzz.cross(vxx);
 	vyy /= vyy.norm();
-	tt.row(0) << vxx(0), vxx(1), vxx(2);
-	tt.row(1) << vyy(0), vyy(1), vyy(2);
-	tt.row(2) << vzz(0), vzz(1), vzz(2);
 	
-	double the{2.0*asin(0.5*la/R)};
-	double l{R*the}, cos_the{cos(the)}, sin_the{sin(the)};
-	double cos_2the{cos(2.0*the)}, sin_2the{sin(2.0*the)};
+	tt.row(0) << U(vxx(0)), U(vxx(1)), U(vxx(2));
+	tt.row(1) << U(vyy(0)), U(vyy(1)), U(vyy(2));
+	tt.row(2) << U(vzz(0)), U(vzz(1)), U(vzz(2));
+	
+	const decltype(Ro) the = 2.0*asin(.5*la/R);
+	const decltype(Ro) l = R*the, cos_the = cos(the), sin_the = sin(the);
+	const decltype(Ro) cos_2the = cos(2.0*the), sin_2the = sin(2.0*the);
 	
 	// see also PIPE16
 	// double alpha{.54414+2.97294*Ri/Ro-1.51899*Ri*Ri/Ro/Ro};
 	// double alpha{1.885};
-	double alpha{2.};
-	double Me{prop->get_material_prop(MaterialProp::DENS)*Ax*l};
-	double EA{prop->get_material_prop(MaterialProp::YOUNG)*Ax};
-	double GA{prop->get_material_prop(MaterialProp::YOUNG)*Ax*0.5/(1.0+v)};
-	double EI{prop->get_material_prop(MaterialProp::YOUNG)*Iyy};
-	double GI{prop->get_material_prop(MaterialProp::YOUNG)*Iyy*0.5/(1.0+v)};
-	double kp;
+	const decltype(Ro) alpha = 2.;
+	const decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*l;
+	const decltype(Ro) EA = prop->get_material_prop(MaterialProp::YOUNG)*Ax;
+	const decltype(Ro) GA = prop->get_material_prop(MaterialProp::YOUNG)*Ax*.5/(1.0+v);
+	const decltype(Ro) EI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy;
+	const decltype(Ro) GI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy*.5/(1.0+v);
+	decltype(Ro) kp;
 	
 	{
-		double r{Ro-0.5*t}, h{t*R/(r*r)}, pr{sect->get_sect_prop(SectionProp::PRESIN)};
-		double Xk;
+		decltype(Ro) r = Ro-.5*t, h = t*R/(r*r), pr = sect->get_sect_prop(SectionProp::PRESIN);
+		decltype(Ro) Xk;
 		if(1.7>(R/r)){
 			Xk = 0.;
 		}
@@ -254,39 +259,54 @@ varargout pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	H(5, 0) = -R*(cos_the-1.0);
 	H(5, 1) = -R*sin_the; 
 	sij = fij.inverse();
-	stif.block<6, 6>(0, 0) = H*sij*H.transpose();
-	stif.block<6, 6>(0, 6) = H*sij;
-	stif.block<6, 6>(6, 0) = sij*H.transpose();
-	stif.block<6, 6>(6, 6) = sij;
+	stif.block(0, 0, 6, 6) = H*sij*H.transpose();
+	stif.block(0, 6, 6, 6) = H*sij;
+	stif.block(6, 0, 6, 6) = sij*H.transpose();
+	stif.block(6, 6, 6, 6) = sij;
 
 	for(int i: {0, 1, 2, 6, 7, 8})mass(i, i) = 0.5*Me;
 	//! From Code-Aster reference formulation.
 	// mass(3, 3) = mass(9, 9) = prop.param[0]*Iyy*R*the;
 	// mass(4, 4) = mass(10, 10) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
 	// mass(5, 5) = mass(11, 11) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
-	MatrixXd loc2gbl = MatrixXd::Zero(12, 12);
-	for(int i: {0, 1, 2, 3})loc2gbl.block<3, 3>(i*3, i*3) = tt;
+	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
+	for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
 	
-	MatrixXd tmp = MatrixXd::Zero(3, 3);
-	MatrixXd t2 = MatrixXd::Zero(12, 12);
-	double cos_b{cos(0.5*the)}, sin_b{sin(0.5*the)};
+	matrix_<U> tmp = matrix_<U>::Zero(3, 3);
+	matrix_<U> t2 = matrix_<U>::Zero(12, 12);
+	const decltype(Ro) cos_b = cos(.5*the), sin_b = sin(.5*the);
+	
 	tmp.row(0) << cos_b, -sin_b, 0.;
 	tmp.row(1) << sin_b, cos_b, 0.;
 	tmp.row(2) << 0., 0., 1.;	
-	for(int i: {0, 1, 2, 3})t2.block<3, 3>(i*3, i*3) = tmp;
+	
+	for(int i: {0, 1, 2, 3})t2.block(i*3, i*3, 3, 3) = tmp;
 	stif = t2.transpose()*stif*t2;
 	mass = t2.transpose()*mass*t2;
 	
 	return make_tuple(stif, mass, loc2gbl, rhs);
 }
 //! Specialization.
-template varargout pipe16<REAL4>(const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const Material<REAL4>*, const Section<REAL4>*);
-template varargout pipe16<REAL8>(const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const Material<REAL8>*, const Section<REAL8>*);
-template varargout pipe18<REAL4>(const NodeBase<REAL4>*, const NodeBase<REAL4>*,
+template varargout<REAL8> pipe16<REAL4, REAL8>(const NodeBase<REAL4>*,
 	const NodeBase<REAL4>*, const Material<REAL4>*, const Section<REAL4>*);
-template varargout pipe18<REAL8>(const NodeBase<REAL8>*, const NodeBase<REAL8>*,
+template varargout<REAL8> pipe16<REAL8, REAL8>(const NodeBase<REAL8>*,
 	const NodeBase<REAL8>*, const Material<REAL8>*, const Section<REAL8>*);
+template varargout<REAL4> pipe16<REAL4, REAL4>(const NodeBase<REAL4>*,
+	const NodeBase<REAL4>*, const Material<REAL4>*, const Section<REAL4>*);
+template varargout<REAL4> pipe16<REAL8, REAL4>(const NodeBase<REAL8>*,
+	const NodeBase<REAL8>*, const Material<REAL8>*, const Section<REAL8>*);
+	
+template varargout<REAL8> pipe18<REAL4, REAL8>(const NodeBase<REAL4>*,
+	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const Material<REAL4>*,
+	const Section<REAL4>*);
+template varargout<REAL8> pipe18<REAL8, REAL8>(const NodeBase<REAL8>*,
+	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const Material<REAL8>*,
+	const Section<REAL8>*);
+template varargout<REAL4> pipe18<REAL4, REAL4>(const NodeBase<REAL4>*,
+	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const Material<REAL4>*,
+	const Section<REAL4>*);
+template varargout<REAL4> pipe18<REAL8, REAL4>(const NodeBase<REAL8>*,
+	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const Material<REAL8>*,
+	const Section<REAL8>*);
 }
 }

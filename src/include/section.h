@@ -81,8 +81,6 @@ class Section: public ObjectBase {
 		Scalar get_sect_prop(SectionProp sp) const;
 		//! Set property of section.
 		void set_sect_prop(SectionProp sp, Scalar val);
-		//! Write variables to MAT format file.
-		void write2mat(const char* fname="elemvars.mat");
 		//! Print section info.
 		friend std::ostream& operator<<(std::ostream& cout, const Section &a)
 		{
