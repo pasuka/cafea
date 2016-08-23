@@ -17,6 +17,7 @@
 #include "boundary.h"
 #include "sparse_matrix.h"
 #include "mesh_reader.h"
+#include "eigenpair.h"
 
 namespace cafea
 {
@@ -107,6 +108,8 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 	protected:
 		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
 		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
+		
+		EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
 };
 
 /**

@@ -1,7 +1,7 @@
 CC := gcc
 CXX := g++
 FC := gfortran
-CXXFLAGS := -lgfortran -L./ -lmatio #-O3
+CXXFLAGS := -lgfortran -L./ -lmatio -O3
 FFLAGS := -cpp
 
 # Check version of gcc
@@ -24,7 +24,7 @@ ASTERISK := $(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
 SRC = ../cppformat/fmt/format.o ../src/core/coord_tran.o ../src/core/integration.o
-SRC += ../src/core/sparse_matrix.o
+SRC += ../src/core/sparse_matrix.o ../src/core/eigensolver.o
 SRC += ../src/base/material.o ../src/base/section.o ../src/base/node.o
 SRC += ../src/base/dof_handler.o
 SRC += ../src/element/element_attr.o ../src/element/pipe.o
@@ -77,6 +77,16 @@ test_solution: $(SRC) ./solution_basic_test.o
 	$(COMMENT)
 	./test_solution
 
+test_modal: $(SRC) ./solution_modal_test.o
+	$(COMMENT)
+	@echo -ne "\033[33m"Test: Solution Case"\033[0m\n"
+	$(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_modal
+	$(COMMENT)
+	@echo -ne "\033[35m"Run test"\033[0m\n"
+	$(COMMENT)
+	./test_modal
+	
 matio_lib:
 	@echo "MATIO Library"
 	$(MAKE) -f matio.mk libs
@@ -91,4 +101,4 @@ all:
 	./test_node
 	$(MAKE) clean
 	
-.PHONY: clean test_node test_cdb test_cdb_cpp test_solution matio_lib all
+.PHONY: clean test_node test_cdb test_cdb_cpp test_solution test_modal matio_lib all

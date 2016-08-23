@@ -16,6 +16,7 @@
 #include "mesh_reader.h"
 #include "solution.h"
 #include "element_lib.h"
+#include "eigenpair.h"
 
 #ifndef PRINT_ON
 #define PRINT_ON 0

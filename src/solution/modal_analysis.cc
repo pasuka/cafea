@@ -263,7 +263,14 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 {
-	fmt::print("Empty\n");
+	this->solver_.load(this->mat_pair_.get_stif_ptr(),
+		this->mat_pair_.get_mass_ptr(), this->mat_pair_.get_coord_ptr(),
+		this->mat_pair_.get_nnz(), this->mat_pair_.get_dim());
+	/*ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
+	fspan[0] = PI<ResultScalar>()*PI<ResultScalar>()*ResultScalar(1e10);
+	this->solver_.subspace(fspan[0], fspan[1]);*/
+	// this->solver_.subspace(10);
+	auto nn = this->solver_.sturm_check(1e30);
 };
 
 template <class FileReader, class Scalar, class ResultScalar>
