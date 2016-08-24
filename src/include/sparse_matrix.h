@@ -98,12 +98,6 @@ class SparseMat{
 		size_t get_nnz() const {return nnz_;};
 		//! Get matrix format.
 		SpFmt get_format() const {return format_;};
-		//! Get stiffness matrix ptr.
-		const T* get_stif() const {return stif_.data();};
-		//! Get mass matrix ptr.
-		const T* get_mass() const {return mass_.data();};
-		//! Get rhs ptr.
-		const T* get_rhs() const {return rhs_.data();};
 		//! Inquire symmetric of matrix.
 		bool is_symmetric() const {return SpSym::SYMMETRIC==sym_;};
 		//! Inquire full storage of matrix.
@@ -126,11 +120,15 @@ class SparseMat{
 		//! Add stiffness and rhs value.
 		void add_matrix_data_KF(SparseCell, T, T);
 		void add_matrix_data_KF(size_t, size_t, T, T);
-		//! Get data pointer.
-		const T* get_stif_ptr() const {return stif_.data();}; 
+		//! Get stiffness matrix pointer.
+		const T* get_stif_ptr() const {return stif_.data();};
+		//! Get mass matrix pointer.
 		const T* get_mass_ptr() const {return mass_.data();};
+		//! Get rhs pointer.
 		const T* get_rhs_ptr() const {return rhs_.data();};
+		//! Get coordinate (row, column) pointer.
 		const SparseCell* get_coord_ptr() const {return row_col_.data();};
+		//! Get auxility pointer.
 		const size_t* get_aux_ptr() const {return aux_.data();};
 		//! Export MAT sparse.
 		std::unique_ptr<mat_sparse_t> get_stif_mat();

@@ -94,7 +94,7 @@ matio_lib:
 	
 clean:
 	@echo "Clean files"
-	- $(RM) $(CLEAN) *.o *.mod test_*
+	- $(RM) $(CLEAN) *.o *.mod *.mat test_*
 	
 all:
 	$(MAKE) test_node

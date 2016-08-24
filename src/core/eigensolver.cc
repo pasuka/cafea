@@ -1,5 +1,10 @@
 #include "cafea.h"
 
+using std::tuple;
+using std::make_tuple;
+
+using Eigen::Triplet;
+
 namespace cafea
 {
 /**
@@ -9,54 +14,65 @@ namespace cafea
  *  \param[in] xy row and cloumn of global matrix.
  *  \param[in] nnz non-zeros of global matrix.
  */
-template <class T>
-void EigenSolver<T>::load(const T *stif, const T *mass, const SparseCell *xy, size_t nnz, size_t dim)
+template <class T, class U>
+void EigenSolver<T, U>::load(const T *stif, const T *mass, const SparseCell *xy, size_t nnz, size_t dim)
 {
 	this->clear();
+	std::vector<Triplet<T>> triList(nnz);
+	
 	this->matA_.resize(dim, dim);
-	this->matB_.resize(dim, dim);
 	this->matA_.reserve(nnz);
-	this->matB_.reserve(nnz);
-	std::vector<Eigen::Triplet<T>> triList(nnz);
-	for(int i=0; i<nnz; i++)triList.push_back(Eigen::Triplet<T>(xy[i].row, xy[i].col, stif[i]));
+	for(int i=0; i<nnz; i++)triList.push_back(Triplet<T>(xy[i].row, xy[i].col, stif[i]));
 	this->matA_.setFromTriplets(triList.begin(), triList.end());
 	triList.clear();
-	for(int i=0; i<nnz; i++)triList[i] = Eigen::Triplet<T>(xy[i].row, xy[i].col, mass[i]);
+	
+	this->matB_.resize(dim, dim);
+	this->matB_.reserve(nnz);
+	for(int i=0; i<nnz; i++)triList.push_back(Triplet<T>(xy[i].row, xy[i].col, mass[i]));
 	this->matB_.setFromTriplets(triList.begin(), triList.end());
 	triList.clear();
 };
+
 /**
  *  \brief Sturm check for eigenpairs in specificy range.
  *  \param[in] right up bound of range.
  *  \param[in] left low bound of range.
  *  \return number of eigenpairs in range.
  */
-template <class T>
-size_t EigenSolver<T>::sturm_check(T right, T left)
+template <class T, class U>
+size_t EigenSolver<T, U>::sturm_check(T right, T left)
 {
 	decltype(this->matA_) A1 = this->matA_ - left *this->matB_;
 	decltype(this->matA_) A2 = this->matA_ - right*this->matB_;
 	
-	this->solver_.analyzePattern(this->matA_);   // for this step the numerical values of A are not used
+	Eigen::SimplicialLDLT<decltype(this->matA_)> solver;
 	
-	this->solver_.factorize(A1);
-	vecX_<T> dd1 = this->solver_.vectorD();
-	this->solver_.factorize(A2);
-	vecX_<T> dd2 = this->solver_.vectorD();
-	for(auto i=0; i<dd1.size(); i++)fmt::print("D1:{}\tD2:{}\n", dd1(i), dd2(i));
+	solver.analyzePattern(this->matA_);   // for this step the numerical values of A are not used
+	
+	solver.factorize(A1);
+	vecX_<T> dd1 = solver.vectorD();
 	auto aa1{(dd1.array()<0.0).count()};
+	
+	solver.factorize(A2);
+	vecX_<T> dd2 = solver.vectorD();
 	auto aa2{(dd2.array()<0.0).count()};
+	
 	size_t nn = (aa2-aa1)<0 ? 0 : aa2-aa1;
+	
 	fmt::print("AA2:{}\tAA1:{}\n", aa2, aa1);
 	fmt::print("In range:{} to {}\t exists {} eigenpairs\n", left, right, nn);
 	
 	return nn;
 };
+
 /**
  *  \brief Modify Gram-Schimidt B-orthogonal algorithm.
+ *  \param[in] X rhs matrix or vector.
+ *  \param[in] B matirx B.
+ *  \return orhtogonal matrix or vector.
  */
-template <class T>
-matrix_<T> EigenSolver<T>::mgs(matrix_<T> X, const Eigen::SparseMatrix<T> B)
+template <class T, class U>
+matrix_<T> EigenSolver<T, U>::mgs(matrix_<T> X, const Eigen::SparseMatrix<T> B)
 {
 	auto n{X.cols()};
 	matrix_<T> R = matrix_<T>::Zero(n, n);
@@ -72,31 +88,40 @@ matrix_<T> EigenSolver<T>::mgs(matrix_<T> X, const Eigen::SparseMatrix<T> B)
 	}
 	return Y;
 };
+
 /**
  *  \brief Subspace Iteration Method.
  */
-template <class T>
-void EigenSolver<T>::subspace(T right, T left)
+template <class T, class U>
+tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(T right, T left)
 {
 	size_t nn = this->sturm_check(right, left);
-	this->subspace(int(nn));
+	if(nn){
+		return this->subspace(int(nn));
+	}
+	else{
+		return this->subspace(6);
+	}
 };
+
 /**
  *  \brief Subspace Iteration Method.
+ *  \param[in] nreq required number of eigenpairs.
+ *  \param[in] tol tolerance of stop criterion.
+ *  \param[in] sigma shift value of eigenvalues.
  */
-template <class T>
-void EigenSolver<T>::subspace(int nreq, T tol, T sigma)
+template <class T, class U>
+tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(int nreq, T tol, T sigma)
 {
 	int ncv = 2*nreq<(8+nreq) ? 2*nreq : 8+nreq;
 	
 	assert(ncv<=this->matA_.rows());
 	assert(ncv<=this->matA_.cols());
 	
-	Eigen::SimplicialLDLT<decltype(this->matA_)> solver;
 	decltype(this->matA_) A = this->matA_ - sigma*this->matB_;
 	
-	solver.analyzePattern(A);   // for this step the numerical values of A are not used
-	solver.factorize(A);
+	this->solver_.analyzePattern(A);// for this step the numerical values of A are not used
+	this->solver_.factorize(A);
 	
 	matrix_<T> y, y0, y2;
 	y = this->mgs(matrix_<T>::Random(A.rows(), ncv), this->matB_);
@@ -107,32 +132,40 @@ void EigenSolver<T>::subspace(int nreq, T tol, T sigma)
 	matrix_<T> Res, sol, ak, am, vv;
 	vecX_<T> w;
 	
+	auto rerr = [this](auto x1, auto x2){return x1-x2*(x2.transpose()*(this->matB_*x1));};
+	
 	while(iter <= max_iter){
-		sol = solver.solve(this->matB_*y);
-		std::cout << sol << "\n";
+		sol = this->solver_.solve(this->matB_*y);
 		y0 = y;
+		// Projection to small matrix.
 		ak = sol.transpose()*A*sol;
 		am = sol.transpose()*this->matB_*sol;
+		// Solve eigenpairs of projection matrix.
 		Eigen::GeneralizedSelfAdjointEigenSolver<matrix_<T>> es(ak, am);
 		w = es.eigenvalues();
-		if(iter<2)std::cout << ak << "\n";
 		vv = es.eigenvectors();
+		// Get new eigenvectors.
 		y2 = sol*vv;
-		
+		// Normalize eigenvectors.
 		for(int ij=0; ij<ncv; ij++)y2.col(ij) /= y2.col(ij).norm();
+		// Gram-Schimidt B-orthogonal.
 		y = this->mgs(y2, this->matB_);
-	
-		Res = y0.leftCols(nreq) - y.leftCols(nreq)*(y.leftCols(nreq).transpose()*(this->matB_*y0.leftCols(nreq)));
+		// Compute relative error.
+		Res = rerr(y0.leftCols(nreq), y.leftCols(nreq));
 		fmt::print("Iter:{}\tRES:{}\n", iter, Res.norm());
-		if(Res.norm() < tol)break;
+		// Check for tolerance.
+		if(Res.norm()<tol)break;
 		iter++;
 	}
-	
+	// Resize.
 	this->lambda_.resize(nreq, 2);
 	this->X_.resize(this->matA_.rows(), nreq);
+	// Get eigenvalues.
 	this->lambda_.col(0) = (w.head(nreq).array()+sigma).abs();
+	// Get relative error.
 	for(int i=0; i<nreq; i++)this->lambda_(i, 1) = Res.col(i).norm();
+	// Get eigenvectors.
 	this->X_ = y.leftCols(nreq);
-	for(auto i=0; i<nreq; i++)fmt::print("No.{}\tFrequency:{}\n", i, sqrt(this->lambda_(i, 0))/T(2)/PI<T>());
+	return make_tuple(this->lambda_, this->X_);
 };
 }

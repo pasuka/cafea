@@ -266,11 +266,15 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	this->solver_.load(this->mat_pair_.get_stif_ptr(),
 		this->mat_pair_.get_mass_ptr(), this->mat_pair_.get_coord_ptr(),
 		this->mat_pair_.get_nnz(), this->mat_pair_.get_dim());
-	/*ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
-	fspan[0] = PI<ResultScalar>()*PI<ResultScalar>()*ResultScalar(1e10);
-	this->solver_.subspace(fspan[0], fspan[1]);*/
-	// this->solver_.subspace(10);
-	auto nn = this->solver_.sturm_check(1e30);
+	// ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
+	// fspan[0] = PI<ResultScalar>()*PI<ResultScalar>()*ResultScalar(1e10);
+	// this->solver_.subspace(fspan[0], fspan[1]);
+	matrix_<ResultScalar> val, shp;
+	const int num{10};
+	std::tie(val, shp) = this->solver_.subspace(num);
+	fmt::print("\n");
+	for(int i=0; i<num; i++)fmt::print("No.{}\tFreq.:{}Hz\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>());
+	// auto nn = this->solver_.sturm_check(1e30);
 };
 
 template <class FileReader, class Scalar, class ResultScalar>
