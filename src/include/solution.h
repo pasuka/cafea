@@ -50,6 +50,49 @@ class SolutionBase {
 };
 
 /**
+ *  Solution of static analysis.
+ */
+template <class FileReader, class Scalar=float, class ResultScalar=double>
+class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
+	public:
+		//! default constructor.
+		SolutionStatic(){};
+		//! Destructor.
+		~SolutionStatic();
+		//! Initialize environment.
+		void init() override;
+		//! Clear model data.
+		void clear() override;
+		//! Load input file.
+		void load(const char* fn) override;
+		//! Check input model data.
+		void check() override;
+		//! Analyze pattern.
+		void analyze() override;
+		//! Assemble global matrix.
+		void assembly() override;
+		//! Solve.
+		void solve() override;
+		//! Save MAT file.
+		void write2mat(const char*) override;
+		//! Post process.
+		void post_process() override;
+		//! Get model information.
+		std::array<size_t, 5> get_info()const override;
+	protected:
+		FileReader file_parser_;//!< Input file loader.
+		
+		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
+		dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
+		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary dictionary.
+		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
+		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
+		
+		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
+		EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
+		
+}; 
+/**
  *  Solution of modal analysis.	
  */
 template <class FileReader, class Scalar=float, class ResultScalar=double>
@@ -61,11 +104,12 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		~SolutionModal() { init();};
 		//! Initialize environment.
 		void init() override;
+		//! Clear variables.
 		void clear() override {init();};
 		//! Load input file.
 		void load(const char* file_name) override;
 		//! Load input file.
-		void load(std::string fn) { load(fn.c_str());};
+		void load(std::string fn) {load(fn.c_str());};
 		//! Check input model data.
 		void check() override;
 		//! Analyze pattern.
@@ -101,9 +145,19 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
 };
 
+
 /**
  *  Solution of harmonic
  */
+template <class FileReader, class Scalar=float, class ResultScalar=double>
+class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultScalar> {
+	public:
+		//! Default constructor.
+		SolutionHarmonicFull(){};
+		//! Destructor.
+		~SolutionHarmonicFull();
+		
+};
 /*template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 	public:
@@ -139,7 +193,7 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		
 };*/
 //! Specialization with float type.
-template class SolutionBase<AnsysCdbReader<float>>;
-template class SolutionModal<AnsysCdbReader<float>>;
+template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL8>;
+template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL4>;
 }
 #endif
