@@ -13,9 +13,13 @@ namespace cafea
 template <class T=double, class Solver=Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>>>
 class EigenSolver {
 	public:
+		//! Default constructor.
 		EigenSolver(){};
+		//! Destructor.
 		~EigenSolver(){clear();};
+		//! Load K M matrix.
 		void load(const T*, const T*, const SparseCell*, size_t, size_t);
+		//! Clear variables.
 		void clear()
 		{
 			matA_.resize(0, 0);
@@ -27,14 +31,18 @@ class EigenSolver {
 			matA_.data().squeeze();
 			matB_.data().squeeze();
 		};
+		//! Subspace iteration method in eigenpair number.
 		std::tuple<matrix_<T>, matrix_<T>> subspace(int num=1, T tol=sqrt(EPS<T>()), T sigma=T(-1));
-		std::tuple<matrix_<T>, matrix_<T>> subspace(T ubound, T lbound=T(0));
+		//! Subspace iteration method in specified range.
+		std::tuple<matrix_<T>, matrix_<T>> subspace(T ubound, T lbound=T(0), T tol=sqrt(EPS<T>()), T sigma=T(-1));
+		//! Sturm check in specified range.
 		size_t sturm_check(T ubound, T lbound=T(0));
+		//! Modify Gram-Schimidt B-orthogonal method.
 		matrix_<T> mgs(matrix_<T> y, const Eigen::SparseMatrix<T> B);
 	private:
-		Eigen::SparseMatrix<T> matA_, matB_;
-		matrix_<T> X_, lambda_;
-		Solver solver_;
+		Eigen::SparseMatrix<T> matA_, matB_;//!< Global matrix A and B.
+		matrix_<T> X_, lambda_;//!< Eigenvectors and eigenvalues.
+		Solver solver_;//!< Solver of sparse matrix.
 };
 
 //!< Specialization.

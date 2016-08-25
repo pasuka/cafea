@@ -18,7 +18,7 @@ template <class T=float, class U=float>
 class Load: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;// Inherit Base's constructors.
-		Load()=delete;
+		Load(){};
 		/**
 		 *  \brief Constructor with id load type.
 		 *  \param [in] id load's id.

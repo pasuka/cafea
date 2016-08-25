@@ -59,7 +59,6 @@ size_t EigenSolver<T, U>::sturm_check(T right, T left)
 	
 	size_t nn = (aa2-aa1)<0 ? 0 : aa2-aa1;
 	
-	fmt::print("AA2:{}\tAA1:{}\n", aa2, aa1);
 	fmt::print("In range:{} to {}\t exists {} eigenpairs\n", left, right, nn);
 	
 	return nn;
@@ -93,14 +92,14 @@ matrix_<T> EigenSolver<T, U>::mgs(matrix_<T> X, const Eigen::SparseMatrix<T> B)
  *  \brief Subspace Iteration Method.
  */
 template <class T, class U>
-tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(T right, T left)
+tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(T right, T left, T tol, T sigma)
 {
 	size_t nn = this->sturm_check(right, left);
 	if(nn){
-		return this->subspace(int(nn));
+		return this->subspace(int(nn), tol, sigma);
 	}
 	else{
-		return this->subspace(6);
+		return this->subspace(2, tol, sigma);
 	}
 };
 
@@ -134,6 +133,7 @@ tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(int nreq, T tol, T sig
 	
 	auto rerr = [this](auto x1, auto x2){return x1-x2*(x2.transpose()*(this->matB_*x1));};
 	
+	fmt::print("Begin Subspace Iteration...\n");
 	while(iter <= max_iter){
 		sol = this->solver_.solve(this->matB_*y);
 		y0 = y;

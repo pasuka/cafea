@@ -32,21 +32,29 @@ class SolutionBase {
 		//! Clear model data.
 		virtual void clear()=0;
 		//! Load input file.
-		virtual void load(const char* fn)=0;
+		virtual void load(const char* fn) {fmt::print("Load file:{}\n", fn);};
+		//! Load input file.
+		// virtual void load(const std::string fn) {load(fn.c_str());};
 		//! Check input model data.
-		virtual void check()=0;
+		virtual void check() {fmt::print("Check input.\n");};
 		//! Analyze pattern.
-		virtual void analyze()=0;
+		virtual void analyze() {fmt::print("Analyze model.\n");};
 		//! Assemble global matrix.
-		virtual void assembly()=0;
+		virtual void assembly() {fmt::print("Assemble matrix.\n");};
 		//! Solve.
-		virtual void solve()=0;
+		virtual void solve() {fmt::print("Solve problem.\n");};
 		//! Save MAT file.
-		virtual void write2mat(const char*)=0;
+		virtual void write2mat(const char* mat) {fmt::print("Save :{}\n", mat);};
+		//! Save MAT file.
+		// virtual void write2mat(const std::string mat) {write2mat(mat.c_str());};
 		//! Post process.
-		virtual void post_process()=0;
+		virtual void post_process() {fmt::print("Post process.\n");};
 		//! Get model information.
-		virtual std::array<size_t, 5> get_info()const=0;
+		virtual std::array<size_t, 5> get_info() const
+		{
+			std::array<size_t, 5> a{0, 0, 0, 0,0};
+			return a;
+		};
 };
 
 /**
@@ -58,11 +66,11 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! default constructor.
 		SolutionStatic(){};
 		//! Destructor.
-		~SolutionStatic();
+		~SolutionStatic() {init();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear model data.
-		void clear() override;
+		void clear() override {init();};
 		//! Load input file.
 		void load(const char* fn) override;
 		//! Check input model data.
@@ -84,14 +92,15 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		
 		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
 		dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
-		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary dictionary.
 		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
 		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
 		
-		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
-		EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
+		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary list.
+		std::vector<Load<Scalar, Scalar>> load_group_;//!< Load list.
 		
-}; 
+		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
+};
+ 
 /**
  *  Solution of modal analysis.	
  */
