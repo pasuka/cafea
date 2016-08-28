@@ -110,7 +110,7 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
 		//! Default constructor.
 		SolutionModal(){};
 		//! Destructor.
-		~SolutionModal() { init();};
+		~SolutionModal(){init();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.

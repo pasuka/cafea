@@ -260,6 +260,10 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 		}
 	}
 }
+
+/**
+ *  \brief Solve.
+ */
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 {
@@ -277,6 +281,9 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	// auto nn = this->solver_.sturm_check(1e30);
 };
 
+/**
+ *  \brief Post-process.
+ */
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::post_process()
 {
@@ -356,11 +363,13 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 		global_stif.get(), MAT_F_DONT_COPY_DATA);
 	Mat_VarWrite(matfp, gk, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(gk);
+	global_stif.reset(nullptr);
 	auto global_mass = this->mat_pair_.get_mass_mat();
 	matvar_t *gm = Mat_VarCreate("mass", MAT_C_SPARSE, MAT_T_DOUBLE, 2, dim_vec,
 		global_mass.get(), MAT_F_DONT_COPY_DATA);
 	Mat_VarWrite(matfp, gm, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(gm);
+	global_mass.reset(nullptr);
 	Mat_Close(matfp);
 	return;
 };

@@ -123,4 +123,169 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::load(const char* fn)
 	}
 	(*this).file_parser_.clean_model();	
 }
+
+/**
+ *  \brief Get model info.
+ *  \return array that contain model statistics.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+std::array<size_t, 5> SolutionStatic<FileReader, Scalar, ResultScalar>::get_info()const
+{
+	std::array<size_t, 5> param{this->node_group_.size(), this->elem_group_.size(),
+		this->matl_group_.size(), this->sect_group_.size(), this->bc_group_.size()};
+#if(PRINT_ON==1)		
+	fmt::print("Number of node:{}\n", param[0]);
+	fmt::print("Number of element:{}\n", param[1]);
+	fmt::print("Number of material:{}\n", param[2]);
+	fmt::print("Number of section:{}\n", param[3]);
+	fmt::print("Number of boundary:{}\n", param[4]);
+#endif	
+	return param;
+};
+
+/**
+ *  \brief Check model.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionStatic<FileReader, Scalar, ResultScalar>::check()
+{
+	if(this->node_group_.empty())fmt::print("None node in model\n");
+	if(this->elem_group_.empty())fmt::print("None element in model\n");
+	if(this->matl_group_.empty())fmt::print("None material in model\n");
+	if(this->sect_group_.empty())fmt::print("None section in model\n");
+	if(this->load_group_.empty())fmt::print("None load in model\n");
+	if(this->bc_group_.empty())fmt::print("None boundary in model\n");
+	fmt::print("Model has been checked!\n");
+};
+
+/**
+ *  \brief Analyze pattern.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionStatic<FileReader, Scalar, ResultScalar>::analyze()
+{
+	for(const auto &it: (*this).elem_group_){
+		const auto &p_elem = it.second;//!< Get element ptr.
+		auto node_list = p_elem.get_node_list();
+		auto et = p_elem.get_element_type();
+		for(int i=0; i<p_elem.get_active_num_of_node(); i++){
+			auto got = this->node_group_.find(node_list[i]);
+			if(got!=this->node_group_.end()){
+				got->second.activate(true);
+				got->second.dof_init(et);
+			}
+		}
+	}
+	for(const auto &bc: (*this).bc_group_){
+		auto got = this->node_group_.find(bc.get_id());
+		if(got!=this->node_group_.end()){
+			got->second.dof_apply(bc);
+		}
+	}
+	int num{0};
+	for(auto &it: this->node_group_)it.second.dof_accum(&num, DofType::NORMAL);
+	
+	fmt::print("Total Dimension:{}\n", num);
+	
+	for(const auto &it: this->elem_group_){
+		const auto &p_elem = it.second;
+		auto node_list = p_elem.get_node_list();
+		auto num = p_elem.get_active_num_of_node();
+		for(int i=0; i<num; i++){
+			auto got_i = this->node_group_.find(node_list[i]);
+			if(got_i!=this->node_group_.end()){
+				auto dof_i = got_i->second.dof_list();
+				for(int j=0; j<num; j++){
+					auto got_j = this->node_group_.find(node_list[j]);
+						if(got_j!=this->node_group_.end()){
+							auto dof_j = got_j->second.dof_list();
+							for(auto ia: dof_i){
+								if(ia>=0){
+									for(auto ib: dof_j){
+										if(ib>=0)this->mat_pair_.append(ia, ib);
+									}
+								}
+							}
+						}
+				}
+			}
+		}
+	}
+	this->mat_pair_.unique();
+	fmt::print("Non Zeros: {}\n", this->mat_pair_.get_nnz());
+	fmt::print("Dimension: {}\n", this->mat_pair_.get_dim());
+};
+
+/**
+ *  \brief Assembly global matrix.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
+{
+	for(auto &it: this->elem_group_){
+		auto node_list = it.second.get_node_list();
+		auto mt = it.second.get_material_id();
+		auto st = it.second.get_section_id();
+		auto got_mt = this->matl_group_.find(mt);
+		auto got_st = this->sect_group_.find(st);
+		assert(got_mt!=this->matl_group_.end());
+		assert(got_st!=this->sect_group_.end());
+		Node<Scalar, ResultScalar> pt[node_list.size()];
+		for(size_t i=0; i<node_list.size(); i++){
+			auto got = this->node_group_.find(node_list[i]);
+			if(got!=this->node_group_.end())pt[i] = got->second;
+		}
+		it.second.form_matrix(pt, &(got_mt->second), &(got_st->second));
+		auto p_stif = it.second.get_stif();
+		auto p_mass = it.second.get_mass();
+		auto p_tran = it.second.get_tran();
+		p_stif = p_tran.transpose()*p_stif*p_tran;
+		p_mass = p_tran.transpose()*p_mass*p_tran;
+		auto nn = it.second.get_active_num_of_node();
+		auto ndof = it.second.get_dofs_per_node();
+		for(size_t ia=0; ia<nn; ia++){
+			auto va = pt[ia].dof_list();
+			for(auto ja=0; ja<ndof; ja++){
+				if(va[ja]<0)continue;
+				for(size_t ib=0; ib<nn; ib++){
+					auto vb = pt[ib].dof_list();
+					for(auto jb=0; jb<ndof; jb++){
+						if(vb[jb]<0)continue;
+						auto row_ = ia*ndof+ja;
+						auto col_ = ib*ndof+jb;
+						this->mat_pair_.add_matrix_data_KM(va[ja], vb[jb],
+							p_stif(row_, col_), p_mass(row_, col_));
+					}
+				}
+			}
+			
+		}
+	}
+};
+
+/**
+ *  \brief Solve.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionStatic<FileReader, Scalar, ResultScalar>::solve()
+{
+	
+};
+
+/**
+ *  \brief Post-process.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionStatic<FileReader, Scalar, ResultScalar>::post_process()
+{
+	fmt::print("Empty\n");
+};
+
+/**
+ *  \brief Write element matrix to MAT file.
+ *  \param[in] fname file name.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionStatic<FileReader, Scalar, ResultScalar>::write2mat(const char* fname)
+{};
 }
