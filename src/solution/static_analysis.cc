@@ -223,9 +223,10 @@ template <class FileReader, class Scalar, class ResultScalar>
 void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 {
 	for(auto &it: this->elem_group_){
-		auto node_list = it.second.get_node_list();
-		auto mt = it.second.get_material_id();
-		auto st = it.second.get_section_id();
+		auto &p_elem = it.second;
+		auto node_list = p_elem.get_node_list();
+		auto mt = p_elem.get_material_id();
+		auto st = p_elem.get_section_id();
 		auto got_mt = this->matl_group_.find(mt);
 		auto got_st = this->sect_group_.find(st);
 		assert(got_mt!=this->matl_group_.end());
@@ -235,14 +236,14 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 			auto got = this->node_group_.find(node_list[i]);
 			if(got!=this->node_group_.end())pt[i] = got->second;
 		}
-		it.second.form_matrix(pt, &(got_mt->second), &(got_st->second));
-		auto p_stif = it.second.get_stif();
-		auto p_mass = it.second.get_mass();
-		auto p_tran = it.second.get_tran();
+		p_elem.form_matrix(pt, &(got_mt->second), &(got_st->second));
+		auto p_stif = p_elem.get_stif();
+		auto p_mass = p_elem.get_mass();
+		auto p_tran = p_elem.get_tran();
 		p_stif = p_tran.transpose()*p_stif*p_tran;
 		p_mass = p_tran.transpose()*p_mass*p_tran;
-		auto nn = it.second.get_active_num_of_node();
-		auto ndof = it.second.get_dofs_per_node();
+		auto nn = p_elem.get_active_num_of_node();
+		auto ndof = p_elem.get_dofs_per_node();
 		for(size_t ia=0; ia<nn; ia++){
 			auto va = pt[ia].dof_list();
 			for(auto ja=0; ja<ndof; ja++){
