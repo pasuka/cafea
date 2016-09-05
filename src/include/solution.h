@@ -105,7 +105,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
  *  Solution of modal analysis.	
  */
 template <class FileReader, class Scalar=float, class ResultScalar=double>
-class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar>{
+class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar> {
 	public:
 		//! Default constructor.
 		SolutionModal(){};

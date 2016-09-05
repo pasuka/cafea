@@ -21,7 +21,7 @@ enum struct ElementType {
 	SOLID185, SOLID186, C3D4, C3D8, C3D20,
 	SHELL181, SHELL281, S3R, S4R, S8R, S9R,
 	MASS21, COMBIN14,
-	UNKNOWN,
+	UNKNOWN=-1,
 };
 
 /**
@@ -30,7 +30,7 @@ enum struct ElementType {
 enum struct BoundaryType {
 	FIXED,
 	INIT_VAL,
-	UNKNOWN,
+	UNKNOWN=-1,
 };
 /**
  *  DOF type enum.

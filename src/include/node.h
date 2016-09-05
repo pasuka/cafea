@@ -318,75 +318,29 @@ template class Node<REAL4, REAL8>;
 template class Node<REAL8, REAL8>;
 template class Node<REAL8, REAL4>;
 
-//! Coordinate transform for 2-node pipe element.
-template <class T, class U> varargout_2_<U> coord_tran(
-	const NodeBase<T>*, const NodeBase<T>*);
-//! Coordinate transform for 2-node beam element.
-template <class T, class U> varargout_2_<U> coord_tran(
-	const NodeBase<T>*, const NodeBase<T>*, const T[]);
-//! Coordinate transform for 3-node triangle element.
-template <class T, class U> varargout_3_<U> coord_tran(
-	const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*);
-//! Coordinate transform for 4-node quadrangle element.
-template <class T, class U> varargout_3_<U> coord_tran(
-	const NodeBase<T>*, const NodeBase<T>*,
-	const NodeBase<T>*, const NodeBase<T>*);
+/**
+ *  \brief Coordinate transform uitiliy.
+ */
+template <class T, class U>
+struct NodeFunc{
+	//! Coordinate transform for 2-node element.
+	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*);
+	//! Coordinate transform for 2-node and up direction.
+	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
+		const T[]);
+	//! Coordinate transform for triangle.
+	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
+		const NodeBase<T>*);
+	//! Coordinate transform for quadrangle.
+	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
+		const NodeBase<T>*, const NodeBase<T>*);
+};
 
-//! Specialization coord_tran function with REAL4/float type.
-//! Avoid to compile more than one times.
-//! Extern template trick in C++11. 
-extern template varargout_2_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_2_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const REAL4[]);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_3_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization coord_tran function with REAL4/float type.
-extern template varargout_3_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-	
-//! Specialization coord_tran function with REAL8/double type.
-extern template varargout_2_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_2_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const REAL8[]);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_3_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_3_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-	
-extern template varargout_2_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_2_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const REAL4[]);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_3_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization coord_tran function with REAL4/float type.
-extern template varargout_3_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-	
-//! Specialization coord_tran function with REAL8/double type.
-extern template varargout_2_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_2_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const REAL8[]);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_3_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization coord_tran function with REAL4/float type.	
-extern template varargout_3_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);
+//! Specialization.
+template struct NodeFunc<REAL4, REAL4>;
+template struct NodeFunc<REAL4, REAL8>;
+template struct NodeFunc<REAL8, REAL4>;
+template struct NodeFunc<REAL8, REAL8>;
+
 }
 #endif

@@ -277,7 +277,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	const int num{10};
 	std::tie(val, shp) = this->solver_.subspace(num);
 	fmt::print("\n");
-	for(int i=0; i<num; i++)fmt::print("No.{}\tFreq.:{}Hz\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>());
+	for(int i=0; i<num; i++)fmt::print("No.{}\tFreq.:{}Hz Error:{}\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>(), val(i, 1));
 	// auto nn = this->solver_.sturm_check(1e30);
 };
 
@@ -329,11 +329,11 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 			dim_vec, nodes_d, 0);
 		auto sz  = it.second.get_matrix_shape();
 		matvar[5] = Mat_VarCreate(fieldnames[5], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
-			sz.data(), const_cast<double*>(it.second.get_stif_ptr()), MAT_F_DONT_COPY_DATA);
+			sz.data(), const_cast<ResultScalar*>(it.second.get_stif_ptr()), MAT_F_DONT_COPY_DATA);
 		matvar[6] = Mat_VarCreate(fieldnames[6], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
-			sz.data(), const_cast<double*>(it.second.get_mass_ptr()), MAT_F_DONT_COPY_DATA);
+			sz.data(), const_cast<ResultScalar*>(it.second.get_mass_ptr()), MAT_F_DONT_COPY_DATA);
 		matvar[7] = Mat_VarCreate(fieldnames[7], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
-			sz.data(), const_cast<double*>(it.second.get_tran_ptr()), MAT_F_DONT_COPY_DATA);
+			sz.data(), const_cast<ResultScalar*>(it.second.get_tran_ptr()), MAT_F_DONT_COPY_DATA);
 		for(size_t i=0; i<nfields; i++){
 			Mat_VarSetStructFieldByName(elem_list, fieldnames[i], num, matvar[i]);
 		}

@@ -14,16 +14,17 @@ using Eigen::VectorXd;
 
 namespace cafea
 {
-namespace additional_elem_lib
-{
 namespace
 {
 template <class T>
 using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>>;
 }
+/**
+ *  \brief Mass.
+ */
 template <class T, class U>
-varargout<U> mass21(const NodeBase<T> *p, const Material<T> *prop,
-	const Section<T> *sect, const int opt[])
+varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p,
+	const Material<T> *prop, const Section<T> *sect, const int opt[])
 {
 	matrix_<U> stif = matrix_<U>::Zero(6, 6);
 	matrix_<U> mass = matrix_<U>::Zero(6, 6);
@@ -37,9 +38,13 @@ varargout<U> mass21(const NodeBase<T> *p, const Material<T> *prop,
 	return make_tuple(stif, mass, tran, rhs);
 }
 
+/**
+ *  \brief Spring.
+ */
 template <class T, class U>
-varargout<U> combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const Material<T> *prop, const Section<T> *sect, const int opt[])
+varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
+	const NodeBase<T> *p2, const Material<T> *prop, const Section<T> *sect,
+	const int opt[])
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
@@ -48,7 +53,7 @@ varargout<U> combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	
 	U l;
 	matrix_<U> tt = matrix_<U>::Zero(3, 3);
-	tie(l, tt) = coord_tran<T, U>(p1, p2);
+	tie(l, tt) = NodeFunc<T, U>::coord_tran(p1, p2);
 	
 	if(opt[1]==0){
 		for(size_t i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
@@ -96,28 +101,5 @@ varargout<U> combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	}
 		
 	return make_tuple(stif, mass, loc2gbl, rhs);
-}
-
-template varargout<REAL8> mass21<REAL4, REAL8>(const NodeBase<REAL4>*,
-	const Material<REAL4>*, const Section<REAL4>*, const int[]);
-template varargout<REAL8> mass21<REAL8, REAL8>(const NodeBase<REAL8>*,
-	const Material<REAL8>*, const Section<REAL8>*, const int[]);
-template varargout<REAL4> mass21<REAL4, REAL4>(const NodeBase<REAL4>*,
-	const Material<REAL4>*, const Section<REAL4>*, const int[]);
-template varargout<REAL4> mass21<REAL8, REAL4>(const NodeBase<REAL8>*,
-	const Material<REAL8>*, const Section<REAL8>*, const int[]);	
-	
-template varargout<REAL8> combin14<REAL4, REAL8>(const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const Material<REAL4>*, const Section<REAL4>*,
-	const int[]);
-template varargout<REAL8> combin14<REAL8, REAL8>(const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const Material<REAL8>*, const Section<REAL8>*,
-	const int[]);
-template varargout<REAL4> combin14<REAL4, REAL4>(const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const Material<REAL4>*, const Section<REAL4>*,
-	const int[]);
-template varargout<REAL4> combin14<REAL8, REAL4>(const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const Material<REAL8>*, const Section<REAL8>*,
-	const int[]);
 }
 }

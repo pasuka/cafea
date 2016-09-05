@@ -11,7 +11,8 @@ namespace cafea
  *  \param [in] p2 End node. 
  */
 template <class T, class U>
-varargout_2_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2)
+varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1,
+	const NodeBase<T> *p2)
 {
 	matrix_<U> tran = matrix_<U>::Zero(3, 3);
 	vec3_<T> vxx, vxy, vyy, vzz;
@@ -43,7 +44,8 @@ varargout_2_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2)
  *  \brief Coordinate transform for 2-node beam with up-axis.
  */
 template <class T, class U>
-varargout_2_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const T up[])
+varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1,
+	const NodeBase<T> *p2, const T up[])
 {
 	matrix_<U> tran = matrix_<U>::Zero(3, 3);
 	vec3_<T> vxx, vyy, vzz, vxy;
@@ -77,7 +79,8 @@ varargout_2_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const T
  *  \brief Coordinate transform for 3-node triangle element.
  */
 template <class T, class U>
-varargout_3_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const NodeBase<T> *p3)
+varargout_3_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1,
+	const NodeBase<T> *p2, const NodeBase<T> *p3)
 {
 	
 	matrix_<U> tran = matrix_<U>::Zero(3, 3);
@@ -124,8 +127,8 @@ varargout_3_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const N
  *  \brief Coordinate transform for 4-node quadrangle element.
  */
 template <class T, class U>
-varargout_3_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const NodeBase<T> *p3, const NodeBase<T> *p4) 
+varargout_3_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1,
+	const NodeBase<T> *p2, const NodeBase<T> *p3, const NodeBase<T> *p4) 
 {
 	matrix_<U> tran = matrix_<U>::Zero(3, 3); 
 	matrix_<U> xy = matrix_<U>::Zero(4, 2);
@@ -180,59 +183,4 @@ varargout_3_<U> coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2,
 
 	return make_tuple(area, xy, tran);
 }
-//! Specialization with REAL4/float type.
-template varargout_2_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization with REAL4/float type.	
-template varargout_2_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const REAL4[]);
-//! Specialization with REAL4/float type.
-template varargout_3_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization with REAL4/float type.
-template varargout_3_<REAL8> coord_tran<REAL4, REAL8>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-
-	//! Specialization with REAL4/float type.
-template varargout_2_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization with REAL4/float type.	
-template varargout_2_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const REAL4[]);
-//! Specialization with REAL4/float type.
-template varargout_3_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-//! Specialization with REAL4/float type.
-template varargout_3_<REAL4> coord_tran<REAL4, REAL4>(
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*);
-
-//! Specialization with REAL8/double type.
-template varargout_2_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization with REAL8/double type.
-template varargout_2_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const REAL8[]);
-//! Specialization with REAL8/double type.
-template varargout_3_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization with REAL8/double type.
-template varargout_3_<REAL8> coord_tran<REAL8, REAL8>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-	
-//! Specialization with REAL8/double type.
-template varargout_2_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization with REAL8/double type.
-template varargout_2_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const REAL8[]);
-//! Specialization with REAL8/double type.
-template varargout_3_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const NodeBase<REAL8>*);
-//! Specialization with REAL8/double type.
-template varargout_3_<REAL4> coord_tran<REAL8, REAL4>(
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*);	
 }

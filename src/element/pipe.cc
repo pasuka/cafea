@@ -16,8 +16,6 @@ using Eigen::Vector3d;
 
 namespace cafea
 {
-namespace pipe_elem_lib
-{
 namespace
 {
 template <class T>
@@ -34,8 +32,8 @@ using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>>;
  *  \details Details
  */
 template <class T, class U>
-varargout<U> pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const Material<T> *prop, const Section<T> *sect)
+varargout<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1,
+	const NodeBase<T> *p2, const Material<T> *prop, const Section<T> *sect)
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
@@ -58,31 +56,16 @@ varargout<U> pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	
 	decltype(Ro) Le;
 	matrix_<U> tt = matrix_<U>::Zero(3, 3);
-	tie(Le, tt) = coord_tran<T, U>(p1, p2);
+	tie(Le, tt) = NodeFunc<T, U>::coord_tran(p1, p2);
 	
 	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
 	for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
-	
-	const decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*Le;
-	
+	// Axial.
 	stif(0, 0) = stif(6, 6) = ES/Le;
 	stif(6, 0) = stif(0, 6) = -stif(0, 0);
-	
+	// Torque. 
 	stif(3, 3) = stif(9, 9) = GJx/Le;
 	stif(9, 3) = stif(3, 9) = -stif(3, 3);
-	
-	int LUMP_MASS = 0;
-	if(LUMP_MASS>0){
-		mass(0, 0) = mass(6, 6) = Me/2.;
-		mass(3, 3) = mass(9, 9) = prop->get_material_prop(MaterialProp::DENS)*Jxx*Le/2.;
-	}
-	else{
-		mass(0, 0) = mass(6, 6) = Me/3.;
-		mass(0, 6) = mass(6, 0) = mass(0, 0)/2.;
-	
-		mass(3, 3) = mass(9, 9) = prop->get_material_prop(MaterialProp::DENS)*Jxx*Le/3.;
-		mass(3, 9) = mass(9, 3) = mass(3, 3)/2.;
-	}
 	
 	// ANSYS set 2
 	// frame3dd set .54414+2.97294*Ri/Ro-1.51899*Ri*Ri/Ro/Ro
@@ -94,84 +77,72 @@ varargout<U> pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	const decltype(Ro) EIz = prop->get_material_prop(MaterialProp::YOUNG)*Izz;
 	const decltype(Ro) EIy = prop->get_material_prop(MaterialProp::YOUNG)*Iyy;
 	
-	stif(1, 1) = stif(7, 7) = 12.*EIy/(Le*Le*Le*(1.+Ksy));
-	stif(5, 5) = stif(11, 11) = (4.+Ksy)*EIy/(Le*(1.+Ksy));
-	stif(5, 1) = stif(1, 5) = 6.*EIy/(Le*Le*(1.+Ksy));
-	stif(11, 5) = stif(5, 11) = (2.-Ksy)*EIy/(Le*(1.+Ksy));
-	stif(11, 7) = stif(7, 11) = stif(7, 5) = stif(5, 7) = -stif(5, 1);
-	stif(11, 1) = stif(1, 11) = stif(5, 1);
-	stif(7, 1) = stif(1, 7) = -stif(1, 1);
+	// Bending.
+	stif( 1, 1) = stif( 7,  7) = 12.*EIy/(Le*Le*Le*(1.+Ksy));
+	stif( 5, 5) = stif(11, 11) = (4.+Ksy)*EIy/(Le*(1.+Ksy));
+	stif( 5, 1) = stif( 1,  5) = 6.*EIy/(Le*Le*(1.+Ksy));
+	stif(11, 5) = stif( 5, 11) = (2.-Ksy)*EIy/(Le*(1.+Ksy));
+	stif(11, 7) = stif( 7, 11) = stif(7, 5) = stif(5, 7) = -stif(5, 1);
+	stif(11, 1) = stif( 1, 11) = stif(5, 1);
+	stif( 7, 1) = stif( 1,  7) = -stif(1, 1);
+	// Bending.
+	stif( 2, 2) = stif( 8,  8) = 12.*EIz/(Le*Le*Le*(1.+Ksz));
+	stif( 4, 4) = stif(10, 10) = (4.+Ksz)*EIz/(Le*(1.+Ksz));
+	stif( 4, 2) = stif( 2,  4) = -6.*EIz/(Le*Le*(1.+Ksz));
+	stif(10, 4) = stif( 4, 10) = (2.-Ksz)*EIz/(Le*(1.+Ksz));
+	stif(10, 8) = stif( 8, 10) = stif(8, 4) = stif(4, 8) = -stif(4, 2);
+	stif(10, 2) = stif( 2, 10) = stif(4, 2);
+	stif( 8, 2) = stif( 2,  8) = -stif(2, 2);
 	
-	stif(2, 2) = stif(8, 8) = 12.*EIz/(Le*Le*Le*(1.+Ksz));
-	stif(4, 4) = stif(10, 10) = (4.+Ksz)*EIz/(Le*(1.+Ksz));
-	stif(4, 2) = stif(2, 4) = -6.*EIz/(Le*Le*(1.+Ksz));
-	stif(10, 4) = stif(4, 10) = (2.-Ksz)*EIz/(Le*(1.+Ksz));
-	stif(10, 8) = stif(8, 10) = stif(8, 4) = stif(4, 8) = -stif(4, 2);
-	stif(10, 2) = stif(2, 10) = stif(4, 2);
-	stif(8, 2) = stif(2, 8) = -stif(2, 2);
-	
-	// {
-		// double t{Me/pow(1.+Ksz, 2.)}, rz{prop.param[0]*Izz/pow(1.+Ksz, 2.)};
-		// mass(1, 1) = mass(7, 7) = t*(13./35.+7.*Ksz/10.+Ksz*Ksz/3.) + 6.*rz/(5.*Le);
-		// mass(5, 5) = mass(11, 11) = t*Le*Le*(1./105.+Ksz/60.+Ksz*Ksz/120.) + rz*(2.*Le/15.+Le*Ksy/6.+Le*Ksy*Ksy/3.);
-		// mass(5, 1) = mass(1, 5) = t*(11.*Le/210.+11.*Le*Ksz/120.+Le*Ksz*Ksz/24.)+rz*(1./10.-Ksz/2.);
-		// mass(5, 7) = mass(7, 5) = t*(13.*Le/420.+3.*Le*Ksz/40.+Le*Ksz*Ksz/24.)+rz*(-1./10.+Ksz/2.);
-		// mass(11, 7) = mass(7, 11) = t*(11.*Le/210.-11.*Le*Ksz/120.-Le*Ksz*Ksz/24.)+rz*(-1./10.+Ksz/2.);
-		// mass(1, 11) = mass(11, 1) = t*(-13.*Le/420.-3.*Le*Ksz/40.-Le*Ksz*Ksz/24.)+rz*(1./10.-Ksz/2.);
-		
-		// mass(1, 7) = mass(7, 1) = t*(9./70.+3./10.*Ksz+Ksz*Ksz/6.)-rz*6./(5.*Le);
-		// mass(11, 5) = mass(5, 11) = t*(-Le*Le/140.-Le*Le*Ksz/60.-Le*Le*Ksz*Ksz/120.)+rz*(-Le/30.-Le*Ksz/6.+Le*Ksz*Ksz/6.);
-	// }
-	
-	// {
-		// double t{Me/pow(1.+Ksy, 2.)}, ry{prop.param[0]*Iyy/pow(1.+Ksy, 2.)};
-		// mass(2, 2) = mass(8, 8) = t*(13./35.+7.*Ksy/10.+Ksy*Ksy/3.) + 6.*ry/(5.*Le);
-		// mass(4, 4) = mass(10, 10) = t*Le*Le*(1./105.+Ksy/60.+Ksy*Ksy/120.) + ry*(2.*Le/15.+Le*Ksy/6.+Le*Ksy*Ksy/3.);
-		// mass(4, 2) = mass(2, 4) = -t*(11.*Le/210.+11.*Le*Ksy/120.+Le*Ksy*Ksy/24.)-ry*(1./10.-Ksy/2.);
-		// mass(4, 8) = mass(8, 4) = -t*(13.*Le/420.+3.*Le*Ksy/40.+Le*Ksy*Ksy/24.)-ry*(-1./10.+Ksy/2.);
-		// mass(2, 10) = mass(10, 2) = -t*(-13.*Le/420.-3.*Le*Ksy/40.-Le*Ksy*Ksy/24.)-ry*(1./10.-Ksy/2.);
-		// mass(10, 8) = mass(8, 10) = -t*(11.*Le/210.-11.*Le*Ksy/120.-Le*Ksy*Ksy/24.)-ry*(-1./10.+Ksy/2.);
-		// mass(2, 8) = mass(8, 2) = t*(9./70.+3./10.*Ksy+Ksy*Ksy/6.)-ry*6./(5.*Le);
-		// mass(10, 4) = mass(4, 10) = t*(-Le*Le/140.-Le*Le*Ksy/60.-Le*Le*Ksy*Ksy/120.)+ry*(-Le/30.-Le*Ksy/6.+Le*Ksy*Ksy/6.);
-	// }
-	const decltype(Ro) t = Me;
+	const decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*Le;
+	const decltype(Ro) Je = prop->get_material_prop(MaterialProp::DENS)*Jxx*Le;
 	const decltype(Ro) rz = prop->get_material_prop(MaterialProp::DENS)*Izz;
 	const decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
 	
-	if(LUMP_MASS>0){
-		mass(1, 1) = mass(7, 7) = mass(2, 2) = mass(8, 8) = t/2.;
-		mass(5, 5) = mass(11, 11) = rz/2.;
+	// Lumped Mass.
+/* 		mass(0, 0) = mass(6, 6) = Me/2.;
+		mass(1, 1) = mass(7, 7) = mass(2, 2) = mass(8, 8) = Me/2.;
+		mass(3, 3) = mass(9, 9) = Je/2.;
 		mass(4, 4) = mass(10, 10) = ry/2.;
-	}
-	else{
-		mass(1, 1) = mass(7, 7) = 13.*t/35. + 6.*rz/(5.*Le);
-		mass(5, 5) = mass(11, 11) = t*Le*Le/105. + 2.*Le*rz/15.;
-		mass(11, 5) = mass(5, 11) = -Le*Le*t/140. - rz*Le/30.;
-		mass(5, 1) = mass(1, 5) = 11.*t*Le/210. + rz/10.;
-		mass(7, 5) = mass(5, 7) = 13.*t*Le/420. - rz/10.;
-		mass(7, 1) = mass(1, 7) = 9.*t/70. - 6.*rz/(5.*Le);
-		
-		mass(11, 7) = mass(7, 11) = -mass(5, 1);
-		mass(11, 1) = mass(1, 11) = -mass(5, 7);
-		
-		mass(2, 2) = mass(8, 8) = 13.*t/35. + 6.*ry/(5.*Le);
-		mass(4, 4) = mass(10, 10) = t*Le*Le/105. + 2.*Le*ry/15.;
-		mass(10, 4) = mass(4, 10) = -Le*Le*t/140. - ry*Le/30.;
-		mass(4, 2) = mass(2, 4) = -11.*t*Le/210. - ry/10.;
-		mass(8, 4) = mass(4, 8) = -13.*t*Le/420. + ry/10.;
-		mass(8, 2) = mass(2, 8) =  9.*t/70. - 6.*ry/(5.*Le);
-		
-		mass(10, 2) = mass(2, 10) =  -mass(4, 8);
-		mass(10, 8) = mass(8, 10) =  -mass(4, 2);
-	}
+		mass(5, 5) = mass(11, 11) = rz/2.;
+ */
+	mass( 0, 0) = mass( 6,  6) = Me/3.;
+	mass( 0, 6) = mass( 6,  0) = mass(0, 0)/2.;
+	
+	mass( 3, 3) = mass( 9,  9) = Je/3.;
+	mass( 3, 9) = mass( 9,  3) = mass(3, 3)/2.;
+	
+	mass( 1, 1) = mass( 7,  7) = 13.*Me/35. + 6.*rz/(5.*Le);
+	mass( 5, 5) = mass(11, 11) = Me*Le*Le/105. + 2.*Le*rz/15.;
+	mass(11, 5) = mass( 5, 11) = -Me*Le*Le/140. - rz*Le/30.;
+	mass( 5, 1) = mass( 1,  5) = 11.*Me*Le/210. + rz/10.;
+	mass( 7, 5) = mass( 5,  7) = 13.*Me*Le/420. - rz/10.;
+	mass( 7, 1) = mass( 1,  7) = 9.*Me/70. - 6.*rz/(5.*Le);
+	
+	mass(11, 7) = mass( 7, 11) = -mass(5, 1);
+	mass(11, 1) = mass( 1, 11) = -mass(5, 7);
+	
+	mass( 2, 2) = mass( 8,  8) = 13.*Me/35. + 6.*ry/(5.*Le);
+	mass( 4, 4) = mass(10, 10) = Me*Le*Le/105. + 2.*Le*ry/15.;
+	mass(10, 4) = mass( 4, 10) = -Me*Le*Le/140. - ry*Le/30.;
+	mass( 4, 2) = mass( 2,  4) = -11.*Me*Le/210. - ry/10.;
+	mass( 8, 4) = mass( 4,  8) = -13.*Me*Le/420. + ry/10.;
+	mass( 8, 2) = mass( 2,  8) = 9.*Me/70. - 6.*ry/(5.*Le);
+	
+	mass(10, 2) = mass( 2, 10) = -mass(4, 8);
+	mass(10, 8) = mass( 8, 10) = -mass(4, 2);
+	
+	rhs(0) = PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
+	rhs(6) = -rhs(0);
 	return make_tuple(stif, mass, loc2gbl, rhs);
 }
 /**
  *  
  */
 template <class T, class U>
-varargout<U> pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const NodeBase<T> *cen, const Material<T> *prop, const Section<T> *sect)
+varargout<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1,
+	const NodeBase<T> *p2, const NodeBase<T> *cen, const Material<T> *prop,
+	const Section<T> *sect)
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
@@ -285,28 +256,5 @@ varargout<U> pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	mass = t2.transpose()*mass*t2;
 	
 	return make_tuple(stif, mass, loc2gbl, rhs);
-}
-//! Specialization.
-template varargout<REAL8> pipe16<REAL4, REAL8>(const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const Material<REAL4>*, const Section<REAL4>*);
-template varargout<REAL8> pipe16<REAL8, REAL8>(const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const Material<REAL8>*, const Section<REAL8>*);
-template varargout<REAL4> pipe16<REAL4, REAL4>(const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const Material<REAL4>*, const Section<REAL4>*);
-template varargout<REAL4> pipe16<REAL8, REAL4>(const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const Material<REAL8>*, const Section<REAL8>*);
-	
-template varargout<REAL8> pipe18<REAL4, REAL8>(const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const Material<REAL4>*,
-	const Section<REAL4>*);
-template varargout<REAL8> pipe18<REAL8, REAL8>(const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const Material<REAL8>*,
-	const Section<REAL8>*);
-template varargout<REAL4> pipe18<REAL4, REAL4>(const NodeBase<REAL4>*,
-	const NodeBase<REAL4>*, const NodeBase<REAL4>*, const Material<REAL4>*,
-	const Section<REAL4>*);
-template varargout<REAL4> pipe18<REAL8, REAL4>(const NodeBase<REAL8>*,
-	const NodeBase<REAL8>*, const NodeBase<REAL8>*, const Material<REAL8>*,
-	const Section<REAL8>*);
 }
 }
