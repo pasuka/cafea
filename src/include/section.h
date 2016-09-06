@@ -72,7 +72,7 @@ class Section: public ObjectBase {
 			for(int i=0; i<n; i++)param_[i] = val[i];
 		};
 		//! Destructor.
-		~Section(){};
+		~Section() override {};
 		//! Get type of section.
 		SectionType get_sect_type() const {return sect_;};
 		//! Set type of section.

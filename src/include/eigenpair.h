@@ -11,7 +11,7 @@ template <class T=double, class Solver=Eigen::SimplicialLDLT<Eigen::SparseMatrix
 class LinearSolver {
 	public:
 	//! Destructor.
-	~LinearSolver() {clear();};
+	virtual ~LinearSolver() {clear();};
 	//! Load K.
 	void load(const T*, const SparseCell*, size_t, size_t);
 	//! Analyze pattern.
@@ -44,7 +44,7 @@ template <class T=double, class Solver=Eigen::SimplicialLDLT<Eigen::SparseMatrix
 class EigenSolver: public LinearSolver<T, Solver> {
 	public:
 		//! Destructor.
-		~EigenSolver() {clear();};
+		~EigenSolver() override {clear();};
 		//! Load K M matrix.
 		void load(const T*, const T*, const SparseCell*, size_t, size_t);
 		//! Clear variables.

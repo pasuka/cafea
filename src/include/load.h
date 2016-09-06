@@ -40,7 +40,7 @@ class Load: public ObjectBase {
 			}
 		};
 		//! A destructor.
-		~Load(){val_.clear(); range_.clear();};
+		~Load() override {val_.clear(); range_.clear();};
 	private:
 		LoadType lt_;//!< Load type.
 		LoadDomain ld_;//!< Load domain.

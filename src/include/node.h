@@ -147,7 +147,7 @@ class NodeBase: public ObjectBase {
 			for(auto &it: val2)angle_(j++) = it;
 		};
 		//! Destructor.
-		virtual ~NodeBase(){};
+		~NodeBase() override {};
 		//! Get coordinate system.
 		CoordinateSystem get_csys() const {return csys_;};
 		//! Set coordinate system.
@@ -256,7 +256,7 @@ class Node: public NodeBase<Scalar> {
 		//! Default constructor.
 		Node(){};
 		//! Destructor.
-		~Node()
+		~Node() override
 		{
 			disp_.resize(0, 0);
 			vel_.resize(0, 0);

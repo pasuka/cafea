@@ -59,7 +59,7 @@ class Material: public ObjectBase {
 			std::copy(val2.begin(), val2.end(), param2_.begin());
 		};
 		//! Destructor.
-		~Material(){};
+		~Material() override {};
 		//! Get type of material.
 		MaterialType get_material_type() const {return mtype_;};
 		//! Set type of material.

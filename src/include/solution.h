@@ -31,6 +31,8 @@ class SolutionBase {
 		virtual void init()=0;
 		//! Clear model data.
 		virtual void clear()=0;
+		//! Destructor.
+		virtual ~SolutionBase() {fmt::print("Destructor of solution base.\n");};
 		//! Load input file.
 		virtual void load(const char* fn) {fmt::print("Load file:{}\n", fn);};
 		//! Load input file.
@@ -66,7 +68,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! default constructor.
 		SolutionStatic(){};
 		//! Destructor.
-		~SolutionStatic() {init();};
+		~SolutionStatic() override {init();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear model data.
@@ -110,7 +112,7 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! Default constructor.
 		SolutionModal(){};
 		//! Destructor.
-		~SolutionModal(){init();};
+		~SolutionModal() override {init();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.

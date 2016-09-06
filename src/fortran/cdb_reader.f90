@@ -1,11 +1,8 @@
 module ansys
 !> Experimental module to read ANSYS cdb format files.
 !! Notice: Only support limited keywords.
-use, intrinsic:: iso_fortran_env
-use, intrinsic:: iso_c_binding
+use header
 implicit none
-integer, parameter:: MAX_NODES_PER_ELEM=27!> Set max. number of nodes in a elements.
-integer, parameter:: LEN_ARRAY=16!> Set length of array.
 !> Struct of node.
 type, bind(c):: node_base
 integer(c_int):: id=-1
@@ -63,7 +60,7 @@ contains
 	if(allocated(model_matl))deallocate(model_matl)
 	if(allocated(model_real))deallocate(model_real)
 	end subroutine
-	
+
 	subroutine cdb_reader(fn, is_keep)
 	!> @fn Read cdb files.
 	!! @param fn file path of cdb file.
@@ -87,7 +84,7 @@ contains
         write(*, line_fmt)trim(fn), fid_stat
         return
     else
-#if(PRINT_ON==1)    
+#if(PRINT_ON==1)
     	write(*, '(1x, "Begin read file: ", a)')trim(fn)
 #endif
     endif
@@ -101,46 +98,46 @@ contains
         if(line(1:6)=='NUMOFF')then
         	if(line(8:11)=='NODE')then
         		read(line(13:), *)num_node
-#if(PRINT_ON==1)        		
+#if(PRINT_ON==1)
         		write(*, '(1x, "Max. id of nodes:", i6)')num_node
-#endif        		
+#endif
         	elseif(line(8:11)=='ELEM')then
         		read(line(13:), *)num_elem
-#if(PRINT_ON==1)        		
+#if(PRINT_ON==1)
         		write(*, '(1x, "Max. id of elements:", i6)')num_elem
-#endif        		
+#endif
         	elseif(line(8:11)=='TYPE')then
         		read(line(13:), *)num_etype
-#if(PRINT_ON==1)        		
+#if(PRINT_ON==1)
         		write(*, '(1x, "Max. id of element types:", i3)')num_etype
-#endif        		
+#endif
         		if(allocated(tmp_etype))deallocate(tmp_etype)
 	        	allocate(tmp_etype(num_etype, LEN_ARRAY+1))
     	    	tmp_etype(:, 1) = -1
     	    	tmp_etype(:, 2:) = 0
         	elseif(line(8:11)=='REAL')then
         		read(line(13:), *)num_real
-#if(PRINT_ON==1)        		
+#if(PRINT_ON==1)
         		write(*, *)'Max. id of real constants:', num_real
-#endif        		
+#endif
         	elseif(line(8:11)=='CSYS')then
         		read(line(13:), *)num_csys
-#if(PRINT_ON==1)        		
+#if(PRINT_ON==1)
         		write(*, *)'Number of coordinate systems:', num_csys
-#endif        		
+#endif
         	elseif(line(8:11)=='LINE')then
         	elseif(line(8:11)=='AREA')then
         	elseif(line(8:11)=='VOLU')then
         	elseif(line(8:11)=='SECN')then
         		read(line(13:), *)num_secn
-#if(PRINT_ON==1)        		
+#if(PRINT_ON==1)
         		write(*, *)'Number of sections:', num_secn
-#endif        		
+#endif
         	elseif(line(8:11)=='MAT ')then
         		read(line(13:), *)num_mat
-#if(PRINT_ON==1)        		
+#if(PRINT_ON==1)
         		write(*, *)'Max. id of materials:', num_mat
-#endif        		
+#endif
         		allocate(model_matl(num_mat))
         		do i = 1, num_mat
         			model_matl(i)%id = i
@@ -175,9 +172,9 @@ contains
         		write(*, '(1x, "Real constants not match.", i3, "vs", i3)')tmp(2), num_real
         	endif
         	num_real = tmp(1)
-#if(PRINT_ON==1)        	
+#if(PRINT_ON==1)
         	write(*, '(1x, "Number of real constants:", i4)')num_real
-#endif        	
+#endif
         	if(allocated(model_real))deallocate(model_real)
         	allocate(model_real(num_real))
         	read(fid, '(A)')line_fmt
@@ -197,9 +194,9 @@ contains
             	exit
             else
             	num_node = k
-#if(PRINT_ON==1)            	
+#if(PRINT_ON==1)
             	write(*, '(1x, "Number of nodes:", i6)')num_node
-#endif            	
+#endif
             endif
             allocate(model_node(num_node))
             read(fid, '(a)')line_fmt
@@ -208,9 +205,9 @@ contains
                 read(fid, trim(line_fmt))node_id, j, j, r_xyz(1:6)
                 model_node(i)%id = node_id
                 model_node(i)%csys = csys
-                model_node(i)%xyz = r_xyz(1:3)               
-                if(r_xyz(4).ne.0E0.or.r_xyz(5).ne.0E0.or.r_xyz(6).ne.0E0)then            	
-	                model_node(i)%rot = r_xyz(4:6)           	
+                model_node(i)%xyz = r_xyz(1:3)
+                if(r_xyz(4).ne.0E0.or.r_xyz(5).ne.0E0.or.r_xyz(6).ne.0E0)then
+	                model_node(i)%rot = r_xyz(4:6)
 	            endif
             end do
         elseif(line(1:6)=='EBLOCK')then
@@ -220,13 +217,13 @@ contains
 	        	write(*, '(1x, "Number of elements not match:", i6, "vs", i6)')k, num_elem
 	        else
 	        	num_elem = k
-#if(PRINT_ON==1)	        	
+#if(PRINT_ON==1)
 	        	write(*, '(1x, "Number of elements:", i6)')num_elem
-#endif	        	
+#endif
 	        endif
 	        allocate(model_elem(num_elem))
 	        read(fid, '(A)')line_fmt
-	        if(keyword=='SOLID')then	        
+	        if(keyword=='SOLID')then
 	        	do j = 1, num_elem
 	        		read(fid, trim(line_fmt))tmp(:ii)
 	        		model_elem(j)%id = tmp(11)
@@ -242,7 +239,7 @@ contains
 	        				read(fid, *)tmp(i+1:i+tmp(99)-8)
 	        			endif
 	        			model_elem(j)%node_list(1:tmp(99)) = tmp(12:11+tmp(99))
-	        		endif	        		
+	        		endif
 	        	enddo
 	        else
 	        endif
@@ -326,7 +323,7 @@ contains
     enddo
     close(fid)
     deallocate(tmp_etype)
-    
+
 #if(PRINT_ON==1)
 	if(allocated(model_node))then
 		if(num_node>99)write(*, '(1x, a)')'Print first 99 of nodes.'
@@ -351,12 +348,12 @@ contains
 			end associate
 		enddo
 	endif
-#endif    
+#endif
 #if(PRINT_ON>1)
    	open(newunit=fid, file='test_nml.txt')
    	group_flag(1:2) = [allocated(model_node), allocated(model_elem)]
    	group_flag(3:4) = [allocated(model_matl), allocated(model_real)]
-#if(PRINT_ON==2)   	
+#if(PRINT_ON==2)
    	if(group_flag(1))write(fid, nml=group_node)
 #elif(PRINT_ON==3)
 	if(group_flag(2))write(fid, nml=group_elem)
@@ -370,21 +367,21 @@ contains
 #endif
 	close(fid)
 #endif
-	! Clear variables.    
+	! Clear variables.
 	if(present(is_keep))then
 		if(.not.is_keep)call model_init()
 	endif
-#if(PRINT_ON==1)	
-	write(*, '(1x, "Finish read file.")')	
-#endif	
+#if(PRINT_ON==1)
+	write(*, '(1x, "Finish read file.")')
+#endif
 	end subroutine
-	
+
 	subroutine test_multiple_file() bind(c, name='test_multi_f')
 	!> @fn Test read multiple cdb files.
 	implicit none
 	integer:: i, fid_stat
 	character(len=256):: fn
-	
+
 	do
 		read(input_unit, '(A)', iostat=fid_stat)fn
 		if(fid_stat==iostat_end)exit
@@ -393,7 +390,7 @@ contains
 			call cdb_reader(fn)
 		endif
 	enddo
-	
+
 	return
 	end subroutine
 
@@ -404,7 +401,7 @@ contains
 	implicit none
 	character(c_char), intent(in):: fn(*)
 	integer(c_int), intent(in), value:: str_len
-	
+
 	character(len=256):: fname
 	integer:: i
 	do i = 1, str_len
@@ -413,7 +410,7 @@ contains
 	call cdb_reader(fname(:str_len))
 	return
 	end subroutine
-	
+
 	subroutine get_model_data(m_node, m_elem, m_matl, m_real, n1, n2, n3, n4) bind(c, name='model_data_ptr')
 	!> @fn Get cdb file data from Fortran.
 	!! @param [out] m_node pointer of node array.
@@ -427,7 +424,7 @@ contains
 	implicit none
 	integer(c_int), intent(out):: n1, n2, n3, n4
 	type(c_ptr), intent(out)::m_node, m_elem, m_matl, m_real
-	
+
 	n1 = -1
 	n2 = -1
 	n3 = -1
@@ -454,7 +451,7 @@ contains
 	endif
 	return
 	end subroutine
-	
+
 	integer function get_num_by_type(et)
 	!> Get number of nodes by element type.
 	!! @param [in] et element type.
