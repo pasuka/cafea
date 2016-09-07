@@ -26,18 +26,64 @@ struct elem_f {
 	int etype_{0};
 	int prop_[2]={0, 0};
 	int opt_[LEN_ARRAY_]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	int node_list_[MAX_NODES_PER_ELEM_]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+	int node_list_[MAX_NODES_PER_ELEM_]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 };
 
 struct matl_f {
 	int id_{-1};
 	int sect_{0};
-	REAL4 val_[LEN_ARRAY_]={0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0,0E0};
+	REAL4 val_[LEN_ARRAY_]{0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0,
+		0E0, 0E0, 0E0, 0E0, 0E0, 0E0};
 };
 void load_cdb_file(const char*, int);
 void model_data_clean();
-void model_data_ptr(node_f**, elem_f**, matl_f**, matl_f**, int*, int*, int*, int*);
+void model_data_ptr(node_f**, elem_f**, matl_f**, matl_f**, int*, int*, int*,
+	int*);
 void test_multi_f();
+
+//! Definition for BCY format file.
+struct node_bcy {
+	int id_{-1};
+	int csys_{0};
+	REAL4 xyz_[3]{0E0, 0E0, 0E0};
+	REAL4 rot_[3]{1.81E2, 1.81E2, 1.81E2};
+};
+struct elem_bcy {
+	int id_{-1};
+	int etype_{-1};
+	int mtype_{-1};
+	int stype_{-1};
+	int node_list_[MAX_NODES_PER_ELEM_]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+};
+struct matl_bcy {
+	int id_{-1};
+	REAL4 val_[LEN_ARRAY_]={0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0,
+		0E0, 0E0, 0E0, 0E0, 0E0, 0E0}; 
+};
+struct sect_bcy {
+	int id_{-1};
+	REAL4 val_[LEN_ARRAY_]={0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0,
+		0E0, 0E0, 0E0, 0E0, 0E0, 0E0};
+};
+struct bndy_bcy {
+	int id_{-1};
+	int bc_type_{-1};
+	REAL4 val_[LEN_ARRAY_]={0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0,
+		0E0, 0E0, 0E0, 0E0, 0E0, 0E0};
+};
+struct load_bcy {
+	int id_{-1};
+	int load_type_{-1};
+	REAL4 val_[LEN_ARRAY_]={0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0,
+		0E0, 0E0, 0E0, 0E0, 0E0, 0E0};
+};
+void load_bcy_file(const char*, int);
+void model_data_clean_bcy();
+void model_data_ptr_bcy(node_bcy**, elem_bcy**, matl_bcy**, sect_bcy**,
+	bndy_bcy**, load_bcy**, int*, int*, int*, int*, int*, int*);
+
 #ifdef __cplusplus
 }
 #endif

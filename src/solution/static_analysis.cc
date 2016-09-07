@@ -1,5 +1,7 @@
 #include "cafea.h"
 
+using std::type_index;
+
 namespace cafea
 {
 /**
@@ -26,6 +28,17 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::load(const char* fn)
 {
 	auto flag = (*this).file_parser_.load_model(fn);
 	
+	auto is_cdb = [this](){return type_index(typeid(file_parser_))==type_index(typeid(AnsysCdbReader<float>));};
+	auto is_bcy = [this](){return type_index(typeid(file_parser_))==type_index(typeid(BcyReader<float>));};
+	
+	if(is_cdb()){
+		fmt::print("This is ansys cdb reader.\n");
+	}
+	else if(is_bcy()){
+		fmt::print("This is bcy reader.\n");
+	}
+	else{}
+		
 	wrapper_::node_f *p_node{nullptr};
 	wrapper_::elem_f *p_elem{nullptr};
 	wrapper_::matl_f *p_real{nullptr}, *p_matl{nullptr};

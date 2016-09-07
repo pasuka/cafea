@@ -53,7 +53,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::check()
  *  \brief Load input file.
  *  \param[in] fn file path.
  */
-template <class FileReader, class Scalar, class ResultScalar>
+/* template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 {
 	auto flag = (*this).file_parser_.load_model(fn);
@@ -154,7 +154,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::load(const char* fn)
 		}
 	}
 	(*this).file_parser_.clean_model();
-};
+}; */
 
 /**
  *  \brief Analyze pattern.

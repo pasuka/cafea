@@ -28,9 +28,11 @@ SRC += ../src/core/sparse_matrix.o ../src/core/eigensolver.o
 SRC += ../src/base/material.o ../src/base/section.o ../src/base/node.o
 SRC += ../src/base/dof_handler.o
 SRC += ../src/element/element_attr.o ../src/element/pipe.o
-SRC += ../src/element/additional.o ../src/element/element.o 
+SRC += ../src/element/additional.o ../src/element/element.o
+SRC += ../src/solution/static_analysis.o 
 SRC += ../src/solution/modal_analysis.o ../src/io/simple_convert.o
-SRC += ../src/fortran/cdb_reader.o 
+SRC += ../src/fortran/common_reader.o
+SRC += ../src/fortran/cdb_reader.o ../src/fortran/bcy_reader.o
 
 %.o: %.cc
 	$(COMMENT)

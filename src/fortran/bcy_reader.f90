@@ -5,38 +5,38 @@ implicit none
 type, bind(c):: node_bcy
 integer(c_int):: id = -1
 integer(c_int):: csys = 0!> Coordinate system.
-real(c_float):: xyz(3) = 0.0E0!> XYZ values.
-real(c_float):: rot(3) = 0.0E0!> Euler angles.
+real(c_float):: xyz(3) = .0E0!> XYZ values.
+real(c_float):: rot(3) = 1.81E2!> Euler angles.
 end type
 !> Struct of element.
 type, bind(c):: elem_bcy
 integer(c_int):: id = -1
-integer(c_int):: etype!> ID of element type.
-integer(c_int):: mtype!> ID of material type.
-integer(c_int):: stype!> ID of section type.
-integer(c_int):: node_list(MAX_NODES_PER_ELEM)!> List of node id.
+integer(c_int):: etype = -1!> ID of element type.
+integer(c_int):: mtype = -1!> ID of material type.
+integer(c_int):: stype = -1!> ID of section type.
+integer(c_int):: node_list(MAX_NODES_PER_ELEM) = -1!> List of node id.
 end type
 !> Struct of material.
 type, bind(c):: matp_bcy
 integer(c_int):: id = -1
-real(c_float):: val(LEN_ARRAY)
+real(c_float):: val(LEN_ARRAY) = .0E0
 end type
 !> Struct of section.
 type, bind(c):: sect_bcy
 integer(c_int):: id = -1
-real(c_float):: val(LEN_ARRAY)
+real(c_float):: val(LEN_ARRAY) = .0E0
 end type
 !> Struct of boundary.
 type, bind(c):: bndy_bcy
 integer(c_int):: id = -1
-integer(c_int):: bc_type
-real(c_float):: val(LEN_ARRAY)
+integer(c_int):: bc_type = -1
+real(c_float):: val(LEN_ARRAY) = .0E0
 end type
 !> Struct of load.
 type, bind(c):: load_bcy
 integer(c_int):: id = -1
-integer(c_int):: load_type
-real(c_float):: val(LEN_ARRAY)
+integer(c_int):: load_type = -1
+real(c_float):: val(LEN_ARRAY) = .0E0
 end type
 ! Global variables.
 type(node_bcy), target, allocatable:: model_node(:)
@@ -66,9 +66,16 @@ contains
 	character(len=*), intent(in):: fn
 	logical, intent(in), optional:: is_keep
     ! Internal variables.
-	character(len=256):: line, line_fmt, line_fmt2
+	character(len=256):: line, line_data, line_fmt, line_fmt2
 	character(len=5):: keyword
-    integer:: fid, fid_stat, i, j, k,
+    integer:: fid, fid_stat, i, j, k
+    integer:: num_node, max_node, csys
+    integer:: num_elem, max_elem
+    integer:: num_matl, max_matl
+    integer:: num_sect, max_sect
+    integer:: num_load, max_load
+    integer:: num_bndy, max_bndy
+    real(kind=4):: r1, r2
 
     ! Open cdb file.
     open(newunit=fid, file=trim(fn), status='old', iostat=fid_stat)
@@ -87,8 +94,66 @@ contains
         if(fid_stat==iostat_end)exit
         line = adjustl(trim(line))
         if(line(1:1)=='$')then
+            if(line(2:5)=='END_')then
+                cycle
+            elseif(line(2:5)=='NODE')then
+                read(fid, *)num_node, max_node, csys, k
+                allocate(model_node(num_node))
+                do i = 1, num_node
+                    model_node(i)%csys = csys
+                    read(fid, *)model_node(i)%id, model_node(i)%xyz(1:3), model_node(i)%rot(1:3)
+                enddo
+            elseif(line(2:5)=='ELEM')then
+                read(fid, *)num_elem, max_elem
+                allocate(model_elem(num_elem))
+                do i = 1, num_elem
+                    associate(p=>model_elem(i))
+                    read(fid, *)p%id, p%etype, p%mtype, p%stype, j, p%node_list(1:j)
+                    end associate
+                enddo
+            elseif(line(2:5)=='MATL')then
+                read(fid, *)num_matl, max_matl
+                allocate(model_matl(num_matl))
+                do i = 1, num_matl
+                    read(fid, *)model_matl(i)%id, j, model_matl(i)%val(1:j)
+                enddo
+            elseif(line(2:5)=='SECT')then
+                read(fid, *)num_sect, max_sect
+                allocate(model_sect(num_sect))
+                do i = 1, num_sect
+                    read(fid, *)model_sect(i)%id, j, model_sect(i)%val(1:j)
+                enddo
+            elseif(line(2:5)=='LOAD')then
+                read(fid, *)num_load, max_load
+                if(num_load<1)then
+                    cycle
+                else
+                    allocate(model_load(num_load))
+                    do i = 1, num_load
+                        associate(p=>model_load(i))
+                        read(fid, *)p%id, p%load_type, j, p%val(1:j)
+                        end associate
+                    enddo
+                endif
+            elseif(line(2:5)=='BNDY')then
+                read(fid, *)num_bndy, max_bndy
+                if(num_bndy<1)then
+                    cycle
+                else
+                    allocate(model_bndy(num_bndy))
+                    do i = 1, num_bndy
+                        associate(p=>model_bndy(i))
+                        read(fid, *)p%id, p%bc_type, j, p%val(1:j)
+                        end associate
+                    enddo
+                endif
+            else
+            endif
         elseif(line(1:1)=='!')then
+            write(*, '("This is a comment line.")')
+            cycle
         else
+            write(*, '("Unsupported keyword:", A)')line(1:1)
         endif
     enddo
     close(fid)
@@ -100,7 +165,7 @@ contains
     return
     end subroutine
 
-    subroutine test_single_file(fn, str_len) bind(c, name='load_file_bcy')
+    subroutine load_single_file(fn, str_len) bind(c, name='load_bcy_file')
 	!> @fn Read single bcy file of C wrapper.
 	!! @param [in] fn bcy file path.
 	!! @param [in] str_len length of string.
@@ -167,7 +232,7 @@ contains
 
     if(allocated(model_sect))then
 		n4 = size(model_sect)
-		m_real = c_loc(model_sect(1))
+		m_sect = c_loc(model_sect(1))
 	endif
 
     if(allocated(model_bndy))then

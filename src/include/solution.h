@@ -6,6 +6,8 @@
 #include <array>
 #include <vector>
 #include <ostream>
+#include <typeinfo>
+#include <typeindex>
 
 #include <Eigen/Eigen>
 #include "fmt/format.h"
@@ -107,7 +109,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
  *  Solution of modal analysis.	
  */
 template <class FileReader, class Scalar=float, class ResultScalar=double>
-class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar> {
+class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 	public:
 		//! Default constructor.
 		SolutionModal(){};
@@ -118,9 +120,9 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! Clear variables.
 		void clear() override {init();};
 		//! Load input file.
-		void load(const char* file_name) override;
+		// void load(const char* file_name);
 		//! Load input file.
-		void load(std::string fn) {load(fn.c_str());};
+		// void load(std::string fn) {load(fn.c_str());};
 		//! Check input model data.
 		void check() override;
 		//! Analyze pattern.
@@ -141,17 +143,17 @@ class SolutionModal: public SolutionBase <FileReader, Scalar, ResultScalar> {
 			return cout << "This is solution of modal analysis.\n";
 		};
 	protected:
-		FileReader file_parser_;//!< Input file loader.
-		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
-		dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
-		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary dictionary.
+		// FileReader file_parser_;//!< Input file loader.
+		// dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
+		// dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
+		// std::vector<Boundary<Scalar>> bc_group_;//!< Boundary dictionary.
 		
-		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
+		// SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
 		
-		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
-		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
+		// dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
+		// dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
 		
 		EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
 };
@@ -204,6 +206,8 @@ class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		
 };*/
 //! Specialization with float type.
+template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL8>;
+template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL4>;
 template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL8>;
 template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL4>;
 }
