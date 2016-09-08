@@ -87,30 +87,26 @@ void model_data_ptr_bcy(node_bcy**, elem_bcy**, matl_bcy**, sect_bcy**,
 #ifdef __cplusplus
 }
 #endif
+template <class Scalar=float, class ResultScalar=double>
+struct AdapterF2Cpp{
+	static Node<Scalar, ResultScalar> bcy2node(const node_bcy*);
+	static Element<ResultScalar> bcy2elem(const elem_bcy*);
+	static Material<Scalar> bcy2matl(const matl_bcy*);
+	static Section<Scalar> bcy2sect(const sect_bcy*);
+	static Boundary<Scalar> bcy2bndy(const bndy_bcy*);
+	static Load<Scalar> bcy2load(const load_bcy*);
+	
+	static Node<Scalar, ResultScalar> cdb2node(const node_f*);
+	static Element<ResultScalar> cdb2elem(const elem_f*);
+	static Material<Scalar> cdb2matl(const matl_f*);
+	static Section<Scalar> cdb2sect(const matl_f*);
+};
 
-template <class Scalar, class ResultScalar>
-Node<Scalar, ResultScalar> convert2node(const node_f*);
-template < class ResultScalar>
-Element<ResultScalar> convert2elem(const elem_f*);
-template <class Scalar>
-Material<Scalar> convert2matl(const matl_f*);
-template <class Scalar>
-Section<Scalar> convert2sect(const matl_f*);
-
-//! Specialization
-extern template Node<REAL4, REAL8> convert2node(const node_f*);
-extern template Node<REAL4, REAL4> convert2node(const node_f*);
-extern template Node<REAL8, REAL4> convert2node(const node_f*);
-extern template Node<REAL8, REAL8> convert2node(const node_f*);
-
-extern template Element<REAL8> convert2elem(const elem_f*);
-extern template Element<REAL4> convert2elem(const elem_f*);
-
-extern template Material<REAL8> convert2matl(const matl_f*);
-extern template Material<REAL4> convert2matl(const matl_f*);
-
-extern template Section<REAL4> convert2sect(const matl_f*);
-extern template Section<REAL8> convert2sect(const matl_f*);
+//! Specialization.
+template struct AdapterF2Cpp<REAL4, REAL4>;
+template struct AdapterF2Cpp<REAL4, REAL8>;
+template struct AdapterF2Cpp<REAL8, REAL8>;
+template struct AdapterF2Cpp<REAL8, REAL4>;
 }
 }
 #endif

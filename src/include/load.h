@@ -14,11 +14,11 @@ namespace cafea
 /**
  *  Load definition.
  */
-template <class T=float, class U=float>
+template <class T=float>
 class Load: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;// Inherit Base's constructors.
-		Load(){};
+		Load()=delete;
 		/**
 		 *  \brief Constructor with id load type.
 		 *  \param [in] id load's id.
@@ -30,7 +30,7 @@ class Load: public ObjectBase {
 		 *  \param [in] n length of load array.
 		 */
 		Load(int id, LoadType lt, LoadDomain ld, DofLabel df, const T val[],
-			const U range[], int n):lt_(lt), ld_(ld), df_(df),
+			const T range[], int n):lt_(lt), ld_(ld), df_(df),
 			ObjectBase{id, fmt::format("Load#{0}", id)}
 		{
 			assert(n>0);
@@ -46,7 +46,7 @@ class Load: public ObjectBase {
 		LoadDomain ld_;//!< Load domain.
 		DofLabel df_;//!< Dof label.
 		std::vector<T> val_;//!< Load value vector.
-		std::vector<U> range_;//!< Load range vector.
+		std::vector<T> range_;//!< Load range vector.
 };
 }
 #endif

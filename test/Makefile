@@ -88,6 +88,16 @@ test_modal: $(SRC) ./solution_modal_test.o
 	@echo -ne "\033[35m"Run test"\033[0m\n"
 	$(COMMENT)
 	./test_modal
+
+test_static: $(SRC) ./solution_static_test.o
+	$(COMMENT)
+	@echo -ne "\033[33m"Test: Solution Case"\033[0m\n"
+	$(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_static
+	$(COMMENT)
+	@echo -ne "\033[35m"Run test"\033[0m\n"
+	$(COMMENT)
+	./test_static
 	
 matio_lib:
 	@echo "MATIO Library"

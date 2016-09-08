@@ -92,7 +92,7 @@ class BcyReader{
 		std::function<void(wrapper_::node_bcy**, wrapper_::elem_bcy**,
 			wrapper_::matl_bcy**, wrapper_::sect_bcy**, wrapper_::bndy_bcy**,
 			wrapper_::load_bcy**, int*, int*, int*, int*, int*,
-			int*)> get_data_ptr_bcy = std::bind(wrapper_::model_data_ptr_bcy,
+			int*)> get_data_ptr = std::bind(wrapper_::model_data_ptr_bcy,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
 			std::placeholders::_4, std::placeholders::_5, std::placeholders::_6,
 			std::placeholders::_7, std::placeholders::_8, std::placeholders::_9,

@@ -100,7 +100,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
 		
 		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary list.
-		std::vector<Load<Scalar, Scalar>> load_group_;//!< Load list.
+		std::vector<Load<Scalar>> load_group_;//!< Load list.
 		
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 };
@@ -210,5 +210,10 @@ template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL8>;
 template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL4>;
 template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL8>;
 template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL4>;
+
+template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL8>;
+template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL4>;
+template class SolutionModal<BcyReader<REAL4>, REAL4, REAL8>;
+template class SolutionModal<BcyReader<REAL4>, REAL4, REAL4>;
 }
 #endif

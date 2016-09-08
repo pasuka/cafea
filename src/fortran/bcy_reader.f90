@@ -101,7 +101,11 @@ contains
                 allocate(model_node(num_node))
                 do i = 1, num_node
                     model_node(i)%csys = csys
-                    read(fid, *)model_node(i)%id, model_node(i)%xyz(1:3), model_node(i)%rot(1:3)
+                    if(k==6)then
+                        read(fid, *)model_node(i)%id, model_node(i)%xyz(1:3), model_node(i)%rot(1:3)
+                    else
+                        read(fid, *)model_node(i)%id, model_node(i)%xyz(1:3)
+                    endif
                 enddo
             elseif(line(2:5)=='ELEM')then
                 read(fid, *)num_elem, max_elem
