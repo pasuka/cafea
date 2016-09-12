@@ -8,7 +8,23 @@ using Eigen::Triplet;
 namespace cafea
 {
 /**
- *  \brief Load data to sparese matrix.
+ *  \brief Load data to sparse matrix.
+ */
+template <class T, class U>
+void LinearSolver<T, U>::load(const T *stif, const SparseCell *xy, size_t nnz, size_t dim)
+{
+	this->clear();
+	std::vector<Triplet<T>> triList(nnz);
+	
+	this->matA_.resize(dim, dim);
+	this->matA_.reserve(nnz);
+	for(int i=0; i<nnz; i++)triList.push_back(Triplet<T>(xy[i].row, xy[i].col, stif[i]));
+	this->matA_.setFromTriplets(triList.begin(), triList.end());
+	triList.clear();
+};
+
+/**
+ *  \brief Load data to sparse matrix.
  *  \param[in] stif pointer of stiffness matrix.
  *  \param[in] mass pointer of mass matrix.
  *  \param[in] xy row and cloumn of global matrix.

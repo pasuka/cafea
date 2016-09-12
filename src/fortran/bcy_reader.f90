@@ -19,11 +19,13 @@ end type
 !> Struct of material.
 type, bind(c):: matp_bcy
 integer(c_int):: id = -1
+integer(c_int):: mt_type = -1
 real(c_float):: val(LEN_ARRAY) = .0E0
 end type
 !> Struct of section.
 type, bind(c):: sect_bcy
 integer(c_int):: id = -1
+integer(c_int):: st_type = -1
 real(c_float):: val(LEN_ARRAY) = .0E0
 end type
 !> Struct of boundary.
@@ -119,13 +121,17 @@ contains
                 read(fid, *)num_matl, max_matl
                 allocate(model_matl(num_matl))
                 do i = 1, num_matl
-                    read(fid, *)model_matl(i)%id, j, model_matl(i)%val(1:j)
+                    associate(p=>model_matl(i))
+                    read(fid, *)p%id, p%mt_type, j, p%val(1:j)
+                    end associate
                 enddo
             elseif(line(2:5)=='SECT')then
                 read(fid, *)num_sect, max_sect
                 allocate(model_sect(num_sect))
                 do i = 1, num_sect
-                    read(fid, *)model_sect(i)%id, j, model_sect(i)%val(1:j)
+                    associate(p=>model_sect(i))
+                    read(fid, *)p%id, p%st_type, j, p%val(1:j)
+                    end associate
                 enddo
             elseif(line(2:5)=='LOAD')then
                 read(fid, *)num_load, max_load

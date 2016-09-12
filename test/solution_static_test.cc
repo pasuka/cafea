@@ -17,7 +17,10 @@ TEST_CASE("Internal Pressure", "[Solution Static]")
 {
 	std::unique_ptr<SolutionBase<BcyReader<float>>> example(new SolutionSimple);
 	
-	example->clear();
+	example->init();
 	example->load("./bcy_data/nrc_ex02.bcy");
+	example->analyze();
+	example->assembly();
+	example->solve();
 }
 }

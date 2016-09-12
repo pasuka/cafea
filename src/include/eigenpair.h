@@ -7,34 +7,56 @@
 
 namespace cafea
 {
+/**
+ *  \brief Linear solver for static solution.
+ */
 template <class T=double, class Solver=Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>>>
-class LinearSolver {
+class LinearSolver{
 	public:
-	//! Destructor.
-	virtual ~LinearSolver() {clear();};
-	//! Load K.
-	void load(const T*, const SparseCell*, size_t, size_t);
-	//! Analyze pattern.
-	void analyze() {solver_.analyzePattern(matA_);};
-	//! Factorize matirx K.
-	void factorize() {solver_.factorize(matA_);};
-	//! Analyze and factorize.
-	void analyze_factorize() {analyze(); factorize();};
-	//! Solve.
-	vecX_<T> solve(const T*, size_t);
-	//! Clear variables.
-	virtual void clear()
-	{
-		matA_.resize(0, 0);
-		matA_.setZero();
-		matA_.data().squeeze();
-		xx_.resize(0);
-		bb_.resize(0);
-	};
+		//! Destructor.
+		virtual ~LinearSolver() {clear();};
+		//! Load K.
+		void load(const T*, const SparseCell*, size_t, size_t);
+		//! Analyze pattern.
+		void analyze() {solver_.analyzePattern(matA_); isAnalyzed_ = true;};
+		//! Factorize matirx K.
+		void factorize()
+		{
+			if(!isAnalyzed_)analyze();
+			solver_.factorize(matA_);
+			isFactorized_ = true;
+		};
+		//! Analyze and factorize.
+		void analyze_factorize()
+		{
+			if(!isAnalyzed_)analyze();
+			if(!isFactorized_)factorize();
+		};
+		//! Solve.
+		vecX_<T> solve(const T* rhs, size_t n)
+		{
+			analyze_factorize();
+			bb_.resize(n);
+			bb_.setZero();
+			for(int i=0; i<n; i++)bb_(i) = rhs[i];
+			xx_ = solver_.solve(bb_);
+			return xx_;
+		};
+		//! Clear variables.
+		virtual void clear()
+		{
+			matA_.resize(0, 0);
+			matA_.setZero();
+			matA_.data().squeeze();
+			xx_.resize(0);
+			bb_.resize(0);
+			isAnalyzed_ = isFactorized_ = false;
+		};
 	protected:
 		Eigen::SparseMatrix<T> matA_;//!< Global stiffness matrix.
 		vecX_<T> xx_, bb_;//!< Result and RHS vector.
 		Solver solver_;//!< Solver of sparse matrix.
+		bool isAnalyzed_{false}, isFactorized_{false};
 };
 
 /**
@@ -44,7 +66,7 @@ template <class T=double, class Solver=Eigen::SimplicialLDLT<Eigen::SparseMatrix
 class EigenSolver: public LinearSolver<T, Solver> {
 	public:
 		//! Destructor.
-		~EigenSolver() override {clear();};
+		~EigenSolver() {clear();};
 		//! Load K M matrix.
 		void load(const T*, const T*, const SparseCell*, size_t, size_t);
 		//! Clear variables.

@@ -8,7 +8,7 @@ namespace cafea
  *  \brief Clear member variables.
  */
 template <class FileReader, class Scalar, class ResultScalar>
-void SolutionStatic<FileReader, Scalar, ResultScalar>::init()
+void SolutionStatic<FileReader, Scalar, ResultScalar>::clear()
 {
 	if(!this->node_group_.empty())this->node_group_.clear();
 	if(!this->elem_group_.empty())this->elem_group_.clear();
@@ -17,6 +17,17 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::init()
 	if(!this->load_group_.empty())this->load_group_.clear();
 	if(!this->bc_group_.empty())this->bc_group_.clear();
 	this->mat_pair_.clear();
+	if(this->solver_)this->solver_.reset(nullptr);
+};
+/**
+ *  \brief Initliazation member variables.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionStatic<FileReader, Scalar, ResultScalar>::init()
+{
+	this->clear();
+	std::unique_ptr<LinearSolver<ResultScalar>> p(new LinearSolver<ResultScalar>);
+	this->solver_ = std::move(p);
 };
 /**
  *  \brief Load input file.
@@ -143,7 +154,7 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::load(const char* fn)
 			assert(a2>0);
 			assert(a3>0);
 			assert(a4>0);
-			/* for(int i=0; i<a1; i++, p_node++){
+			for(int i=0; i<a1; i++, p_node++){
 				auto got = this->node_group_.find(p_node->id_);
 				if(got==this->node_group_.end()){
 					this->node_group_[p_node->id_] = f2cpp.bcy2node(p_node);
@@ -151,7 +162,40 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::load(const char* fn)
 				else{
 					fmt::print("Duplicated node id:{}\n", p_node->id_);
 				}
-			} */
+			}
+			for(int i=0; i<a2; i++, p_elem++){
+				auto got = this->elem_group_.find(p_elem->id_);
+				if(got==this->elem_group_.end()){
+					this->elem_group_[p_elem->id_] = f2cpp.bcy2elem(p_elem);
+				}
+				else{
+					fmt::print("Duplicated element id:{}\n", p_elem->id_);
+				}
+			}
+			for(int i=0; i<a3; i++, p_matl++){
+				auto got = this->matl_group_.find(p_matl->id_);
+				if(got==this->matl_group_.end()){
+					this->matl_group_[p_matl->id_] = f2cpp.bcy2matl(p_matl);
+				}
+				else{
+					fmt::print("Duplicated material id:{}\n", p_matl->id_);
+				}
+			}
+			for(int i=0; i<a4; i++, p_sect++){
+				auto got = this->sect_group_.find(p_sect->id_);
+				if(got==this->sect_group_.end()){
+					this->sect_group_[p_sect->id_] = f2cpp.bcy2sect(p_sect);
+				}
+				else{
+					fmt::print("Duplicated section id:{}\n", p_sect->id_);
+				}
+			}
+			if(a5>0){
+				for(int i=0; i<a5; i++)this->bc_group_.push_back(f2cpp.bcy2bndy(p_bndy++));
+			}
+			if(a6>0){
+				for(int i=0; i<a6; i++)this->load_group_.push_back(f2cpp.bcy2load(p_load++));
+			}
 		}
 	}
 	(*this).file_parser_.clean_model();	
@@ -276,7 +320,7 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 		auto p_rhs = p_elem.get_rhs();
 		p_stif = p_tran.transpose()*p_stif*p_tran;
 		p_mass = p_tran.transpose()*p_mass*p_tran;
-		p_rhs = p_rhs*p_tran;
+		p_rhs = p_tran.transpose()*p_rhs;
 		auto nn = p_elem.get_active_num_of_node();
 		auto ndof = p_elem.get_dofs_per_node();
 		for(size_t ia=0; ia<nn; ia++){
@@ -305,7 +349,14 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionStatic<FileReader, Scalar, ResultScalar>::solve()
 {
+	this->solver_->load(
+		this->mat_pair_.get_stif_ptr(),
+		this->mat_pair_.get_coord_ptr(),
+		this->mat_pair_.get_nnz(),
+		this->mat_pair_.get_dim());
 	
+	auto x = this->solver_->solve(this->mat_pair_.get_rhs_ptr(), this->mat_pair_.get_dim());
+	std::cout << x;
 };
 
 /**

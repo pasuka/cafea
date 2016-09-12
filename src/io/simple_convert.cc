@@ -152,11 +152,19 @@ Section<T> AdapterF2Cpp<T, U>::bcy2sect(const sect_bcy *p)
  *  \brief Convert Boundary from Fortran/C to C++.
  */
 template <class T, class U>
-Boundary<T> AdapterF2Cpp<T, U>::bcy2bndy(const bndy_bcy *p){};
+Boundary<T> AdapterF2Cpp<T, U>::bcy2bndy(const bndy_bcy *p)
+{
+	Boundary<T> bc(p->id_, BoundaryType::FIXED, DofLabel::ALL);
+	return bc;
+};
 /**
  *  \brief Convert Load from Fortran/C to C++.
  */
 template <class T, class U>
-Load<T> AdapterF2Cpp<T, U>::bcy2load(const load_bcy *p){};
+Load<T> AdapterF2Cpp<T, U>::bcy2load(const load_bcy *p)
+{
+	/*Load<T> ld(p->id_,);
+	return ld;*/
+};
 }
 }

@@ -8,6 +8,16 @@ namespace cafea
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::init()
 {
+	this->clear();
+	std::unique_ptr<EigenSolver<ResultScalar>> p(new EigenSolver<ResultScalar>);
+	this->solver_ = std::move(p);
+};
+/**
+ *  \brief Clear member variables.
+ */
+template <class FileReader, class Scalar, class ResultScalar>
+void SolutionModal<FileReader, Scalar, ResultScalar>::clear()
+{
 	if(!this->node_group_.empty())this->node_group_.clear();
 	if(!this->elem_group_.empty())this->elem_group_.clear();
 	if(!this->matl_group_.empty())this->matl_group_.clear();
@@ -16,6 +26,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::init()
 	this->mat_pair_.clear();
 	(*this).mode_shape_.resize(0, 0);
 	(*this).natural_freq_.resize(0, 0);
+	if(this->solver_)this->solver_.reset(nullptr);
 };
 /**
  *  \brief Get model info.
@@ -267,7 +278,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 {
-	this->solver_.load(this->mat_pair_.get_stif_ptr(),
+	this->solver_->load(this->mat_pair_.get_stif_ptr(),
 		this->mat_pair_.get_mass_ptr(), this->mat_pair_.get_coord_ptr(),
 		this->mat_pair_.get_nnz(), this->mat_pair_.get_dim());
 	// ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
@@ -275,7 +286,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	// this->solver_.subspace(fspan[0], fspan[1]);
 	matrix_<ResultScalar> val, shp;
 	const int num{10};
-	std::tie(val, shp) = this->solver_.subspace(num);
+	std::tie(val, shp) = this->solver_->subspace(num, sqrt(EPS<ResultScalar>()), -1.0);
 	fmt::print("\n");
 	for(int i=0; i<num; i++)fmt::print("No.{}\tFreq.:{}Hz Error:{}\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>(), val(i, 1));
 	// auto nn = this->solver_.sturm_check(1e30);

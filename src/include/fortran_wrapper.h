@@ -59,11 +59,13 @@ struct elem_bcy {
 };
 struct matl_bcy {
 	int id_{-1};
+	int tp_{-1};
 	REAL4 val_[LEN_ARRAY_]={0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0,
 		0E0, 0E0, 0E0, 0E0, 0E0, 0E0}; 
 };
 struct sect_bcy {
 	int id_{-1};
+	int tp_{-1};
 	REAL4 val_[LEN_ARRAY_]={0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0, 0E0,
 		0E0, 0E0, 0E0, 0E0, 0E0, 0E0};
 };

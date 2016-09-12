@@ -70,11 +70,11 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! default constructor.
 		SolutionStatic(){};
 		//! Destructor.
-		~SolutionStatic() override {init();};
+		~SolutionStatic() override {clear();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear model data.
-		void clear() override {init();};
+		void clear() override;
 		//! Load input file.
 		void load(const char* fn) override;
 		//! Check input model data.
@@ -103,6 +103,8 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		std::vector<Load<Scalar>> load_group_;//!< Load list.
 		
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
+		
+		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};
 };
  
 /**
@@ -114,11 +116,11 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		//! Default constructor.
 		SolutionModal(){};
 		//! Destructor.
-		~SolutionModal() override {init();};
+		~SolutionModal() override {clear();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.
-		void clear() override {init();};
+		void clear() override;
 		//! Load input file.
 		// void load(const char* file_name);
 		//! Load input file.
@@ -155,7 +157,8 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		// dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
 		// dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
 		
-		EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
+		// EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
+		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};
 };
 
 
