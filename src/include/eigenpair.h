@@ -33,14 +33,13 @@ class LinearSolver{
 			if(!isFactorized_)factorize();
 		};
 		//! Solve.
-		vecX_<T> solve(const T* rhs, size_t n)
+		bool solve(const T* rhs, size_t n)
 		{
 			analyze_factorize();
-			bb_.resize(n);
-			bb_.setZero();
-			for(int i=0; i<n; i++)bb_(i) = rhs[i];
-			xx_ = solver_.solve(bb_);
-			return xx_;
+			vecX_<T> bb = vecX_<T>::Zero(n);
+			for(int i=0; i<n; i++)bb(i) = rhs[i];
+			xx_ = solver_.solve(bb);
+			return solver_.info()!=Eigen::ComputationInfo::Success ? false: true;
 		};
 		//! Clear variables.
 		virtual void clear()
@@ -49,14 +48,15 @@ class LinearSolver{
 			matA_.setZero();
 			matA_.data().squeeze();
 			xx_.resize(0);
-			bb_.resize(0);
 			isAnalyzed_ = isFactorized_ = false;
 		};
+		//! Get result.
+		vecX_<T> get_X() const {return xx_;};
 	protected:
 		Eigen::SparseMatrix<T> matA_;//!< Global stiffness matrix.
-		vecX_<T> xx_, bb_;//!< Result and RHS vector.
+		vecX_<T> xx_;//!< Result vector.
 		Solver solver_;//!< Solver of sparse matrix.
-		bool isAnalyzed_{false}, isFactorized_{false};
+		bool isAnalyzed_{false}, isFactorized_{false};//!< Flag of solver status.
 };
 
 /**
@@ -82,6 +82,7 @@ class EigenSolver: public LinearSolver<T, Solver> {
 			
 			X_.resize(0, 0);
 			lambda_.resize(0, 0);
+			isSolved_ = false;
 		};
 		//! Subspace iteration method in eigenpair number.
 		std::tuple<matrix_<T>, matrix_<T>> subspace(int num=1, T tol=sqrt(EPS<T>()), T sigma=T(-1));
@@ -91,9 +92,16 @@ class EigenSolver: public LinearSolver<T, Solver> {
 		size_t sturm_check(T ubound, T lbound=T(0));
 		//! Modify Gram-Schimidt B-orthogonal method.
 		matrix_<T> mgs(matrix_<T> y, const Eigen::SparseMatrix<T> B);
+		//! Get eigenvalues.
+		matrix_<T> get_eigenvalues() const {return lambda_;};
+		//! Get eigenvectors.
+		matrix_<T> get_eigenvectors() const {return X_;};
+		//! Get eigenpairs.
+		std::tuple<matrix_<T>, matrix_<T>> get_eigenpairs() const {return std::make_tuple(lambda_, X_);};
 	private:
 		Eigen::SparseMatrix<T> matB_;//!< Global mass matrix.
 		matrix_<T> X_, lambda_;//!< Eigenvectors and eigenvalues.
+		bool isSolved_{false};//!< Flag of solver status.
 };
 
 //!< Specialization.

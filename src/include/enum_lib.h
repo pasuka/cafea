@@ -125,5 +125,14 @@ enum struct SectionProp {
 	ADDONMASS,//!< Add-on mass.
 	ADDONSPRING,//!< Add-on spring.
 };
+/**
+ *  Enum of solution property.
+ */
+enum struct SolutionType {
+	STATIC,//!< Static analysis.
+	MODAL,//!< Modal analysis.
+	HARMONIC,//!< Harmonic analysis.
+	UNKNOWN,
+};
 }
 #endif

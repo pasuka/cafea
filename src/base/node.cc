@@ -41,4 +41,24 @@ void Node<Scalar, ResultScalar>::dof_accum(int *it, DofType mt)
 {
 	this->dof_mgr_.accum(it, mt);
 }
+/**
+ *  \brief Initialize result variables.
+ */
+/*template <class T, class U>
+void Node<T, U>::init_result(SolutionType sol, int n)
+{
+	if(!this->is_activated())return;
+	auto m = this->dof_mgr_.get_num_dofs();
+	switch(sol){
+	case SolutionType::STATIC:
+		this->disp_ = matrix_<U>::Zero(m, 1);
+	case SolutionType::MODAL:
+		this->disp_ = matrix_<U>::Zero(m, n);
+	case SolutionType::HARMONIC:
+	
+	case SolutionType::UNKNOWN:
+	default:
+		fmt::print("Unsupported solution type definition\n");
+	}
+}*/
 }

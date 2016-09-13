@@ -346,17 +346,34 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 /**
  *  \brief Solve.
  */
-template <class FileReader, class Scalar, class ResultScalar>
-void SolutionStatic<FileReader, Scalar, ResultScalar>::solve()
+template <class FileReader, class T, class U>
+void SolutionStatic<FileReader, T, U>::solve()
 {
 	this->solver_->load(
-		this->mat_pair_.get_stif_ptr(),
-		this->mat_pair_.get_coord_ptr(),
-		this->mat_pair_.get_nnz(),
-		this->mat_pair_.get_dim());
+		this->mat_pair_.get_stif_ptr(), this->mat_pair_.get_coord_ptr(),
+		this->mat_pair_.get_nnz(), this->mat_pair_.get_dim());
 	
-	auto x = this->solver_->solve(this->mat_pair_.get_rhs_ptr(), this->mat_pair_.get_dim());
-	std::cout << x;
+	bool flag = this->solver_->solve(this->mat_pair_.get_rhs_ptr(),
+		this->mat_pair_.get_dim());
+	if(!flag){
+		fmt::print("Solve Failed.\n");
+		return;
+	}
+	else{
+		fmt::print("Solve Success.\n");
+	}
+	auto sol = this->solver_->get_X();
+	for(auto &it: this->node_group_){
+		auto &p_node = it.second;
+		if(p_node.is_activated()){
+			auto va = p_node.dof_list();
+			fmt::print("Dof list:\t");
+			for(auto ij: va)fmt::print("{}\t", ij);
+			fmt::print("\n");
+			vecX_<U> px = vecX_<U>::Zero(va.size());
+			for(int i=0; i<va.size(); i++)px(i) = va[i]<0 ? U(0): sol(va[i]);
+		}
+	}
 };
 
 /**

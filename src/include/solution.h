@@ -70,7 +70,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! default constructor.
 		SolutionStatic(){};
 		//! Destructor.
-		~SolutionStatic() override {clear();};
+		~SolutionStatic() override {fmt::print("Destructor of static analysis.\n"); clear();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear model data.
@@ -104,7 +104,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		
-		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};
+		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
 };
  
 /**
@@ -116,15 +116,11 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		//! Default constructor.
 		SolutionModal(){};
 		//! Destructor.
-		~SolutionModal() override {clear();};
+		~SolutionModal() override {fmt::print("Destructor of modal analysis.\n"); clear();};
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.
 		void clear() override;
-		//! Load input file.
-		// void load(const char* file_name);
-		//! Load input file.
-		// void load(std::string fn) {load(fn.c_str());};
 		//! Check input model data.
 		void check() override;
 		//! Analyze pattern.
@@ -145,20 +141,10 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 			return cout << "This is solution of modal analysis.\n";
 		};
 	protected:
-		// FileReader file_parser_;//!< Input file loader.
-		// dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
-		// dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
-		// std::vector<Boundary<Scalar>> bc_group_;//!< Boundary dictionary.
-		
-		// SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
-		
-		// dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
-		// dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
-		
-		// EigenSolver<ResultScalar> solver_;//!< Generalize Eigenpair solver.
-		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};
+
+		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};//!< Eigenpair solver.
 };
 
 

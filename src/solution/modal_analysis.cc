@@ -285,10 +285,11 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	// fspan[0] = PI<ResultScalar>()*PI<ResultScalar>()*ResultScalar(1e10);
 	// this->solver_.subspace(fspan[0], fspan[1]);
 	matrix_<ResultScalar> val, shp;
-	const int num{10};
-	std::tie(val, shp) = this->solver_->subspace(num, sqrt(EPS<ResultScalar>()), -1.0);
+	ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
+	fspan[0] = pow(PI<ResultScalar>()*ResultScalar(2000), 2.0);
+	std::tie(val, shp) = this->solver_->subspace(fspan[0], fspan[1]);
 	fmt::print("\n");
-	for(int i=0; i<num; i++)fmt::print("No.{}\tFreq.:{}Hz Error:{}\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>(), val(i, 1));
+	for(int i=0; i<val.rows(); i++)fmt::print("No.{}\tFreq.:{}Hz Error:{}\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>(), val(i, 1));
 	// auto nn = this->solver_.sturm_check(1e30);
 };
 

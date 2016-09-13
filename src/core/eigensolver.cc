@@ -92,7 +92,7 @@ matrix_<T> EigenSolver<T, U>::mgs(matrix_<T> X, const Eigen::SparseMatrix<T> B)
 	auto n{X.cols()};
 	matrix_<T> R = matrix_<T>::Zero(n, n);
 	matrix_<T> Y = X;
-	Y.fill(T(0));
+	Y.setZero();
 	for(int i=0; i<n; i++){
 		R(i, i) = sqrt(X.col(i).transpose()*B*X.col(i));
 		Y.col(i) = X.col(i)/R(i,i);
@@ -182,6 +182,7 @@ tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(int nreq, T tol, T sig
 	for(int i=0; i<nreq; i++)this->lambda_(i, 1) = Res.col(i).norm();
 	// Get eigenvectors.
 	this->X_ = y.leftCols(nreq);
+	if(!this->isSolved_)this->isSolved_ = true;
 	return make_tuple(this->lambda_, this->X_);
 };
 }

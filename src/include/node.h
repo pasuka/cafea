@@ -280,7 +280,7 @@ class Node: public NodeBase<Scalar> {
 		//! Activate node.
 		void activate(bool stat=true) {activate_ = stat;};
 		//! Check status of node.
-		bool is_activated() const{return activate_;};
+		bool is_activated() const {return activate_;};
 		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const Node &a)
 		{
@@ -296,7 +296,8 @@ class Node: public NodeBase<Scalar> {
 			cout << a.dof_mgr_;
 			return cout;
 		};
-		
+		//! Initialize result container.
+		bool init_result(SolutionType, int);
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
