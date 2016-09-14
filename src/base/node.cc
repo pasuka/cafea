@@ -9,7 +9,7 @@ namespace cafea
 template <class Scalar, class ResultScalar>
 void Node<Scalar, ResultScalar>::dof_init(ElementType et)
 {
-	auto num = element_attr_::get_dofs_per_node(et);
+	auto num = ElementAttr::get_dofs_per_node(et);
 	this->dof_mgr_.set_num_dofs(num);
 }
 /**

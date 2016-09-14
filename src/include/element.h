@@ -3,6 +3,8 @@
 
 #include <cassert>
 #include <cstddef>
+
+#include <map>
 #include <array>
 #include <tuple>
 #include <vector>
@@ -16,6 +18,7 @@
 #include "node.h"
 #include "material.h"
 #include "section.h"
+#include "element_lib.h"
 
 namespace cafea
 {
@@ -31,6 +34,8 @@ class Element: public ObjectBase {
 		//* Destructor.
 		~Element(){
 			nodes_.clear();
+			global_dofs_.clear();
+			attr_.clear();
 			mass_.resize(0, 0);
 			stif_.resize(0, 0);
 			tran_.resize(0, 0);
@@ -63,8 +68,10 @@ class Element: public ObjectBase {
 		 */
 		Element(int id, int mp, int st):ObjectBase{id, fmt::format("Elem#{0}",
 			id)}, matl_(mp), sect_(st) {assert(sect_>0&&matl_>0);};
+			
 		//! Generate stifness mass matrix of element.
 		void form_matrix(const Node<REAL4, T>[], const Material<REAL4>*, const Section<REAL4>*);
+		
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};
 		//! Get mass matrix.
@@ -88,7 +95,10 @@ class Element: public ObjectBase {
 		U *get_stress_ptr() const {return stress_.data();}; */
 		
 		//! Post process.
-		void post_stress();
+		void post_stress(const vecX_<T>);
+		void post_stress(const vecX_<std::complex<T>>);
+		void post_stress(const matrix_<T>);
+		void post_stress(const matrix_<std::complex<T>>);
 		
 		//! Set node list.
 		void set_node_list(const int a[], int m)
@@ -124,6 +134,8 @@ class Element: public ObjectBase {
 		void set_section_id(int x){sect_ = x;};
 		//! set type of element.
 		void set_element_type(ElementType et){etype_ = et;};
+		//! Set dof index of element.
+		void set_element_dofs(int x) {global_dofs_.push_back(x);};
 		
 		//! Get material id.
 		int get_material_id() const {return matl_;};
@@ -149,6 +161,8 @@ class Element: public ObjectBase {
 		size_t get_active_num_of_node() const;
 		//! Get shape of element matrix.
 		std::array<size_t, 2> get_matrix_shape() const;
+		//! Get global dofs array.
+		std::vector<int> get_element_dofs() const {return global_dofs_;};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
 		{
@@ -188,6 +202,8 @@ class Element: public ObjectBase {
 		int sect_{-1};//!< Section id.
 		std::array<int, 10> keyopt_{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};//!< Parameters of element.
 		std::vector<int> nodes_;//!< Array of node list.
+		std::vector<int> global_dofs_;//!< Array of global dofs.
+		std::map<std::string, T> attr_;//!< Attibute of element parameters.
 		
 		matrix_<T> stif_;//!< Stiffness matrix of element.
 		matrix_<T> mass_;//!< Mass matrix of element.
@@ -203,12 +219,19 @@ class Element: public ObjectBase {
 template class Element<REAL8>;
 template class Element<REAL4>;
 
-namespace element_attr_
+/**
+ *  \brief Attribution of element.
+ */
+struct ElementAttr
 {
-size_t get_dofs_per_node(ElementType);
-size_t get_active_num_of_node(ElementType);
-size_t get_element_order(ElementType);
-size_t get_element_type_id(ElementType);
-}
+	//! Get dofs per node.
+	static size_t get_dofs_per_node(ElementType);
+	//! Get activated number of nodes.
+	static size_t get_active_num_of_node(ElementType);
+	//! Get shape function order.
+	static size_t get_element_order(ElementType);
+	//! Get element type in Ansys rules.
+	static size_t get_element_type_id(ElementType);
+};
 }
 #endif

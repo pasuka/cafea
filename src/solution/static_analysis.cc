@@ -323,12 +323,13 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 		p_rhs = p_tran.transpose()*p_rhs;
 		auto nn = p_elem.get_active_num_of_node();
 		auto ndof = p_elem.get_dofs_per_node();
-		for(size_t ia=0; ia<nn; ia++){
+		for(auto ia=0; ia<nn; ia++){
 			auto va = pt[ia].dof_list();
 			for(auto ja=0; ja<ndof; ja++){
+				p_elem.set_element_dofs(va[ja]);
 				if(va[ja]<0)continue;
 				auto row_ = ia*ndof+ja;
-				for(size_t ib=0; ib<nn; ib++){
+				for(auto ib=0; ib<nn; ib++){
 					auto vb = pt[ib].dof_list();
 					for(auto jb=0; jb<ndof; jb++){
 						if(vb[jb]<0)continue;
@@ -357,32 +358,30 @@ void SolutionStatic<FileReader, T, U>::solve()
 		this->mat_pair_.get_dim());
 	if(!flag){
 		fmt::print("Solve Failed.\n");
-		return;
 	}
 	else{
 		fmt::print("Solve Success.\n");
-	}
-	auto sol = this->solver_->get_X();
-	for(auto &it: this->node_group_){
-		auto &p_node = it.second;
-		if(p_node.is_activated()){
-			auto va = p_node.dof_list();
-			fmt::print("Dof list:\t");
-			for(auto ij: va)fmt::print("{}\t", ij);
-			fmt::print("\n");
-			vecX_<U> px = vecX_<U>::Zero(va.size());
-			for(int i=0; i<va.size(); i++)px(i) = va[i]<0 ? U(0): sol(va[i]);
-		}
 	}
 };
 
 /**
  *  \brief Post-process.
  */
-template <class FileReader, class Scalar, class ResultScalar>
-void SolutionStatic<FileReader, Scalar, ResultScalar>::post_process()
+template <class FileReader, class T, class U>
+void SolutionStatic<FileReader, T, U>::post_process()
 {
-	fmt::print("Empty\n");
+	if(!this->solver_->get_info()){
+		fmt::print("Solve Static Problem is Failed.\n");
+		return;
+	}
+	auto sol = this->solver_->get_X();
+	for(auto &it: this->elem_group_){
+		auto &p_elem = it.second;
+		auto va = p_elem.get_element_dofs();
+		vecX_<U> x = vecX_<U>::Zero(va.size());
+		for(int i=0; i<x.size(); i++)x(i) = va[i]<0 ? U(0): sol(i);
+		p_elem.post_stress(x);
+	}
 };
 
 /**

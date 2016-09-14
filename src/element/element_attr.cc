@@ -2,13 +2,11 @@
 
 namespace cafea
 {
-namespace element_attr_
-{
 /**
  *  \brief Get dofs on each node. 
  *  \return number of dofs on a node.
  */
-size_t get_dofs_per_node(ElementType et)
+size_t ElementAttr::get_dofs_per_node(ElementType et)
 {
 	switch(et){
 	case ElementType::MASS21:
@@ -38,7 +36,7 @@ size_t get_dofs_per_node(ElementType et)
  *  \brief Get number of active node.
  *  \return number of active node.
  */
-size_t get_active_num_of_node(ElementType et)
+size_t ElementAttr::get_active_num_of_node(ElementType et)
 {
 	switch(et){
 	case ElementType::MASS21: return 1;
@@ -68,7 +66,7 @@ size_t get_active_num_of_node(ElementType et)
  *  \brief Get order of element.
  *  \return order of element.
  */
-size_t get_element_order(ElementType et)
+size_t ElementAttr::get_element_order(ElementType et)
 {
 	switch(et){
 	case ElementType::PIPE16:
@@ -98,7 +96,7 @@ size_t get_element_order(ElementType et)
  *  \brief Get id of element type.
  *  \return id of element type.
  */
-size_t get_element_type_id(ElementType et)
+size_t ElementAttr::get_element_type_id(ElementType et)
 {
 	switch(et){
 	case ElementType::PIPE16: return 16;
@@ -123,6 +121,5 @@ size_t get_element_type_id(ElementType et)
 	case ElementType::UNKNOWN:
 	default: return 0;
 	}	
-}
 }
 }

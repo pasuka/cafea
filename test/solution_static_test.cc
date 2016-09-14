@@ -22,5 +22,6 @@ TEST_CASE("Internal Pressure", "[Solution Static]")
 	example->analyze();
 	example->assembly();
 	example->solve();
+	example->post_process();
 }
 }

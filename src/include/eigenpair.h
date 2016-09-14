@@ -39,7 +39,13 @@ class LinearSolver{
 			vecX_<T> bb = vecX_<T>::Zero(n);
 			for(int i=0; i<n; i++)bb(i) = rhs[i];
 			xx_ = solver_.solve(bb);
-			return solver_.info()!=Eigen::ComputationInfo::Success ? false: true;
+			if(solver_.info()!=Eigen::ComputationInfo::Success){
+				isSolved_ = false;
+			}
+			else{
+				isSolved_ = true;
+			}
+			return  isSolved_;
 		};
 		//! Clear variables.
 		virtual void clear()
@@ -48,15 +54,18 @@ class LinearSolver{
 			matA_.setZero();
 			matA_.data().squeeze();
 			xx_.resize(0);
-			isAnalyzed_ = isFactorized_ = false;
+			isAnalyzed_ = isFactorized_ = isSolved_ = false;
 		};
 		//! Get result.
 		vecX_<T> get_X() const {return xx_;};
+		//! Get flag of solver status.
+		bool get_info() const {return isSolved_;};
 	protected:
 		Eigen::SparseMatrix<T> matA_;//!< Global stiffness matrix.
 		vecX_<T> xx_;//!< Result vector.
 		Solver solver_;//!< Solver of sparse matrix.
 		bool isAnalyzed_{false}, isFactorized_{false};//!< Flag of solver status.
+		bool isSolved_{false};//!< Flag of solver status.
 };
 
 /**
@@ -72,9 +81,10 @@ class EigenSolver: public LinearSolver<T, Solver> {
 		//! Clear variables.
 		void clear() override
 		{
-			LinearSolver<T, Solver>::matA_.resize(0, 0);
-			LinearSolver<T, Solver>::matA_.setZero();
-			LinearSolver<T, Solver>::matA_.data().squeeze();
+			// LinearSolver<T, Solver>::matA_.resize(0, 0);
+			// LinearSolver<T, Solver>::matA_.setZero();
+			// LinearSolver<T, Solver>::matA_.data().squeeze();
+			LinearSolver<T, Solver>::clear();
 			
 			matB_.resize(0, 0);
 			matB_.setZero();
@@ -82,7 +92,6 @@ class EigenSolver: public LinearSolver<T, Solver> {
 			
 			X_.resize(0, 0);
 			lambda_.resize(0, 0);
-			isSolved_ = false;
 		};
 		//! Subspace iteration method in eigenpair number.
 		std::tuple<matrix_<T>, matrix_<T>> subspace(int num=1, T tol=sqrt(EPS<T>()), T sigma=T(-1));
@@ -101,7 +110,6 @@ class EigenSolver: public LinearSolver<T, Solver> {
 	private:
 		Eigen::SparseMatrix<T> matB_;//!< Global mass matrix.
 		matrix_<T> X_, lambda_;//!< Eigenvectors and eigenvalues.
-		bool isSolved_{false};//!< Flag of solver status.
 };
 
 //!< Specialization.
