@@ -38,16 +38,16 @@ void Element<T>::form_matrix(const Node<REAL4, T> p[], const Material<REAL4> *ma
 	auto opt = this->get_option();
 	switch(this->etype_){
 	case ElementType::PIPE16:
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = StructuralElement<REAL4, T>::pipe16(&p[0], &p[1], matl, sect);
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_, this->attr_) = StructuralElement<REAL4, T>::pipe16(&p[0], &p[1], matl, sect);
 		break;
 	case ElementType::PIPE18:
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = StructuralElement<REAL4, T>::pipe18(&p[0], &p[1], &p[2], matl, sect);
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_, this->attr_) = StructuralElement<REAL4, T>::pipe18(&p[0], &p[1], &p[2], matl, sect);
 		break;
 	case ElementType::MASS21:
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = StructuralElement<REAL4, T>::mass21(&p[0], matl, sect, opt.data());
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_, this->attr_) = StructuralElement<REAL4, T>::mass21(&p[0], matl, sect, opt.data());
 		break;
 	case ElementType::COMBIN14:
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_) = StructuralElement<REAL4, T>::combin14(&p[0], &p[1], matl, sect, opt.data());
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_, this->attr_) = StructuralElement<REAL4, T>::combin14(&p[0], &p[1], matl, sect, opt.data());
 		break;
 	case ElementType::BEAM188:
 	case ElementType::B31:
@@ -80,8 +80,8 @@ void Element<T>::post_stress(const vecX_<T> x)
 	switch(this->etype_){
 	case ElementType::PIPE16:
 	case ElementType::PIPE18:
-		fmt::print("Not yet finish stress result.\n");
-		
+		// fmt::print("Not yet finish stress result.\n");
+		this->result_ = StructuralElementPost<T>::pipe(this->stif_, this->tran_, x, this->attr_);
 		break;
 	case ElementType::MASS21:
 	case ElementType::COMBIN14:

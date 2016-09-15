@@ -40,8 +40,8 @@ class Element: public ObjectBase {
 			stif_.resize(0, 0);
 			tran_.resize(0, 0);
 			rhs_.resize(0, 0);
-			stress_.resize(0, 0);
-			stress_cmplx_.resize(0, 0);
+			result_.resize(0, 0);
+			result_cmplx_.resize(0, 0);
 		};
 		/**
 		 *  \brief Initialize with element id type material type and node list.
@@ -97,8 +97,8 @@ class Element: public ObjectBase {
 		//! Post process.
 		void post_stress(const vecX_<T>);
 		void post_stress(const vecX_<std::complex<T>>);
-		void post_stress(const matrix_<T>);
-		void post_stress(const matrix_<std::complex<T>>);
+		// void post_stress(const matrix_<T>);
+		// void post_stress(const matrix_<std::complex<T>>);
 		
 		//! Set node list.
 		void set_node_list(const int a[], int m)
@@ -210,8 +210,8 @@ class Element: public ObjectBase {
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		matrix_<T> rhs_;//!< Right-hand side of element.
 		
-		matrix_<T> stress_;//!< Stress of element.
-		matrix_<std::complex<T>> stress_cmplx_;//!< Stress of element in complex.
+		matrix_<T> result_;//!< Result of element.
+		matrix_<std::complex<T>> result_cmplx_;//!< Result of element in complex.
 		
 };
 

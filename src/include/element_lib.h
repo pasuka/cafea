@@ -1,6 +1,10 @@
 #ifndef ELEMENT_LIB_H
 #define ELEMENT_LIB_H
 
+#include <map>
+#include <tuple>
+#include <string>
+
 #include "node.h"
 #include "material.h"
 #include "section.h"
@@ -9,8 +13,12 @@ namespace cafea
 {
 namespace
 {
+using std::map;
+using std::tuple;
+using std::string;
+
 template <class T>
-using varargout_basic = std::tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>>;
+using varargout_basic = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
 }
 
 /**
@@ -39,11 +47,25 @@ struct StructuralElement{
 	static varargout_basic<U> combin14(const NodeBase<T>*, const NodeBase<T>*, 
 		const Material<T>*, const Section<T>*, const int[]);
 };
-
+/**
+ *  \brief Interface for structural element post process.
+ */
+template <class T=double>
+struct StructuralElementPost
+{
+	/**
+	 *  \brief 2-node straight/elbow pipe element post process.
+	 */
+	static matrix_<T> pipe(const matrix_<T>, const matrix_<T>, const matrix_<T>, const map<string, T>);
+	//static matrix_<COMPLEX<T>> pipe(const matrix_<T>, const matrix_<T>, const matrix_<COMPLEX<T>>, const map<string, T>);
+};
 //!< Specialization.
 template struct StructuralElement<REAL4, REAL4>;
 template struct StructuralElement<REAL4, REAL8>;
 template struct StructuralElement<REAL8, REAL4>;
 template struct StructuralElement<REAL8, REAL8>;
+
+template struct StructuralElementPost<REAL4>;
+template struct StructuralElementPost<REAL8>;
 }
 #endif

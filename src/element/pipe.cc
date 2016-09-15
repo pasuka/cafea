@@ -6,9 +6,12 @@
 
 #include "cafea.h"
 
-using std::tuple;
-using std::make_tuple;
 using std::tie;
+using std::map;
+using std::tuple;
+using std::string;
+using std::make_tuple;
+
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using Eigen::Vector3d;
@@ -19,7 +22,7 @@ namespace cafea
 namespace
 {
 template <class T>
-using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>>;
+using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
 }
 /**
  *  \brief Straight Pipe Element No.16
@@ -32,8 +35,9 @@ using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>>;
  *  \details Details
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1,
-	const NodeBase<T> *p2, const Material<T> *prop, const Section<T> *sect)
+varargout<U> StructuralElement<T, U>::pipe16(
+	const NodeBase<T> *p1, const NodeBase<T> *p2,
+	const Material<T> *prop, const Section<T> *sect)
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
@@ -134,15 +138,20 @@ varargout<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1,
 	
 	rhs(0) = PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
 	rhs(6) = -rhs(0);
-	return make_tuple(stif, mass, loc2gbl, rhs);
+	
+	map<string, U> attr{{"Length", Le}, {"Area", Ax}, {"Volume", Ax*Le}, {"Mass", Me}, {"Aw", Ax},
+		{"Thick", Ro-Ri}, {"OutDiameter", U(2)*Ro},  {"Iy", Iyy}, {"Iz", Izz}, {"Jx", Jxx},
+		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
+	
+	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
 /**
  *  
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1,
-	const NodeBase<T> *p2, const NodeBase<T> *cen, const Material<T> *prop,
-	const Section<T> *sect)
+varargout<U> StructuralElement<T, U>::pipe18(
+	const NodeBase<T> *p1, const NodeBase<T> *p2, const NodeBase<T> *cen,
+	const Material<T> *prop, const Section<T> *sect)
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
@@ -255,6 +264,37 @@ varargout<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1,
 	stif = t2.transpose()*stif*t2;
 	mass = t2.transpose()*mass*t2;
 	
-	return make_tuple(stif, mass, loc2gbl, rhs);
+	map<string, U> attr{{"Length", l}, {"Area", Ax}, {"Volume", Ax*l}, {"Mass", Me}, {"Aw", Ax}, 
+		{"Thick", t}, {"OutDiameter", U(2)*Ro}, {"Iy", Iyy}, {"Iz", Iyy}, {"Jx", Jxx},
+		{"CurvatureRadius", R}, {"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
+		
+	return make_tuple(stif, mass, loc2gbl, rhs, attr);
+}
+
+/**
+ *  
+ */
+template <class T>
+matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T> tran,
+	const matrix_<T> x, const map<string, T> attr)
+{
+	fmt::print("This is for pipe post process in real domain.\n");
+	matrix_<T> esol = matrix_<T>::Zero(99, 2);
+	auto tmp = stif*tran*x;
+	for(int i=0; i<6; i++){
+		esol(i, 0) = tmp(i, 0);
+		esol(i, 1) = tmp(i+6, 0);
+		switch(i){
+		case 0:fmt::print("MFORX I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case 1:fmt::print("MFORY I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case 2:fmt::print("MFORZ I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case 3:fmt::print("MMOMX I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case 4:fmt::print("MMOMY I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case 5:
+		default:fmt::print("MMOMZ I:{}\tJ:{}\n", esol(i, 0), esol(i, 1));
+		}
+	}
+	
+	return esol;
 }
 }

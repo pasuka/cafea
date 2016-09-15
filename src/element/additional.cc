@@ -7,6 +7,7 @@
 #include "cafea.h"
 
 using std::tie;
+using std::map;
 using std::tuple;
 using std::make_tuple;
 using Eigen::MatrixXd;
@@ -17,7 +18,7 @@ namespace cafea
 namespace
 {
 template <class T>
-using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>>;
+using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
 }
 /**
  *  \brief Mass.
@@ -30,12 +31,14 @@ varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p,
 	matrix_<U> mass = matrix_<U>::Zero(6, 6);
 	matrix_<U> tran = matrix_<U>::Identity(6, 6);
 	vecX_<U> rhs = vecX_<U>::Zero(6);
+	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)}, 
+		{"Mass", sect->get_sect_prop(SectionProp::ADDONMASS)}};
 	
 	//! Mass on X Y Z direction.
 	//! Notice: mass element do not need transform in most cases.
 	for(size_t i: {0, 1, 2})mass(i, i) = sect->get_sect_prop(SectionProp::ADDONMASS);
 	
-	return make_tuple(stif, mass, tran, rhs);
+	return make_tuple(stif, mass, tran, rhs, attr);
 }
 
 /**
@@ -50,6 +53,7 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
 	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
 	vecX_<U> rhs = vecX_<U>::Zero(12);
+	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},}; 
 	
 	U l;
 	matrix_<U> tt = matrix_<U>::Zero(3, 3);
@@ -100,6 +104,6 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 		stif(m+6, m) = stif(m, m+6) = -stif(m, m);
 	}
 		
-	return make_tuple(stif, mass, loc2gbl, rhs);
+	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
 }
