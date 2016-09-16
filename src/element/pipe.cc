@@ -286,26 +286,18 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	esol.block(0, 0, 6, 1) = tmp.block(0, 0, 6, 1);
 	esol.block(0, 1, 6, 1) = tmp.block(6, 0, 6, 1);
 	
-	T Aw{EPS<T>()}, Pres{T(0)}, PresOut{T(0)}, Dout{T(0)}, Din{T(0)}, Ir{EPS<T>()};
+	auto get_val = [=](auto k){auto p = attr.find(k); return p!=attr.end() ? p->second: EPS<T>();};
 	
-	auto got = attr.find("Aw");
-	if(got!=attr.end())Aw = got->second;
-	
-	got = attr.find("InternalPressure");
-	if(got!=attr.end())Pres = got->second;
-	
-	got = attr.find("OuterDiameter");
-	if(got!=attr.end())Dout = got->second;
-	
-	got = attr.find("InnerDiameter");
-	if(got!=attr.end())Din = got->second;
-	
-	got = attr.find("Iy");
-	if(got!=attr.end())Ir = got->second;
+	auto Aw   = get_val("Aw");
+	auto Pres = get_val("InternalPressure");
+	auto Dout = get_val("OuterDiameter");
+	auto Din  = get_val("InnerDiameter");
+	auto Ir   = get_val("Iy");
 	
 	auto Ro = Dout/T(2); 
 	auto Ri = Din/T(2);
 	auto t = Ro - Ri;
+	auto PresOut = T(0);
 	auto Fe = PI<T>()*(Pres*Ri*Ri-PresOut*Ro*Ro);
 	auto Jx = T(2)*Ir;
 	
