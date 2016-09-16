@@ -140,8 +140,8 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	rhs(6) = -rhs(0);
 	
 	map<string, U> attr{{"Length", Le}, {"Area", Ax}, {"Volume", Ax*Le}, {"Mass", Me}, {"Aw", Ax},
-		{"Thick", Ro-Ri}, {"OutDiameter", U(2)*Ro},  {"Iy", Iyy}, {"Iz", Izz}, {"Jx", Jxx},
-		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
+		{"Thick", Ro-Ri}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
+		{"Iz", Izz}, {"Jx", Jxx}, {"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
@@ -265,8 +265,9 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	mass = t2.transpose()*mass*t2;
 	
 	map<string, U> attr{{"Length", l}, {"Area", Ax}, {"Volume", Ax*l}, {"Mass", Me}, {"Aw", Ax}, 
-		{"Thick", t}, {"OutDiameter", U(2)*Ro}, {"Iy", Iyy}, {"Iz", Iyy}, {"Jx", Jxx},
-		{"CurvatureRadius", R}, {"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
+		{"Thick", t}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
+		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
+		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
 		
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
@@ -281,17 +282,63 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	fmt::print("This is for pipe post process in real domain.\n");
 	matrix_<T> esol = matrix_<T>::Zero(99, 2);
 	auto tmp = stif*tran*x;
-	for(int i=0; i<6; i++){
-		esol(i, 0) = tmp(i, 0);
-		esol(i, 1) = tmp(i+6, 0);
+	// Member force and moment at node I and J.
+	esol.block(0, 0, 6, 1) = tmp.block(0, 0, 6, 1);
+	esol.block(0, 1, 6, 1) = tmp.block(6, 0, 6, 1);
+	
+	T Aw{EPS<T>()}, Pres{T(0)}, PresOut{T(0)}, Dout{T(0)}, Din{T(0)}, Ir{EPS<T>()};
+	
+	auto got = attr.find("Aw");
+	if(got!=attr.end())Aw = got->second;
+	
+	got = attr.find("InternalPressure");
+	if(got!=attr.end())Pres = got->second;
+	
+	got = attr.find("OuterDiameter");
+	if(got!=attr.end())Dout = got->second;
+	
+	got = attr.find("InnerDiameter");
+	if(got!=attr.end())Din = got->second;
+	
+	got = attr.find("Iy");
+	if(got!=attr.end())Ir = got->second;
+	
+	auto Ro = Dout/T(2); 
+	auto Ri = Din/T(2);
+	auto t = Ro - Ri;
+	auto Fe = PI<T>()*(Pres*Ri*Ri-PresOut*Ro*Ro);
+	auto Jx = T(2)*Ir;
+	
+	for(auto i: {0, 1}){
+		// SDIR: Direct stress.
+		esol(6, i) = (esol(0, i) + Fe)/Aw;
+		// SBEND: Bending stress.
+		esol(7, i) = hypot(esol(4, i), esol(5, i))*Ro/Ir;
+		// ST: Torsional shear stress.
+		esol(8, i) = esol(3, i)*Ro*Jx;
+		// SH: hoop pressure stress at the outside surface of the pipe.
+		esol(9, i) = (T(2)*Pres*Din*Din - PresOut*(Dout*Dout + Din*Din))/(Dout*Dout - Din*Din);
+		// SSF: lateral force shear stress.
+		esol(10, i) = T(2)*hypot(esol(1, i), esol(2, i))/Aw;
+		// SAXL: axial stress on outside surface.
+		// SXH: hoop stress on outside surface.
+	}
+	for(int i=0; i<11; i++){
+		// esol(i, 0) = tmp(i, 0);
+		// esol(i, 1) = tmp(i+6, 0);
 		switch(i){
-		case 0:fmt::print("MFORX I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
-		case 1:fmt::print("MFORY I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
-		case 2:fmt::print("MFORZ I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
-		case 3:fmt::print("MMOMX I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
-		case 4:fmt::print("MMOMY I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
-		case 5:
-		default:fmt::print("MMOMZ I:{}\tJ:{}\n", esol(i, 0), esol(i, 1));
+		case  0: fmt::print("MFORX I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  1: fmt::print("MFORY I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  2: fmt::print("MFORZ I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  3: fmt::print("MMOMX I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  4: fmt::print("MMOMY I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  5: fmt::print("MMOMZ I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  6: fmt::print("SDIR  I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  7: fmt::print("SBEND I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  8: fmt::print("ST    I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case  9: fmt::print("SH    I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		case 10: fmt::print("SSF   I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
+		default: fmt::print("Default.\n");
 		}
 	}
 	
