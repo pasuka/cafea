@@ -23,5 +23,6 @@ TEST_CASE("Internal Pressure", "[Solution Static]")
 	example->assembly();
 	example->solve();
 	example->post_process();
+	example->write2mat("nrc02.mat");
 }
 }

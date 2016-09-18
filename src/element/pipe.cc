@@ -137,6 +137,7 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	mass(10, 8) = mass( 8, 10) = -mass(4, 2);
 	
 	rhs(0) = PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
+	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\tRHS:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v, rhs(0));
 	rhs(6) = -rhs(0);
 	
 	map<string, U> attr{{"Length", Le}, {"Area", Ax}, {"Volume", Ax*Le}, {"Mass", Me}, {"Aw", Ax},
@@ -313,7 +314,15 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 		// SSF: lateral force shear stress.
 		esol(10, i) = T(2)*hypot(esol(1, i), esol(2, i))/Aw;
 		// SAXL: axial stress on outside surface.
+		for(int j=0; j<8; j++)esol(11+j, i) = esol(6, i) + sin(PI<T>()/T(4)*T(j))*esol(7, i);
 		// SXH: hoop stress on outside surface.
+		for(int j=0; j<8; j++)esol(19+j, i) = esol(8, i) + cos(PI<T>()/T(4)*T(j))*esol(10, i);
+		// S1MX: the largest of the four maximum principal stresses.
+		for(int j=0; j<8; j++)esol(27+j, i) = esol(11+j, i)/T(2) + hypot(esol(11+j, i)/T(2), esol(19+j, i));
+		// S2MN: the smallest of the four minimum principal stresses.
+		for(int j=0; j<8; j++)esol(35+j, i) = esol(11+j, i)/T(2) - hypot(esol(11+j, i)/T(2), esol(19+j, i));
+		// SEQVMX: the largest of the four equivalent stresses.
+		for(int j=0; j<8; j++)esol(43+j, i) = hypot(esol(11+j, i), sqrt(T(3))*esol(19+j, i));
 	}
 	for(int i=0; i<11; i++){
 		// esol(i, 0) = tmp(i, 0);

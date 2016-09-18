@@ -125,8 +125,8 @@ Material<T> AdapterF2Cpp<T, U>::bcy2matl(const matl_bcy *p)
 	Material<T> mp(p->id_, MaterialType::LINEAR_ELASTIC);
 	mp.set_material_prop(MaterialProp::DENS, p->val_[0]);
 	mp.set_material_prop(MaterialProp::EX, p->val_[1]);
-	mp.set_material_prop(MaterialProp::NU, p->val_[2]);
-	mp.set_material_prop(MaterialProp::GXY, p->val_[3]);
+	mp.set_material_prop(MaterialProp::GXY, p->val_[2]);
+	mp.set_material_prop(MaterialProp::NU, p->val_[3]);
 	mp.set_material_prop(MaterialProp::DMPR, p->val_[4]);
 	mp.set_material_prop(MaterialProp::ALPD, p->val_[5]);
 	mp.set_material_prop(MaterialProp::BETD, p->val_[6]);

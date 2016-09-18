@@ -38,6 +38,7 @@ class LinearSolver{
 			analyze_factorize();
 			vecX_<T> bb = vecX_<T>::Zero(n);
 			for(int i=0; i<n; i++)bb(i) = rhs[i];
+			std::cout << "RHS:\n" << bb << "\n";
 			xx_ = solver_.solve(bb);
 			if(solver_.info()!=Eigen::ComputationInfo::Success){
 				isSolved_ = false;
@@ -81,9 +82,6 @@ class EigenSolver: public LinearSolver<T, Solver> {
 		//! Clear variables.
 		void clear() override
 		{
-			// LinearSolver<T, Solver>::matA_.resize(0, 0);
-			// LinearSolver<T, Solver>::matA_.setZero();
-			// LinearSolver<T, Solver>::matA_.data().squeeze();
 			LinearSolver<T, Solver>::clear();
 			
 			matB_.resize(0, 0);

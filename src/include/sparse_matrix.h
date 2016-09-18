@@ -111,15 +111,20 @@ class SparseMat{
 		void append(size_t ir, size_t jc){row_col_.push_back({ir, jc});};
 		//! Remove duplicated index pair.
 		void unique(SpFmt t=SpFmt::CSC);
-		//! Add stiffness mass and rhs value.
-		void add_matrix_data(SparseCell, T, T, T);
-		void add_matrix_data(size_t, size_t, T, T, T);
+		
+		//! Add stiffness and mass value.
+		void add_matrix_data(SparseCell, T, T);
+		void add_matrix_data(size_t, size_t, T, T);
 		//! Add stiffness and mass value.
 		void add_matrix_data_KM(SparseCell, T, T);
 		void add_matrix_data_KM(size_t, size_t, T, T);
-		//! Add stiffness and rhs value.
-		void add_matrix_data_KF(SparseCell, T, T);
-		void add_matrix_data_KF(size_t, size_t, T, T);
+		//! Add stiffness value.
+		void add_matrix_data_K(SparseCell, T);
+		void add_matrix_data_K(size_t, size_t, T);
+		//! Add rhs value.
+		void add_rhs_data(SparseCell, T);
+		void add_rhs_data(size_t, T);
+		
 		//! Get stiffness matrix pointer.
 		const T* get_stif_ptr() const {return stif_.data();};
 		//! Get mass matrix pointer.

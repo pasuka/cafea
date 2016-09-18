@@ -39,7 +39,7 @@ class Element: public ObjectBase {
 			mass_.resize(0, 0);
 			stif_.resize(0, 0);
 			tran_.resize(0, 0);
-			rhs_.resize(0, 0);
+			rhs_.resize(0);
 			result_.resize(0, 0);
 			result_cmplx_.resize(0, 0);
 		};
@@ -79,7 +79,10 @@ class Element: public ObjectBase {
 		//! Get transpose matrix.
 		matrix_<T> get_tran() const {return tran_;};
 		//! Get right-hand side matrix.
-		matrix_<T> get_rhs() const {return rhs_;};
+		vecX_<T> get_rhs() const {return rhs_;};
+		//! Get result matrix.
+		matrix_<T> get_result() const {return result_;};
+		
 		//! Get raw pointer of stiffness matrix.
 		const T *get_stif_ptr() const {return stif_.data();};
 		//! Get raw pointer of mass matrix.
@@ -88,11 +91,8 @@ class Element: public ObjectBase {
 		const T *get_tran_ptr() const {return tran_.data();};
 		//! Get raw pointer of right-hand side matrix.
 		const T *get_rhs_ptr() const {return rhs_.data();};
-		
-		/* //! Get stress matrix.
-		matrix_<U> get_stress() const {return stress_;};
-		//! Get raw pointer of stress matrix.
-		U *get_stress_ptr() const {return stress_.data();}; */
+		//! Get raw pointer of result matrix.
+		const T *get_result_ptr() const {return result_.data();};
 		
 		//! Post process.
 		void post_stress(const vecX_<T>);
@@ -161,6 +161,10 @@ class Element: public ObjectBase {
 		size_t get_active_num_of_node() const;
 		//! Get shape of element matrix.
 		std::array<size_t, 2> get_matrix_shape() const;
+		//! Get shape of rhs matrix.
+		std::array<size_t, 2> get_rhs_shape() const;
+		//! Get shape of result matrix.
+		std::array<size_t, 2> get_result_shape() const;
 		//! Get global dofs array.
 		std::vector<int> get_element_dofs() const {return global_dofs_;};
 		//! Print information.
@@ -208,7 +212,7 @@ class Element: public ObjectBase {
 		matrix_<T> stif_;//!< Stiffness matrix of element.
 		matrix_<T> mass_;//!< Mass matrix of element.
 		matrix_<T> tran_;//!< Transpose matrix of element.
-		matrix_<T> rhs_;//!< Right-hand side of element.
+		vecX_<T> rhs_;//!< Right-hand side of element.
 		
 		matrix_<T> result_;//!< Result of element.
 		matrix_<std::complex<T>> result_cmplx_;//!< Result of element in complex.

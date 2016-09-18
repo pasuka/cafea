@@ -321,6 +321,7 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 		p_stif = p_tran.transpose()*p_stif*p_tran;
 		p_mass = p_tran.transpose()*p_mass*p_tran;
 		p_rhs = p_tran.transpose()*p_rhs;
+		
 		auto nn = p_elem.get_active_num_of_node();
 		auto ndof = p_elem.get_dofs_per_node();
 		for(auto ia=0; ia<nn; ia++){
@@ -329,13 +330,14 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 				p_elem.set_element_dofs(va[ja]);
 				if(va[ja]<0)continue;
 				auto row_ = ia*ndof+ja;
+				this->mat_pair_.add_rhs_data(va[ja], p_rhs(row_));
 				for(auto ib=0; ib<nn; ib++){
 					auto vb = pt[ib].dof_list();
 					for(auto jb=0; jb<ndof; jb++){
 						if(vb[jb]<0)continue;
 						auto col_ = ib*ndof+jb;
 						this->mat_pair_.add_matrix_data(va[ja], vb[jb],
-							p_stif(row_, col_), p_mass(row_, col_), p_rhs(row_));
+							p_stif(row_, col_), p_mass(row_, col_));
 					}
 				}
 			}
@@ -379,7 +381,9 @@ void SolutionStatic<FileReader, T, U>::post_process()
 		auto &p_elem = it.second;
 		auto va = p_elem.get_element_dofs();
 		vecX_<U> x = vecX_<U>::Zero(va.size());
-		for(int i=0; i<x.size(); i++)x(i) = va[i]<0 ? U(0): sol(i);
+		for(int i=0; i<x.size(); i++)x(i) = va[i]<0 ? U(0): sol(va[i]);
+		// fmt::print("Element ID:{}\tDisplacement:\n", p_elem.get_id());
+		std::cout << x << "\n";
 		p_elem.post_stress(x);
 	}
 };
@@ -388,7 +392,70 @@ void SolutionStatic<FileReader, T, U>::post_process()
  *  \brief Write element matrix to MAT file.
  *  \param[in] fname file name.
  */
-template <class FileReader, class Scalar, class ResultScalar>
-void SolutionStatic<FileReader, Scalar, ResultScalar>::write2mat(const char* fname)
-{};
+template <class FileReader, class Scalar, class U>
+void SolutionStatic<FileReader, Scalar, U>::write2mat(const char* fname)
+{
+	mat_t *matfp;
+	matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT73);
+	if(NULL==matfp){
+		fmt::print("Error creating MAT file\n");
+		return;
+	}
+	const size_t nfields{10};
+	const char *fieldnames[nfields] = {"id", "etype", "mtype", "stype", "nodes",
+		"stif", "mass", "tran", "rhs", "result"};
+	size_t elem_dims[2] = {this->elem_group_.size(), 1};
+	matvar_t *elem_list = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames,
+		nfields);
+	
+	size_t num{0}, dim_vec[2] = {1, 1}, dim1x1[2] = {1, 1};
+	double val[4];
+	for(const auto &it: this->elem_group_){
+		auto &p_elem = it.second;
+		matvar_t *matvar[nfields];
+		val[0] = double(p_elem.get_element_id());
+		val[1] = double(p_elem.get_element_type_id());
+		val[2] = double(p_elem.get_material_id());
+		val[3] = double(p_elem.get_section_id());
+		for(size_t i=0; i<4; i++){
+			matvar[i] = Mat_VarCreate(fieldnames[i], MAT_C_DOUBLE, MAT_T_DOUBLE,
+				2, dim1x1, &val[i], 0);
+		}
+		// element node list.
+		auto nodes = p_elem.get_node_list();
+		dim_vec[0] = nodes.size();
+		double nodes_d[dim_vec[0]];
+		for(size_t i=0; i<dim_vec[0]; i++)nodes_d[i] = double(nodes[i]);
+		matvar[4] = Mat_VarCreate(fieldnames[4], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			dim_vec, nodes_d, 0);
+			
+		auto sz  = p_elem.get_matrix_shape();
+		// element stiffness matrix.
+		matvar[5] = Mat_VarCreate(fieldnames[5], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			sz.data(), const_cast<U*>(p_elem.get_stif_ptr()), MAT_F_DONT_COPY_DATA);
+		// element mass matrix.
+		matvar[6] = Mat_VarCreate(fieldnames[6], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			sz.data(), const_cast<U*>(p_elem.get_mass_ptr()), MAT_F_DONT_COPY_DATA);
+		// element transpose matrix.
+		matvar[7] = Mat_VarCreate(fieldnames[7], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			sz.data(), const_cast<U*>(p_elem.get_tran_ptr()), MAT_F_DONT_COPY_DATA);
+		// element rhs vector.
+		auto sv = p_elem.get_rhs_shape();
+		matvar[8] = Mat_VarCreate(fieldnames[8], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			sv.data(), const_cast<U*>(p_elem.get_rhs_ptr()), MAT_F_DONT_COPY_DATA);
+		// element result in real-domain.
+		auto rst = p_elem.get_result_shape();
+		matvar[9] = Mat_VarCreate(fieldnames[9], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			rst.data(), const_cast<U*>(p_elem.get_result_ptr()), MAT_F_DONT_COPY_DATA);
+		// Write to element struct.
+		for(size_t i=0; i<nfields; i++){
+			Mat_VarSetStructFieldByName(elem_list, fieldnames[i], num, matvar[i]);
+		}
+		num++;
+	}
+	Mat_VarWrite(matfp, elem_list, MAT_COMPRESSION_ZLIB);
+	Mat_VarFree(elem_list);
+	Mat_Close(matfp);
+	return;
+};
 }

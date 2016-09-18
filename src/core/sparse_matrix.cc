@@ -83,14 +83,13 @@ void SparseMat<T>::unique(SpFmt sf)
 	
 };
 /**
- *  \brief Add stiffness mass and rhs data.
+ *  \brief Add stiffness and mass data.
  *  \param[in] it index pair of row and column.
  *  \param[in] val_k value of stiffness.
  *  \param[in] val_m value of mass.
- *  \param[in] val_rhs value of rhs.
  */
 template <class T>
-void SparseMat<T>::add_matrix_data(SparseCell it, T val_k, T val_m, T val_rhs)
+void SparseMat<T>::add_matrix_data(SparseCell it, T val_k, T val_m)
 {
 	std::array<size_t, 2> index_range;
 	if(this->get_format()==SpFmt::CSR){
@@ -106,7 +105,6 @@ void SparseMat<T>::add_matrix_data(SparseCell it, T val_k, T val_m, T val_rhs)
 	auto nn = std::distance(this->row_col_.begin(), got);
 	this->stif_[nn] += val_k;
 	this->mass_[nn] += val_m;
-	this->rhs_[it.row] += val_rhs;
 };
 /**
  *  \brief Add stiffness and massdata.
@@ -117,32 +115,30 @@ void SparseMat<T>::add_matrix_data(SparseCell it, T val_k, T val_m, T val_rhs)
 template <class T>
 void SparseMat<T>::add_matrix_data_KM(SparseCell it, T val_k, T val_m)
 {
-	this->add_matrix_data(it, val_k, val_m, T(0));
+	this->add_matrix_data(it, val_k, val_m);
 };
 /**
- *  \brief Add stiffness and rhs data.
+ *  \brief Add stiffness data.
  *  \param[in] it index pair of row and column.
  *  \param[in] val_k value of stiffness.
- *  \param[in] val_rhs value of rhs.
  */
 template <class T>
-void SparseMat<T>::add_matrix_data_KF(SparseCell it, T val_k, T val_rhs)
+void SparseMat<T>::add_matrix_data_K(SparseCell it, T val_k)
 {
-	this->add_matrix_data(it, val_k, T(0), val_rhs);
+	this->add_matrix_data(it, val_k, T(0));
 };
 /**
- *  \brief Add stiffness mass and rhs data.
+ *  \brief Add stiffness and mass data.
  *  \param[in] ir row index.
  *  \param[in] jc column index.
  *  \param[in] val_k value of stiffness.
  *  \param[in] val_m value of mass.
- *  \param[in] val_rhs value of rhs.
  */
 template <class T>
-void SparseMat<T>::add_matrix_data(size_t ir, size_t jc, T val_k, T val_m, T val_rhs)
+void SparseMat<T>::add_matrix_data(size_t ir, size_t jc, T val_k, T val_m)
 {
 	SparseCell it{ir, jc};
-	this->add_matrix_data(it, val_k, val_m, val_rhs);
+	this->add_matrix_data(it, val_k, val_m);
 };
 /**
  *  \brief Add stiffness and mass data.
@@ -158,19 +154,37 @@ void SparseMat<T>::add_matrix_data_KM(size_t ir, size_t jc, T val_k, T val_m)
 	this->add_matrix_data_KM(it, val_k, val_m);
 };
 /**
- *  \brief Add stiffness and rhs data.
+ *  \brief Add stiffness data.
  *  \param[in] ir row index.
  *  \param[in] jc column index.
  *  \param[in] val_k value of stiffness.
- *  \param[in] val_rhs value of rhs.
  */
 template <class T>
-void SparseMat<T>::add_matrix_data_KF(size_t ir, size_t jc, T val_k, T val_rhs)
+void SparseMat<T>::add_matrix_data_K(size_t ir, size_t jc, T val_k)
 {
 	SparseCell it{ir, jc};
-	this->add_matrix_data_KF(it, val_k, val_rhs);
+	this->add_matrix_data_K(it, val_k);
 };
-
+/**
+ *  \brief Add RHS data.
+ *  \param[in] it index pair of row and column.
+ *  \param[in] val_rhs value of RHS.
+ */
+template <class T>
+void SparseMat<T>::add_rhs_data(SparseCell it, T val_rhs)
+{
+	this->add_rhs_data(it.row, val_rhs);
+};
+/**
+ *  \brief Add RHS data.
+ *  \param[in] ir row index.
+ *  \param[in] val_rhs value of RHS.
+ */
+template <class T>
+void SparseMat<T>::add_rhs_data(size_t ir, T val_rhs)
+{	
+	if(ir <= this->dim_)this->rhs_[ir] += val_rhs;
+};
 /**
  *  \brief Get stiffness sparse matrix pointer to MAT.
  *  \return
