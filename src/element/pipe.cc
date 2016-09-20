@@ -240,8 +240,15 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	H(3, 2) = -R*(1.0-cos_the);
 	H(4, 2) = R*sin_the;
 	H(5, 0) = -R*(cos_the-1.0);
-	H(5, 1) = -R*sin_the; 
-	sij = fij.inverse();
+	H(5, 1) = -R*sin_the;
+	/*H(0, 0) = H(1, 1) = H(3, 3) = H(4, 4) = -cos_the;
+	H(2, 2) = H(5, 5) = -1.0;
+	H(1, 0) = H(4, 3) = -sin_the;
+	H(0, 1) = H(3, 4) = -H(1, 0);
+	H(5, 0) = H(3, 2) = R*(1.0-cos_the);
+	H(4, 2) = R*sin_the;
+	H(5, 1) = -H(4, 2);*/
+ 	sij = fij.inverse();
 	stif.block(0, 0, 6, 6) = H*sij*H.transpose();
 	stif.block(0, 6, 6, 6) = H*sij;
 	stif.block(6, 0, 6, 6) = sij*H.transpose();
@@ -272,15 +279,13 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
 	
-	vecX_<U> va = vecX_<U>::Zero(12);
-	// va(0) = va(1) = va(5) = va(6) = va(7) = va(11) = U(1);
-	// for(int i: {0, 1, 2})va(i) = va(i+6) = U(1);
-	// va(2) = va(8) = U(1);
-	// va(0) = va(5) = va(6) = va(11) = U(1);
-	va(2) = U(1);
-	// va(8) = U(1);
-	decltype(Ro) coeff = R*(U(1)-U(2)*v)*sect->get_sect_prop(SectionProp::PRESIN)*Ri*Ri/(Ro*Ro-Ri*Ri)/prop->get_material_prop(MaterialProp::YOUNG);
-	rhs = coeff*loc2gbl.transpose()*stif*loc2gbl*va;
+	auto Fp = R*(U(1)-U(2)*v)*sect->get_sect_prop(SectionProp::PRESIN)*Ri*Ri/(Ro*Ro-Ri*Ri)/prop->get_material_prop(MaterialProp::YOUNG);
+	rhs(0) = -U(1);
+	rhs(1) = -U(1);
+	rhs(6) = -rhs(0);
+	rhs(7) = -rhs(1);
+	rhs = Fp*loc2gbl.transpose()*stif*loc2gbl*rhs;
+	
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
