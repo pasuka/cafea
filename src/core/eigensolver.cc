@@ -27,7 +27,7 @@ void LinearSolver<T, U>::load(const T *stif, const SparseCell *xy, size_t nnz, s
  *  \brief Load data to sparse matrix.
  *  \param[in] stif pointer of stiffness matrix.
  *  \param[in] mass pointer of mass matrix.
- *  \param[in] xy row and cloumn of global matrix.
+ *  \param[in] xy row and cloumn of global matrix.	
  *  \param[in] nnz non-zeros of global matrix.
  */
 template <class T, class U>
