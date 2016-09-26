@@ -224,7 +224,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	}
 	
 	
-	
+	/*
 	fij(0, 0) = the*(R/2.0/EA+alpha*R/2.0/GA)+sin_2the*(R/4.0/EA-alpha*R/4.0/GA)+kp*R3/4.0/EI*(2.0*the*(2.0+cos_2the)-3.0*sin_2the);
 	fij(1, 1) = the*(R/2.0/EA+alpha*R/2.0/GA)-sin_2the*(R/4.0/EA-alpha*R/4.0/GA)+kp*R3/4.0/EI*(2.0*the*(2.0-cos_2the)+3.0*sin_2the-8.0*sin_the);
 	fij(2, 2) = alpha*R/GA*the+R3/8.0/GI*(6.0*the+sin_2the-8.0*sin_the)+kp*R3/4.0/EI*(2.0*the-sin_2the);
@@ -262,7 +262,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	tmp.row(2) << 0., 0., 1.;	
 	
 	for(int i: {0, 1, 2, 3})t2.block(i*3, i*3, 3, 3) = tmp;
-	stif = t2.transpose()*stif*t2;
+	stif = t2.transpose()*stif*t2; */
 	
 	for(int i: {0, 1, 2, 6, 7, 8})mass(i, i) = 0.5*Me;
 	//! From Code-Aster reference formulation.
@@ -270,7 +270,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	// mass(4, 4) = mass(10, 10) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
 	// mass(5, 5) = mass(11, 11) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
 	
-	/* {
+	{
 		auto N_ = the + .5*sin_2the;
 		auto B_ = the - .5*sin_2the;
 		auto C_ = 3.*the + .5*sin_2the - 4.*sin_the;
@@ -329,7 +329,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		tmp.row(5) <<    0.,     0., 0.,     0.,    0., 1.;
 		t2.block(6, 6, 6, 6) = tmp;
 		stif = t2*stif*t2.transpose();
-	} */
+	}
 	
 	
 	map<string, U> attr{{"Length", l}, {"Area", Ax}, {"Volume", Ax*l}, {"Mass", Me}, {"Aw", Ax}, 
@@ -337,11 +337,12 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
 	
-	auto Fp = R*(U(1)-U(2)*v)*sect->get_sect_prop(SectionProp::PRESIN)*Ri*Ri/(Ro*Ro-Ri*Ri)/prop->get_material_prop(MaterialProp::YOUNG);
-	rhs(2) = rhs(8) = 1.;
+	auto Fp = .5*R*(U(1)-U(2)*v)*sect->get_sect_prop(SectionProp::PRESIN)*Ri*Ri/(Ro*Ro-Ri*Ri)/prop->get_material_prop(MaterialProp::YOUNG);
+	rhs(0) = rhs(1) =  1.;
+	rhs(6) = rhs(7) = -1.;
 	
-	rhs = Fp*loc2gbl.transpose()*stif*loc2gbl*rhs;
-	
+	// rhs = Fp*loc2gbl.transpose()*stif*loc2gbl*rhs;
+	rhs = Fp*stif*loc2gbl*rhs;
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
