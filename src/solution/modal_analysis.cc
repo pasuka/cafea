@@ -287,7 +287,8 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	matrix_<ResultScalar> val, shp;
 	ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
 	fspan[0] = pow(PI<ResultScalar>()*ResultScalar(2000), 2.0);
-	std::tie(val, shp) = this->solver_->subspace(fspan[0], fspan[1]);
+	// std::tie(val, shp) = this->solver_->subspace(fspan[0], fspan[1]);
+	std::tie(val, shp) = this->solver_->subspace(15);
 	fmt::print("\n");
 	for(int i=0; i<val.rows(); i++)fmt::print("No.{}\tFreq.:{}Hz Error:{}\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>(), val(i, 1));
 	// auto nn = this->solver_.sturm_check(1e30);

@@ -19,7 +19,7 @@ TEST_CASE("Modal Analysis", "[Solution Modal]")
 	example->analyze();
 	example->assembly();
 	example->solve();
-	// example->write2mat("demo01.mat");
+	example->write2mat("demo01.mat");
 	
 	example->init();
 	example->load("./ansys/pipe_demo_02.cdb");

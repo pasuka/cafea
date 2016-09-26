@@ -25,4 +25,17 @@ TEST_CASE("Internal Pressure", "[Solution Static]")
 	example->post_process();
 	example->write2mat("nrc02.mat");
 }
+
+TEST_CASE("Internal Pressure Single Element", "[Solution Static]")
+{
+	std::unique_ptr<SolutionBase<BcyReader<float>>> example(new SolutionSimple);
+	
+	example->init();
+	example->load("./bcy_data/elbow_01.bcy");
+	example->analyze();
+	example->assembly();
+	example->solve();
+	example->post_process();
+	example->write2mat("eblow01.mat");
+}
 }

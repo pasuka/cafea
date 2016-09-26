@@ -187,9 +187,12 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	vyy = vzz.cross(vxx);
 	vyy /= vyy.norm();
 	
-	tt.row(0) << U(vxx(0)), U(vxx(1)), U(vxx(2));
-	tt.row(1) << U(vyy(0)), U(vyy(1)), U(vyy(2));
-	tt.row(2) << U(vzz(0)), U(vzz(1)), U(vzz(2));
+	tt.row(0) << vxx(0), vxx(1), vxx(2);
+	tt.row(1) << vyy(0), vyy(1), vyy(2);
+	tt.row(2) << vzz(0), vzz(1), vzz(2);
+	
+	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
+	for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
 	
 	const decltype(Ro) the = 2.0*asin(.5*la/R);
 	const decltype(Ro) l = R*the, cos_the = cos(the), sin_the = sin(the);
@@ -203,7 +206,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	const decltype(Ro) EA = prop->get_material_prop(MaterialProp::YOUNG)*Ax;
 	const decltype(Ro) GA = prop->get_material_prop(MaterialProp::YOUNG)*Ax*.5/(1.0+v);
 	const decltype(Ro) EI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy;
-	const decltype(Ro) GI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy*.5/(1.0+v);
+	const decltype(Ro) GI = prop->get_material_prop(MaterialProp::YOUNG)*Jxx*.5/(1.0+v);
 	decltype(Ro) kp;
 	
 	{
@@ -241,38 +244,93 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	H(4, 2) = R*sin_the;
 	H(5, 0) = -R*(cos_the-1.0);
 	H(5, 1) = -R*sin_the;
-	/*H(0, 0) = H(1, 1) = H(3, 3) = H(4, 4) = -cos_the;
-	H(2, 2) = H(5, 5) = -1.0;
-	H(1, 0) = H(4, 3) = -sin_the;
-	H(0, 1) = H(3, 4) = -H(1, 0);
-	H(5, 0) = H(3, 2) = R*(1.0-cos_the);
-	H(4, 2) = R*sin_the;
-	H(5, 1) = -H(4, 2);*/
+	
  	sij = fij.inverse();
 	stif.block(0, 0, 6, 6) = H*sij*H.transpose();
 	stif.block(0, 6, 6, 6) = H*sij;
 	stif.block(6, 0, 6, 6) = sij*H.transpose();
 	stif.block(6, 6, 6, 6) = sij;
-
-	for(int i: {0, 1, 2, 6, 7, 8})mass(i, i) = 0.5*Me;
-	//! From Code-Aster reference formulation.
-	// mass(3, 3) = mass(9, 9) = prop.param[0]*Iyy*R*the;
-	// mass(4, 4) = mass(10, 10) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
-	// mass(5, 5) = mass(11, 11) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
-	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
-	for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
+	
+	
 	
 	matrix_<U> tmp = matrix_<U>::Zero(3, 3);
 	matrix_<U> t2 = matrix_<U>::Zero(12, 12);
 	const decltype(Ro) cos_b = cos(.5*the), sin_b = sin(.5*the);
 	
-	tmp.row(0) << cos_b, -sin_b, 0.;
-	tmp.row(1) << sin_b, cos_b, 0.;
+	tmp.row(0) << cos_b, sin_b, 0.;
+	tmp.row(1) << -sin_b, cos_b, 0.;
 	tmp.row(2) << 0., 0., 1.;	
 	
 	for(int i: {0, 1, 2, 3})t2.block(i*3, i*3, 3, 3) = tmp;
 	stif = t2.transpose()*stif*t2;
-	mass = t2.transpose()*mass*t2;
+	
+	for(int i: {0, 1, 2, 6, 7, 8})mass(i, i) = 0.5*Me;
+	//! From Code-Aster reference formulation.
+	// mass(3, 3) = mass(9, 9) = prop.param[0]*Iyy*R*the;
+	// mass(4, 4) = mass(10, 10) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
+	// mass(5, 5) = mass(11, 11) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
+	
+	/* {
+		auto N_ = the + .5*sin_2the;
+		auto B_ = the - .5*sin_2the;
+		auto C_ = 3.*the + .5*sin_2the - 4.*sin_the;
+		auto S_ = .75 - cos_the + .25*cos_2the;
+		auto F_ = sin_the - the;
+		auto H_ = cos_the - 1.;
+		auto V_ = 2.*sin_the - the - .5*sin_2the;
+		auto D_ = .5*cos_2the - .5;
+		
+		fij(0, 0) = R*N_/(2.*EA) + alpha*R*B_/(2.*GA) + kp*C_*R3/(2.*EI);
+		fij(1, 1) = R*B_/(2.*EA) + alpha*R*N_/(2.*GA) + kp*B_*R3/(2.*EI);
+		fij(2, 2) = alpha*the*R/GA + C_*R3/(2.*GI) + kp*B_*R3/(2.*EI);
+		fij(3, 3) = .5*R*(N_/GI + kp*B_/EI);
+		fij(4 ,4) = .5*R*(B_/GI + kp*N_/EI);
+		fij(5 ,5) = kp*R*the/EI;
+		
+		fij(0, 1) = fij(1, 0) = R*D_/(2.*EA) - alpha*R*D_/(2.*GA) + kp*S_*R3/EI;
+		fij(0, 5) = fij(5, 0) = kp*F_*R2/EI;
+		fij(1, 5) = fij(5, 1) = kp*H_*R2/EI;
+		fij(2, 3) = fij(3, 2) = .5*R2*(kp*B_/EI - V_/GI);
+		fij(2, 4) = fij(4, 2) = .5*R2*(S_/GI - kp*D_/EI);
+		fij(3, 4) = fij(4, 3) = .5*R*D_*(1./GI - kp/EI);
+		
+		sij = fij.inverse();
+		auto cs = cos_the, ss = sin_the;
+		
+		H.row(0) <<       -cs,   ss,        0.,  0.,  0.,  0.;
+		H.row(1) <<       -ss,  -cs,        0.,  0.,  0.,  0.;
+		H.row(2) <<        0.,   0.,       -1.,  0.,  0.,  0.;
+		H.row(3) <<        0.,   0., R*(1.-cs), -cs,  ss,  0.;
+		H.row(4) <<        0.,   0.,     -R*ss, -ss, -cs,  0.;
+		H.row(5) << R*(1.-cs), R*ss,        0.,  0.,  0., -1.;
+		
+		stif.block(0, 0, 6, 6) = sij;
+		stif.block(6, 0, 6, 6) = H*sij;
+		stif.block(0, 6, 6, 6) = sij*H.transpose();
+		stif.block(6, 6, 6, 6) = H*sij*H.transpose();
+		
+		matrix_<U> tmp = matrix_<U>::Zero(6, 6);
+		matrix_<U> t2 = matrix_<U>::Zero(12, 12);
+		auto cos_b = cos(.5*the), sin_b = sin(.5*the);
+	
+		tmp.row(0) << cos_b, -sin_b, 0.,    0.,     0., 0.;
+		tmp.row(1) << sin_b,  cos_b, 0.,    0.,     0., 0.;
+		tmp.row(2) <<    0.,     0., 1.,    0.,     0., 0.;
+		tmp.row(3) <<    0.,     0., 0., cos_b, -sin_b, 0.;
+		tmp.row(4) <<    0.,     0., 0., sin_b,  cos_b, 0.;
+		tmp.row(5) <<    0.,     0., 0.,    0.,     0., 1.;
+		t2.block(0, 0, 6 ,6) = tmp;
+		
+		tmp.row(0) <<  cos_b, sin_b, 0.,     0.,    0., 0.;
+		tmp.row(1) << -sin_b, cos_b, 0.,     0.,    0., 0.;
+		tmp.row(2) <<    0.,     0., 1.,     0.,    0., 0.;
+		tmp.row(3) <<    0.,     0., 0.,  cos_b, sin_b, 0.;
+		tmp.row(4) <<    0.,     0., 0., -sin_b, cos_b, 0.;
+		tmp.row(5) <<    0.,     0., 0.,     0.,    0., 1.;
+		t2.block(6, 6, 6, 6) = tmp;
+		stif = t2*stif*t2.transpose();
+	} */
+	
 	
 	map<string, U> attr{{"Length", l}, {"Area", Ax}, {"Volume", Ax*l}, {"Mass", Me}, {"Aw", Ax}, 
 		{"Thick", t}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
@@ -280,10 +338,8 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
 	
 	auto Fp = R*(U(1)-U(2)*v)*sect->get_sect_prop(SectionProp::PRESIN)*Ri*Ri/(Ro*Ro-Ri*Ri)/prop->get_material_prop(MaterialProp::YOUNG);
-	rhs(0) = -U(1);
-	rhs(1) = -U(1);
-	rhs(6) = -rhs(0);
-	rhs(7) = -rhs(1);
+	rhs(2) = rhs(8) = 1.;
+	
 	rhs = Fp*loc2gbl.transpose()*stif*loc2gbl*rhs;
 	
 	
