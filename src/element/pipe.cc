@@ -15,7 +15,6 @@ using std::make_tuple;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using Eigen::Vector3d;
-// using Eigen::MatrixXcd;
 
 namespace cafea
 {
@@ -146,8 +145,9 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
+
 /**
- *  
+ *	\brief Curved Pipe Element No.18  
  */
 template <class T, class U>
 varargout<U> StructuralElement<T, U>::pipe18(
@@ -207,8 +207,8 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	const decltype(Ro) GA = prop->get_material_prop(MaterialProp::YOUNG)*Ax*.5/(1.0+v);
 	const decltype(Ro) EI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy;
 	const decltype(Ro) GI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy*.5/(1.0+v);
-	decltype(Ro) kp;
 	
+	decltype(Ro) kp;
 	{
 		decltype(Ro) r = Ro-.5*t, h = t*R/(r*r), pr = sect->get_sect_prop(SectionProp::PRESIN);
 		decltype(Ro) Xk;
@@ -218,13 +218,12 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		else{
 			Xk = pow(r/t, 4./3.)*pow(R/r, 1./3.);
 		}
-		kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
+		//kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
 		kp = 1.65/h;		
 		if(kp<1.)kp = 1.;
 	}
 	
-	
-
+	// Flexibility sub-matrix.
 	fij(0, 0) = the*(R/2.0/EA+alpha*R/2.0/GA)+sin_2the*(R/4.0/EA-alpha*R/4.0/GA)+kp*R3/4.0/EI*(2.0*the*(2.0+cos_2the)-3.0*sin_2the);
 	fij(1, 1) = the*(R/2.0/EA+alpha*R/2.0/GA)-sin_2the*(R/4.0/EA-alpha*R/4.0/GA)+kp*R3/4.0/EI*(2.0*the*(2.0-cos_2the)+3.0*sin_2the-8.0*sin_the);
 	fij(2, 2) = alpha*R/GA*the+R3/8.0/GI*(6.0*the+sin_2the-8.0*sin_the)+kp*R3/4.0/EI*(2.0*the-sin_2the);
@@ -251,8 +250,6 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	stif.block(6, 0, 6, 6) = sij*H.transpose();
 	stif.block(6, 6, 6, 6) = sij;
 	
-	
-	
 	matrix_<U> tmp = matrix_<U>::Zero(3, 3);
 	matrix_<U> t2 = matrix_<U>::Zero(12, 12);
 	const decltype(Ro) cos_b = cos(.5*the), sin_b = sin(.5*the);
@@ -275,18 +272,22 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
 	
-	auto Fp = R*(U(1)-U(2)*v)*sect->get_sect_prop(SectionProp::PRESIN)*Ri*Ri/(Ro*Ro-Ri*Ri)/prop->get_material_prop(MaterialProp::YOUNG);
+	/*
+	// *******************************************************
+	// * Load caused by internal pressure need to be fixed.  *
+	// *******************************************************
+	auto Fp = R*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN)*Ri*Ri/(Ro*Ro-Ri*Ri)/prop->get_material_prop(MaterialProp::YOUNG);
 	rhs(0) = rhs(1) = -1.;
 	rhs(6) = rhs(7) =  1.;
 	
 	// rhs = Fp*loc2gbl.transpose()*stif*loc2gbl*rhs;
 	rhs = .5*Fp*stif*loc2gbl*rhs;
-	
+	*/
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
 
 /**
- *  
+ * \brief Post-Process of element pipe. 
  */
 template <class T>
 matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T> tran,
