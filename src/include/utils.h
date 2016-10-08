@@ -11,6 +11,7 @@
 #include <initializer_list>
 
 #include <Eigen/Dense>
+#include <Eigen/Geometry>
 
 namespace cafea
 {

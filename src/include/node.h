@@ -200,6 +200,10 @@ class NodeBase: public ObjectBase {
 		Scalar get_rot() const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
 		//! Get Euler angle values.
 		Scalar get_rot(int x) const {return angle_(x)>Scalar(180) ? Scalar(0): angle_(x);};
+		//! Get Euler angle in rad.
+		Scalar get_rot_rad(int x) const {return PI<Scalar>()*get_rot(x)/Scalar(180);};
+		//! Get Euler transform matrix.
+		Eigen::Matrix<Scalar, 3, 3> get_euler_tran() const;
 		//! Get Euler angle values.
 		vec3_<Scalar> get_angle() const
 		{
