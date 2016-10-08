@@ -103,12 +103,12 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	const decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
 	
 	// Lumped Mass.
-/* 		mass(0, 0) = mass(6, 6) = Me/2.;
+ 		mass(0, 0) = mass(6, 6) = Me/2.;
 		mass(1, 1) = mass(7, 7) = mass(2, 2) = mass(8, 8) = Me/2.;
 		mass(3, 3) = mass(9, 9) = Je/2.;
 		mass(4, 4) = mass(10, 10) = ry/2.;
 		mass(5, 5) = mass(11, 11) = rz/2.;
- */
+    /* 
 	mass( 0, 0) = mass( 6,  6) = Me/3.;
 	mass( 0, 6) = mass( 6,  0) = mass(0, 0)/2.;
 	
@@ -134,7 +134,7 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	
 	mass(10, 2) = mass( 2, 10) = -mass(4, 8);
 	mass(10, 8) = mass( 8, 10) = -mass(4, 2);
-	
+	*/
 	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
 	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\tRHS:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v, rhs(0));
 	rhs(6) = -rhs(0);

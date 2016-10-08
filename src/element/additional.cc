@@ -97,7 +97,13 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 			*/
 			
 			euler_tran = p1->get_euler_tran();
-			loc2gbl.block(0, 0, 3, 3) = loc2gbl.block(3, 3, 3, 3) = euler_tran.cast<U>();
+			for(int i=0; i<3; i++){
+				for(int j=0; j<3; j++){
+					loc2gbl(i, j) = U(euler_tran(i, j));
+					loc2gbl(i+3, j+3) = loc2gbl(i, j);
+				}
+			}
+			//loc2gbl.block(0, 0, 3, 3) = loc2gbl.block(3, 3, 3, 3) = euler_tran.cast<U>();
 		}
 		if(p2->get_rot(0)>1.8e2){
 			loc2gbl.block(6, 6, 6, 6).setIdentity();
@@ -120,7 +126,13 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 			*/
 			
 			euler_tran = p2->get_euler_tran();
-			loc2gbl.block(6, 6, 3, 3) = loc2gbl.block(9, 9, 3, 3) = euler_tran.cast<U>();
+			for(int i=0; i<3; i++){
+				for(int j=0; j<3; j++){
+					loc2gbl(i+6, j+6) = U(euler_tran(i, j));
+					loc2gbl(i+6+3, j+6+3) = loc2gbl(i+6, j+6);
+				}
+			}
+			//loc2gbl.block(6, 6, 3, 3) = loc2gbl.block(9, 9, 3, 3) = euler_tran.cast<U>();
 		}
 		int m{opt[1]-1};
 		assert(0<=m&&m<=5);

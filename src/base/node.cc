@@ -47,7 +47,7 @@ void Node<Scalar, ResultScalar>::dof_accum(int *it, DofType mt)
 /**
  *   \brief
  */
-template <class T>
+/* template <class T>
 Eigen::Matrix<T, 3, 3> NodeBase<T>::get_euler_tran() const
 {
 	Eigen::Matrix<T, 3, 3> tran;
@@ -66,7 +66,7 @@ Eigen::Matrix<T, 3, 3> NodeBase<T>::get_euler_tran() const
 		tran = AngleAxis<T>(a2, IY)*AngleAxis<T>(a1, IX)*AngleAxis<T>(a0, IZ);
 	}
 	return tran;
-}
+} */
 
 
 /**

@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include <Eigen/Dense>
+#include <Eigen/Geometry>
 #include "fmt/format.h"
 
 #include "base.h"
@@ -203,7 +204,26 @@ class NodeBase: public ObjectBase {
 		//! Get Euler angle in rad.
 		Scalar get_rot_rad(int x) const {return PI<Scalar>()*get_rot(x)/Scalar(180);};
 		//! Get Euler transform matrix.
-		Eigen::Matrix<Scalar, 3, 3> get_euler_tran() const;
+		Eigen::Matrix<Scalar, 3, 3> get_euler_tran() const
+		{
+			Eigen::Matrix<Scalar, 3, 3> tran;
+			vec3_<Scalar> IY, IX, IZ;
+			using Eigen::AngleAxis;
+			if(get_rot(0)>1.8e2){
+				tran.setIdentity();
+			}
+			else{
+				IX.setZero();
+				IY.setZero();
+				IZ.setZero();
+				IX(0) = IY(1) = IZ(2) = Scalar(1);
+				Scalar a0 = get_rot_rad(0);
+				Scalar a1 = get_rot_rad(1);
+				Scalar a2 = get_rot_rad(2);
+			tran = AngleAxis<Scalar>(a2, IY)*AngleAxis<Scalar>(a1, IX)*AngleAxis<Scalar>(a0, IZ);
+			}
+			return tran;
+		};
 		//! Get Euler angle values.
 		vec3_<Scalar> get_angle() const
 		{
