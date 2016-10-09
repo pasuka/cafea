@@ -30,7 +30,7 @@ struct StructuralElement{
 	 *  \brief 2-node straight pipe element.
 	 */
 	static varargout_basic<U> pipe16(const NodeBase<T>*, const NodeBase<T>*,
-		const Material<T>*, const Section<T>*);
+		const Material<T>*, const Section<T>*, const int*);
 	/**
 	 *  \brief 2-node elbow pipe element.
 	 */

@@ -206,21 +206,16 @@ class NodeBase: public ObjectBase {
 		//! Get Euler transform matrix.
 		Eigen::Matrix<Scalar, 3, 3> get_euler_tran() const
 		{
-			Eigen::Matrix<Scalar, 3, 3> tran;
-			vec3_<Scalar> IY, IX, IZ;
-			using Eigen::AngleAxis;
-			if(get_rot(0)>1.8e2){
-				tran.setIdentity();
-			}
-			else{
-				IX.setZero();
-				IY.setZero();
-				IZ.setZero();
+			using AA = Eigen::AngleAxis<Scalar>;
+			Eigen::Matrix<Scalar, 3, 3> tran = Eigen::Matrix<Scalar, 3, 3>::Identity();
+			vec3_<Scalar> IY = vec3_<Scalar>::Zero(3), IX=IY, IZ=IY;
+		
+			if(get_rot(0)<1.8e2){
 				IX(0) = IY(1) = IZ(2) = Scalar(1);
 				Scalar a0 = get_rot_rad(0);
 				Scalar a1 = get_rot_rad(1);
 				Scalar a2 = get_rot_rad(2);
-			tran = AngleAxis<Scalar>(a2, IY)*AngleAxis<Scalar>(a1, IX)*AngleAxis<Scalar>(a0, IZ);
+				tran = AA(a2, IY)*AA(a1, IX)*AA(a0, IZ);
 			}
 			return tran;
 		};

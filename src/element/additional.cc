@@ -66,73 +66,19 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 	tie(l, tt) = NodeFunc<T, U>::coord_tran(p1, p2);
 	
 	if(opt[1]==0){
-		for(size_t i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
-		if(opt[2]==0){
-			
-		}
-		else if(opt[2]==1){
-			
-		}
+		for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
+		if(opt[2]==0){}
+		else if(opt[2]==1){}
 		else{}
 	}
 	else{
-		if(p1->get_rot(0)>1.8e2){
-			loc2gbl.block(0, 0, 6, 6).setIdentity();
+		euler_tran = p1->get_euler_tran();
+		for(int i=0; i<3; i++){
+			for(int j=0; j<3; j++)loc2gbl(i, j) = loc2gbl(i+3, j+3) = euler_tran(i, j);
 		}
-		else{
-			/* 
-			matrix_<U> tmp = matrix_<U>::Zero(3, 3);
-			U cb = cos(p1->get_rot_rad(0)), sb = sin(p1->get_rot_rad(0));
-			U cp = cos(p1->get_rot_rad(1)), sp = sin(p1->get_rot_rad(1));
-			U ch = cos(p1->get_rot_rad(2)), sh = sin(p1->get_rot_rad(2));
-			
-			tmp.row(0) << ch*cb+sh*sp*sb, -ch*sb+sh*sp*cb, sh*cp;
-			tmp.row(1) << sb*cp, cb*cp, -sp;
-			tmp.row(2) << -sh*cb+ch*sp*sb, sb*sh+ch*sp*cb, ch*cp;
-			loc2gbl.block(0, 0, 3, 3) = loc2gbl.block(3, 3, 3, 3) = tmp;
-			
-			
-			Matrix3f tmp;
-			tmp  = AngleAxisf(p1->get_rot_rad(2), Vector3f::UnitY())*AngleAxisf(p1->get_rot_rad(1), Vector3f::UnitX())*AngleAxisf(p1->get_rot_rad(0), Vector3f::UnitZ());
-			*/
-			
-			euler_tran = p1->get_euler_tran();
-			for(int i=0; i<3; i++){
-				for(int j=0; j<3; j++){
-					loc2gbl(i, j) = U(euler_tran(i, j));
-					loc2gbl(i+3, j+3) = loc2gbl(i, j);
-				}
-			}
-			//loc2gbl.block(0, 0, 3, 3) = loc2gbl.block(3, 3, 3, 3) = euler_tran.cast<U>();
-		}
-		if(p2->get_rot(0)>1.8e2){
-			loc2gbl.block(6, 6, 6, 6).setIdentity();
-		}
-		else{
-			/* 
-			matrix_<U> tmp = matrix_<U>::Zero(3, 3);
-			U cb = cos(p2->get_rot_rad(0)), sb = sin(p2->get_rot_rad(0));
-			U cp = cos(p2->get_rot_rad(1)), sp = sin(p2->get_rot_rad(1));
-			U ch = cos(p2->get_rot_rad(2)), sh = sin(p2->get_rot_rad(2));
-			
-			tmp.row(0) << ch*cb+sh*sp*sb, -ch*sb+sh*sp*cb, sh*cp;
-			tmp.row(1) << sb*cp, cb*cp, -sp;
-			tmp.row(2) << -sh*cb+ch*sp*sb, sb*sh+ch*sp*cb, ch*cp;
-			loc2gbl.block(6, 6, 3, 3) = loc2gbl.block(9, 9, 3, 3) = tmp;
-			
-			
-			Matrix3f tmp;
-			tmp  = AngleAxisf(p1->get_rot_rad(2), Vector3f::UnitY())*AngleAxisf(p1->get_rot_rad(1), Vector3f::UnitX())*AngleAxisf(p1->get_rot_rad(0), Vector3f::UnitZ());
-			*/
-			
-			euler_tran = p2->get_euler_tran();
-			for(int i=0; i<3; i++){
-				for(int j=0; j<3; j++){
-					loc2gbl(i+6, j+6) = U(euler_tran(i, j));
-					loc2gbl(i+6+3, j+6+3) = loc2gbl(i+6, j+6);
-				}
-			}
-			//loc2gbl.block(6, 6, 3, 3) = loc2gbl.block(9, 9, 3, 3) = euler_tran.cast<U>();
+		euler_tran = p2->get_euler_tran();
+		for(int i=0; i<3; i++){
+			for(int j=0; j<3; j++)loc2gbl(i+6, j+6) = loc2gbl(i+9, j+9) = euler_tran(i, j);
 		}
 		int m{opt[1]-1};
 		assert(0<=m&&m<=5);

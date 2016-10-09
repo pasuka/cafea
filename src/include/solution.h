@@ -68,7 +68,7 @@ template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 	public:
 		//! default constructor.
-		SolutionStatic(){};
+		SolutionStatic(){sol_type_ = SolutionType::STATIC;};
 		//! Destructor.
 		~SolutionStatic() override {fmt::print("Destructor of static analysis.\n"); clear();};
 		//! Initialize environment.
@@ -91,6 +91,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		void post_process() override;
 		//! Get model information.
 		std::array<size_t, 5> get_info()const override;
+		
 	protected:
 		FileReader file_parser_;//!< Input file loader.
 		
@@ -105,6 +106,8 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		
 		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
+		
+		SolutionType sol_type_;
 };
  
 /**
@@ -114,7 +117,7 @@ template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 	public:
 		//! Default constructor.
-		SolutionModal(){};
+		SolutionModal(){SolutionStatic<FileReader, Scalar, ResultScalar>::sol_type_ = SolutionType::MODAL;};
 		//! Destructor.
 		~SolutionModal() override {fmt::print("Destructor of modal analysis.\n"); clear();};
 		//! Initialize environment.

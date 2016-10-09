@@ -36,7 +36,7 @@ using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string
 template <class T, class U>
 varargout<U> StructuralElement<T, U>::pipe16(
 	const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const Material<T> *prop, const Section<T> *sect)
+	const Material<T> *prop, const Section<T> *sect, const int *opt)
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
@@ -103,38 +103,40 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	const decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
 	
 	// Lumped Mass.
+	if(0<opt[0]){
  		mass(0, 0) = mass(6, 6) = Me/2.;
 		mass(1, 1) = mass(7, 7) = mass(2, 2) = mass(8, 8) = Me/2.;
 		mass(3, 3) = mass(9, 9) = Je/2.;
 		mass(4, 4) = mass(10, 10) = ry/2.;
 		mass(5, 5) = mass(11, 11) = rz/2.;
-    /* 
-	mass( 0, 0) = mass( 6,  6) = Me/3.;
-	mass( 0, 6) = mass( 6,  0) = mass(0, 0)/2.;
-	
-	mass( 3, 3) = mass( 9,  9) = Je/3.;
-	mass( 3, 9) = mass( 9,  3) = mass(3, 3)/2.;
-	
-	mass( 1, 1) = mass( 7,  7) = 13.*Me/35. + 6.*rz/(5.*Le);
-	mass( 5, 5) = mass(11, 11) = Me*Le*Le/105. + 2.*Le*rz/15.;
-	mass(11, 5) = mass( 5, 11) = -Me*Le*Le/140. - rz*Le/30.;
-	mass( 5, 1) = mass( 1,  5) = 11.*Me*Le/210. + rz/10.;
-	mass( 7, 5) = mass( 5,  7) = 13.*Me*Le/420. - rz/10.;
-	mass( 7, 1) = mass( 1,  7) = 9.*Me/70. - 6.*rz/(5.*Le);
-	
-	mass(11, 7) = mass( 7, 11) = -mass(5, 1);
-	mass(11, 1) = mass( 1, 11) = -mass(5, 7);
-	
-	mass( 2, 2) = mass( 8,  8) = 13.*Me/35. + 6.*ry/(5.*Le);
-	mass( 4, 4) = mass(10, 10) = Me*Le*Le/105. + 2.*Le*ry/15.;
-	mass(10, 4) = mass( 4, 10) = -Me*Le*Le/140. - ry*Le/30.;
-	mass( 4, 2) = mass( 2,  4) = -11.*Me*Le/210. - ry/10.;
-	mass( 8, 4) = mass( 4,  8) = -13.*Me*Le/420. + ry/10.;
-	mass( 8, 2) = mass( 2,  8) = 9.*Me/70. - 6.*ry/(5.*Le);
-	
-	mass(10, 2) = mass( 2, 10) = -mass(4, 8);
-	mass(10, 8) = mass( 8, 10) = -mass(4, 2);
-	*/
+	}
+    else{ 
+		mass( 0, 0) = mass( 6,  6) = Me/3.;
+		mass( 0, 6) = mass( 6,  0) = mass(0, 0)/2.;
+		
+		mass( 3, 3) = mass( 9,  9) = Je/3.;
+		mass( 3, 9) = mass( 9,  3) = mass(3, 3)/2.;
+		
+		mass( 1, 1) = mass( 7,  7) = 13.*Me/35. + 6.*rz/(5.*Le);
+		mass( 5, 5) = mass(11, 11) = Me*Le*Le/105. + 2.*Le*rz/15.;
+		mass(11, 5) = mass( 5, 11) = -Me*Le*Le/140. - rz*Le/30.;
+		mass( 5, 1) = mass( 1,  5) = 11.*Me*Le/210. + rz/10.;
+		mass( 7, 5) = mass( 5,  7) = 13.*Me*Le/420. - rz/10.;
+		mass( 7, 1) = mass( 1,  7) = 9.*Me/70. - 6.*rz/(5.*Le);
+		
+		mass(11, 7) = mass( 7, 11) = -mass(5, 1);
+		mass(11, 1) = mass( 1, 11) = -mass(5, 7);
+		
+		mass( 2, 2) = mass( 8,  8) = 13.*Me/35. + 6.*ry/(5.*Le);
+		mass( 4, 4) = mass(10, 10) = Me*Le*Le/105. + 2.*Le*ry/15.;
+		mass(10, 4) = mass( 4, 10) = -Me*Le*Le/140. - ry*Le/30.;
+		mass( 4, 2) = mass( 2,  4) = -11.*Me*Le/210. - ry/10.;
+		mass( 8, 4) = mass( 4,  8) = -13.*Me*Le/420. + ry/10.;
+		mass( 8, 2) = mass( 2,  8) = 9.*Me/70. - 6.*ry/(5.*Le);
+		
+		mass(10, 2) = mass( 2, 10) = -mass(4, 8);
+		mass(10, 8) = mass( 8, 10) = -mass(4, 2);
+	}
 	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
 	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\tRHS:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v, rhs(0));
 	rhs(6) = -rhs(0);

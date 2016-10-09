@@ -38,7 +38,7 @@ void Element<T>::form_matrix(const Node<REAL4, T> p[], const Material<REAL4> *ma
 	auto opt = this->get_option();
 	switch(this->etype_){
 	case ElementType::PIPE16:
-		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_, this->attr_) = StructuralElement<REAL4, T>::pipe16(&p[0], &p[1], matl, sect);
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_, this->attr_) = StructuralElement<REAL4, T>::pipe16(&p[0], &p[1], matl, sect, opt.data());
 		break;
 	case ElementType::PIPE18:
 		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_, this->attr_) = StructuralElement<REAL4, T>::pipe18(&p[0], &p[1], &p[2], matl, sect);

@@ -38,6 +38,7 @@ enum struct BoundaryType {
 enum struct DofType {
 	ELIMINATE=-11,
 	CONSTRAINT=-12,
+	PENALTY_FUN=-13,
 	NORMAL=-1,
 	MASTER=-2,
 	SLAVE=-3,
@@ -133,6 +134,17 @@ enum struct SolutionType {
 	MODAL,//!< Modal analysis.
 	HARMONIC,//!< Harmonic analysis.
 	UNKNOWN,
+};
+/**
+ *  Enum of solution parameter.
+ */
+enum struct SolutionParameter {
+	LUMP_MASS,
+	SUBSPACE,
+	BLOCK_LANCZOS,
+	LDLT,
+	SPLU,
+	SPQR,
 };
 }
 #endif
