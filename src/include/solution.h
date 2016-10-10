@@ -20,6 +20,7 @@
 #include "sparse_matrix.h"
 #include "mesh_reader.h"
 #include "eigenpair.h"
+#include "solution_config.h"
 
 namespace cafea
 {
@@ -68,7 +69,7 @@ template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 	public:
 		//! default constructor.
-		SolutionStatic(){sol_type_ = SolutionType::STATIC;};
+		SolutionStatic(){};
 		//! Destructor.
 		~SolutionStatic() override {fmt::print("Destructor of static analysis.\n"); clear();};
 		//! Initialize environment.
@@ -107,7 +108,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		
 		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
 		
-		SolutionType sol_type_;
+		std::unique_ptr<SolutionConfig<SolutionType::STATIC>> config_{nullptr};
 };
  
 /**
@@ -117,7 +118,7 @@ template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 	public:
 		//! Default constructor.
-		SolutionModal(){SolutionStatic<FileReader, Scalar, ResultScalar>::sol_type_ = SolutionType::MODAL;};
+		SolutionModal(){};
 		//! Destructor.
 		~SolutionModal() override {fmt::print("Destructor of modal analysis.\n"); clear();};
 		//! Initialize environment.
@@ -143,11 +144,15 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		{
 			return cout << "This is solution of modal analysis.\n";
 		};
+		//! Set solution config.
+		void set_config(const SolutionConfig*) override;
 	protected:
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
 
 		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};//!< Eigenpair solver.
+		
+		std::unique_ptr<SolutionConfig<SolutionType::MODAL>> config_{nullptr};
 };
 
 
