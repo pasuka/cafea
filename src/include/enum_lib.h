@@ -136,5 +136,14 @@ enum struct SolutionType {
 	HARMONIC_FULL,
 	HARMONIC_MODAL_SUPERPOSITION,
 };
+
+/**
+ *  Enum of element mass matrix form.
+ */
+enum struct MassType {
+	LUMPED,
+	CONSISTENT,
+};
+
 }
 #endif

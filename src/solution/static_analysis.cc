@@ -18,7 +18,6 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::clear()
 	if(!this->bc_group_.empty())this->bc_group_.clear();
 	this->mat_pair_.clear();
 	if(this->solver_)this->solver_.reset(nullptr);
-	if(this->config_)this->config_.reset(nullptr);
 };
 /**
  *  \brief Initliazation member variables.
@@ -29,8 +28,6 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::init()
 	this->clear();
 	std::unique_ptr<LinearSolver<ResultScalar>> p(new LinearSolver<ResultScalar>);
 	this->solver_ = std::move(p);
-	std::unique_ptr<SolutionConfig<SolutionType::STATIC>> p2(new SolutionConfig<SolutionType::STATIC>);
-	this->config_ = std::move(p2);
 };
 /**
  *  \brief Load input file.
@@ -460,14 +457,5 @@ void SolutionStatic<FileReader, Scalar, U>::write2mat(const char* fname)
 	Mat_VarFree(elem_list);
 	Mat_Close(matfp);
 	return;
-};
-
-/**
- *
- */
-template <class FileReader, class Scalar, class U>
-void SolutionStatic<FileReader, Scalar, U>::set_config(const SolutionConfig *p)
-{
-	
 };
 }

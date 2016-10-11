@@ -20,7 +20,6 @@
 #include "sparse_matrix.h"
 #include "mesh_reader.h"
 #include "eigenpair.h"
-#include "solution_config.h"
 
 namespace cafea
 {
@@ -107,8 +106,6 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		
 		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
-		
-		std::unique_ptr<SolutionConfig<SolutionType::STATIC>> config_{nullptr};
 };
  
 /**
@@ -144,15 +141,11 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		{
 			return cout << "This is solution of modal analysis.\n";
 		};
-		//! Set solution config.
-		void set_config(const SolutionConfig*) override;
 	protected:
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
 
 		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};//!< Eigenpair solver.
-		
-		std::unique_ptr<SolutionConfig<SolutionType::MODAL>> config_{nullptr};
 };
 
 
