@@ -59,6 +59,18 @@ class SolutionBase {
 			std::array<size_t, 5> a{0, 0, 0, 0,0};
 			return a;
 		};
+		//! Set mass matrix in lumped format.
+		virtual void set_mass_lumped(bool t=false) {fmt::print("Set Lumped mass.\n");};
+		//! Set solve option in numeric values.
+		virtual void set_parameter(SolutionOption chk, const Scalar val[], int n)
+		{
+			fmt::print("Set solve option. in numeric.\n");
+		};
+		//! Set solve option in boolean values.
+		virtual void set_parameter(SolutionOption chk, bool val=false)
+		{
+			fmt::print("Set solve option in boolean.\n");
+		};
 };
 
 /**
@@ -91,7 +103,11 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		void post_process() override;
 		//! Get model information.
 		std::array<size_t, 5> get_info()const override;
-		
+		//!
+		void set_mass_lumped(bool val=false) override
+		{
+			mass_type_ = val ? MassType::LUMPED : MassType::CONSISTENT;
+		};
 	protected:
 		FileReader file_parser_;//!< Input file loader.
 		
@@ -106,6 +122,10 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 		
 		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
+		
+		MassType mass_type_{MassType::CONSISTENT};
+	private:
+		SolutionType sol_type_{SolutionType::STATIC};
 };
  
 /**
@@ -141,11 +161,19 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		{
 			return cout << "This is solution of modal analysis.\n";
 		};
+		//! Set solve option in numeric values.
+		void set_parameter(SolutionOption chk, const Scalar val[], int n) override;
+		//! Set solve option in boolean values.
+		void set_parameter(SolutionOption chk, bool val=false) override;
 	protected:
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
 
 		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};//!< Eigenpair solver.
+	private:
+		SolutionType sol_type_{SolutionType::MODAL};
+		int freq_num_{1};
+		ResultScalar freq_range_[2]={ResultScalar(0), ResultScalar(-1)};
 };
 
 
@@ -159,6 +187,8 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		SolutionHarmonicFull(){};
 		//! Destructor.
 		~SolutionHarmonicFull();
+	private:
+		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
 		
 };
 /*template <class FileReader, class Scalar=float, class ResultScalar=double>

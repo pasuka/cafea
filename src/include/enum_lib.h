@@ -144,6 +144,18 @@ enum struct MassType {
 	LUMPED,
 	CONSISTENT,
 };
-
+/**
+ *
+ */
+enum struct SolutionOption {
+	LUMPED_MASS,
+	SOLVER_LDLT,
+	SOLVER_SPLU,
+	SOLVER_SPQR,
+	MODAL_SUBSPACE,
+	MODAL_LANCZOS,
+	MODAL_NUMBER,
+	MODAL_FREQ_RANGE,
+};
 }
 #endif

@@ -299,8 +299,12 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::analyze()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 {
+	bool lumped{false};
+	if(this->mass_type_==MassType::LUMPED)lumped = true;
+	
 	for(auto &it: this->elem_group_){
 		auto &p_elem = it.second;
+		if(lumped)p_elem.set_lumped_mass(lumped);
 		auto node_list = p_elem.get_node_list();
 		auto mt = p_elem.get_material_id();
 		auto st = p_elem.get_section_id();

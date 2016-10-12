@@ -136,6 +136,8 @@ class Element: public ObjectBase {
 		void set_element_type(ElementType et){etype_ = et;};
 		//! Set dof index of element.
 		void set_element_dofs(int x) {global_dofs_.push_back(x);};
+		//! Set mass matrix format.
+		void set_lumped_mass(bool val=false){if(val)keyopt_[0]=1;};
 		
 		//! Get material id.
 		int get_material_id() const {return matl_;};
@@ -167,6 +169,8 @@ class Element: public ObjectBase {
 		std::array<size_t, 2> get_result_shape() const;
 		//! Get global dofs array.
 		std::vector<int> get_element_dofs() const {return global_dofs_;};
+		//! Get mass format.
+		bool get_lumped_mass()const{return 0<keyopt_[0];};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
 		{

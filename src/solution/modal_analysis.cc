@@ -231,8 +231,11 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::analyze()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 {
+	bool lumped{false};
+	if(this->mass_type_==MassType::LUMPED)lumped = true;
 	for(auto &it: this->elem_group_){
 		auto node_list = it.second.get_node_list();
+		it.second.set_lumped_mass(lumped);
 		auto mt = it.second.get_material_id();
 		auto st = it.second.get_section_id();
 		auto got_mt = this->matl_group_.find(mt);
@@ -386,4 +389,45 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 	Mat_Close(matfp);
 	return;
 };
+
+/**
+ *  \brief Set solution parameter.
+ */
+template <class FP, class T, class U>
+void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, const T val[], int n)
+{
+	fmt::print("Modal parameter in numeric.\n");
+	if(1>n){
+		fmt::print("None of value input.\n");
+		return;
+	}
+	switch(chk){
+	case SolutionOption::MODAL_NUMBER:
+		this->freq_num_ = int(val[0]);
+		this->freq_range_[0] = U(0);
+		this->freq_range_[1] = U(-1);
+		break;
+	case SolutionOption::MODAL_FREQ_RANGE:
+		this->freq_num_ = -1;
+		this->freq_range_[0] = U(val[0]);
+		this->freq_range_[1] = U(val[1]);
+		break;
+	default: fmt::print("Unsupport numeric parameter in modal analyze");
+	}
+}
+
+/**
+ * \brief Set solution parameter.
+ */
+template <class FP, class T, class U>
+void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, bool val)
+{
+	fmt::print("Modal parameter in boolean.\n");
+	switch(chk){
+	case SolutionOption::LUMPED_MASS:
+		this->set_mass_lumped(val);
+		break;
+	default: fmt::print("Unsupport boolean parameter in modal analyze.\n");
+	}
+}
 }
