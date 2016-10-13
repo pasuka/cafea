@@ -62,7 +62,7 @@ class SolutionBase {
 		//! Set mass matrix in lumped format.
 		virtual void set_mass_lumped(bool t=false) {fmt::print("Set Lumped mass.\n");};
 		//! Set solve option in numeric values.
-		virtual void set_parameter(SolutionOption chk, const Scalar val[], int n)
+		virtual void set_parameter(SolutionOption chk, init_list_<ResultScalar> val)
 		{
 			fmt::print("Set solve option. in numeric.\n");
 		};
@@ -70,6 +70,12 @@ class SolutionBase {
 		virtual void set_parameter(SolutionOption chk, bool val=false)
 		{
 			fmt::print("Set solve option in boolean.\n");
+		};
+		//! Get result matrix.
+		virtual matrix_<ResultScalar> get_result() const
+		{
+			matrix_<ResultScalar> tmp;
+			return tmp;
 		};
 };
 
@@ -162,9 +168,11 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 			return cout << "This is solution of modal analysis.\n";
 		};
 		//! Set solve option in numeric values.
-		void set_parameter(SolutionOption chk, const Scalar val[], int n) override;
+		void set_parameter(SolutionOption chk, init_list_<ResultScalar> val) override;
 		//! Set solve option in boolean values.
 		void set_parameter(SolutionOption chk, bool val=false) override;
+		//! Get result.
+		matrix_<ResultScalar> get_result() const override {return natural_freq_;};
 	protected:
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.

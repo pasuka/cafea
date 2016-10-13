@@ -281,19 +281,40 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 {
-	this->solver_->load(this->mat_pair_.get_stif_ptr(),
-		this->mat_pair_.get_mass_ptr(), this->mat_pair_.get_coord_ptr(),
-		this->mat_pair_.get_nnz(), this->mat_pair_.get_dim());
+	matrix_<ResultScalar> val, shp;
+	auto dim = this->mat_pair_.get_dim();
+	auto nnz = this->mat_pair_.get_nnz();
+	auto eps = EPS<ResultScalar>();
+	auto hz2rad = [=](ResultScalar x) {return ResultScalar(pow(x*2.0*PI<>(), 2.));};
+	
+	this->solver_->load(this->mat_pair_.get_stif_ptr(), this->mat_pair_.get_mass_ptr(),
+		this->mat_pair_.get_coord_ptr(), nnz, dim);
+	
+	if(0<this->freq_num_ && dim>=this->freq_num_){
+		std::tie(val, shp) = this->solver_->subspace(this->freq_num_);
+	}
+	else if(eps<this->freq_range_[1]){
+		std::tie(val, shp) = this->solver_->subspace(hz2rad(this->freq_range_[1]), hz2rad(this->freq_range_[0]));
+	}
+	else{
+		std::tie(val, shp) = this->solver_->subspace(1);
+	}
+	if(val.rows()){
+		for(int i=0; i<val.rows(); i++)val(i, 0) = sqrt(val(i, 0))/2./PI<>();
+		this->natural_freq_ = val;
+		this->mode_shape_ = shp;
+		fmt::print("Solve finished.\n");
+	}
 	// ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
 	// fspan[0] = PI<ResultScalar>()*PI<ResultScalar>()*ResultScalar(1e10);
 	// this->solver_.subspace(fspan[0], fspan[1]);
-	matrix_<ResultScalar> val, shp;
-	ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
-	fspan[0] = pow(PI<ResultScalar>()*ResultScalar(2000), 2.0);
+	// matrix_<ResultScalar> val, shp;
+	// ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
+	// fspan[0] = pow(PI<ResultScalar>()*ResultScalar(2000), 2.0);
 	// std::tie(val, shp) = this->solver_->subspace(fspan[0], fspan[1]);
-	std::tie(val, shp) = this->solver_->subspace(15);
-	fmt::print("\n");
-	for(int i=0; i<val.rows(); i++)fmt::print("No.{}\tFreq.:{}Hz Error:{}\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>(), val(i, 1));
+	// std::tie(val, shp) = this->solver_->subspace(15);
+	// fmt::print("\n");
+	// for(int i=0; i<val.rows(); i++)fmt::print("No.{}\tFreq.:{}Hz Error:{}\n", i+1, sqrt(val(i, 0))/2/PI<ResultScalar>(), val(i, 1));
 	// auto nn = this->solver_.sturm_check(1e30);
 };
 
@@ -394,26 +415,28 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
  *  \brief Set solution parameter.
  */
 template <class FP, class T, class U>
-void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, const T val[], int n)
+void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, init_list_<U> val)
 {
 	fmt::print("Modal parameter in numeric.\n");
-	if(1>n){
-		fmt::print("None of value input.\n");
-		return;
-	}
+	int flag{0};
 	switch(chk){
 	case SolutionOption::MODAL_NUMBER:
-		this->freq_num_ = int(val[0]);
+		for(auto p: val)this->freq_num_ = int(p);
 		this->freq_range_[0] = U(0);
 		this->freq_range_[1] = U(-1);
 		break;
 	case SolutionOption::MODAL_FREQ_RANGE:
 		this->freq_num_ = -1;
-		this->freq_range_[0] = U(val[0]);
-		this->freq_range_[1] = U(val[1]);
+		for(auto p: val){
+			if(1>=flag){
+				this->freq_range_[flag] = p;
+			}
+			flag++;
+		}
 		break;
 	default: fmt::print("Unsupport numeric parameter in modal analyze");
 	}
+	
 }
 
 /**
