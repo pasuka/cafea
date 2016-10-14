@@ -220,8 +220,8 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		else{
 			Xk = pow(r/t, 4./3.)*pow(R/r, 1./3.);
 		}
-		//kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
-		kp = 1.65/h;		
+		kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
+		// kp = 1.65/h;		
 		if(kp<1.)kp = 1.;
 	}
 	
