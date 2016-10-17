@@ -434,6 +434,13 @@ void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, init_list_<U> va
 			flag++;
 		}
 		break;
+	case SolutionOption::PRESSURE_INTERNAL:
+		for(auto p: val){
+			for(auto &it: this->sect_group_){
+				it.second.set_sect_prop(SectionProp::PRESIN, T(p));
+			}
+		}
+		break;
 	default: fmt::print("Unsupport numeric parameter in modal analyze");
 	}
 	

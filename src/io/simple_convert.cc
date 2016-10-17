@@ -75,6 +75,12 @@ Section<T> AdapterF2Cpp<T, U>::cdb2sect(const matl_f *p_sect)
 	st.set_sect_prop(SectionProp::OD, p_sect->val_[0]);
 	st.set_sect_prop(SectionProp::TKWALL, p_sect->val_[1]);
 	st.set_sect_prop(SectionProp::RADCUR, p_sect->val_[2]);
+	if(p_sect->val_[5]>p_sect->val_[6]){
+		st.set_sect_prop(SectionProp::DENSFL, p_sect->val_[5]);	
+	}
+	else{
+		st.set_sect_prop(SectionProp::DENSFL, p_sect->val_[6]);
+	}
 	return st;
 };
 

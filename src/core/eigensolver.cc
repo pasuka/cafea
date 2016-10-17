@@ -168,7 +168,7 @@ tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(int nreq, T tol, T sig
 		y = this->mgs(y2, this->matB_);
 		// Compute relative error.
 		Res = rerr(y0.leftCols(nreq), y.leftCols(nreq));
-		fmt::print("Iter:{}\tRES:{}\n", iter, Res.norm());
+		// fmt::print("Iter:{}\tRES:{}\n", iter, Res.norm());
 		// Check for tolerance.
 		if(Res.norm()<tol)break;
 		iter++;

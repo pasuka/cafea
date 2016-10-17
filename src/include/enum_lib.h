@@ -156,6 +156,7 @@ enum struct SolutionOption {
 	MODAL_LANCZOS,
 	MODAL_NUMBER,
 	MODAL_FREQ_RANGE,
+	PRESSURE_INTERNAL,
 };
 }
 #endif

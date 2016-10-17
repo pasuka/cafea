@@ -1,6 +1,5 @@
 #include <tuple>
 #include <cmath>
-#include <cstddef>
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -41,8 +40,8 @@ varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p,
 	
 	//! Mass on X Y Z direction.
 	//! Notice: mass element do not need transform in most cases.
-	for(size_t i: {0, 1, 2})mass(i, i) = sect->get_sect_prop(SectionProp::ADDONMASS);
-	
+	for(auto i: {0, 1, 2})mass(i, i) = sect->get_sect_prop(SectionProp::ADDONMASS);
+	// fmt::print("Mass add-on:{}\n", mass(0, 0));
 	return make_tuple(stif, mass, tran, rhs, attr);
 }
 
@@ -56,7 +55,7 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
-	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
+	matrix_<U> loc2gbl = matrix_<U>::Identity(12, 12);
 	vecX_<U> rhs = vecX_<U>::Zero(12);
 	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},}; 
 	
@@ -67,6 +66,8 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 	
 	if(opt[1]==0){
 		for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
+		for(int i: {0, 1, 2, 6, 7, 8})stif(i, i) = sect->get_sect_prop(SectionProp::ADDONSPRING);
+		for(int i: {0, 1, 2})stif(i+6, i) = stif(i, i+6) = -stif(i, i);
 		if(opt[2]==0){}
 		else if(opt[2]==1){}
 		else{}
@@ -84,6 +85,7 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
 		assert(0<=m&&m<=5);
 		stif(m, m) = stif(m+6, m+6) = sect->get_sect_prop(SectionProp::ADDONSPRING);
 		stif(m+6, m) = stif(m, m+6) = -stif(m, m);
+		// fmt::print("Dof:{}\tKe:{}\n", m+1, stif(m, m));
 	}
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);

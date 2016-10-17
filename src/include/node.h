@@ -210,7 +210,7 @@ class NodeBase: public ObjectBase {
 			Eigen::Matrix<Scalar, 3, 3> tran = Eigen::Matrix<Scalar, 3, 3>::Identity();
 			vec3_<Scalar> IY = vec3_<Scalar>::Zero(3), IX=IY, IZ=IY;
 		
-			if(get_rot(0)<1.8e2){
+			if(angle_(0)<1.8e2){
 				IX(0) = IY(1) = IZ(2) = Scalar(1);
 				Scalar a0 = get_rot_rad(0);
 				Scalar a1 = get_rot_rad(1);

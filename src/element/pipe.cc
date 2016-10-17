@@ -97,10 +97,15 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	stif(10, 2) = stif( 2, 10) = stif(4, 2);
 	stif( 8, 2) = stif( 2,  8) = -stif(2, 2);
 	
-	const decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*Le;
+	decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*Le;
 	const decltype(Ro) Je = prop->get_material_prop(MaterialProp::DENS)*Jxx*Le;
 	const decltype(Ro) rz = prop->get_material_prop(MaterialProp::DENS)*Izz;
 	const decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
+	
+	{
+		decltype(Ro) fluid_dens = sect->get_sect_prop(SectionProp::DENSFL);
+		if(fluid_dens>EPS<>())Me += fluid_dens*PI<U>()*Ri*Ri*Le;
+	}
 	
 	// Lumped Mass.
 	if(0<opt[0]){
@@ -138,7 +143,7 @@ varargout<U> StructuralElement<T, U>::pipe16(
 		mass(10, 8) = mass( 8, 10) = -mass(4, 2);
 	}
 	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
-	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\tRHS:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v, rhs(0));
+	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
 	rhs(6) = -rhs(0);
 	
 	map<string, U> attr{{"Length", Le}, {"Area", Ax}, {"Volume", Ax*Le}, {"Mass", Me}, {"Aw", Ax},
@@ -204,11 +209,17 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	// double alpha{.54414+2.97294*Ri/Ro-1.51899*Ri*Ri/Ro/Ro};
 	// double alpha{1.885};
 	const decltype(Ro) alpha = 2.;
-	const decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*l;
+	
 	const decltype(Ro) EA = prop->get_material_prop(MaterialProp::YOUNG)*Ax;
 	const decltype(Ro) GA = prop->get_material_prop(MaterialProp::YOUNG)*Ax*.5/(1.0+v);
 	const decltype(Ro) EI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy;
 	const decltype(Ro) GI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy*.5/(1.0+v);
+	
+	decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*l;
+	{
+		decltype(Ro) fluid_dens = sect->get_sect_prop(SectionProp::DENSFL);
+		if(fluid_dens>EPS<>())Me += fluid_dens*PI<U>()*Ri*Ri*l;
+	}
 	
 	decltype(Ro) kp;
 	{
@@ -273,7 +284,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		{"Thick", t}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
 		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
-	
+	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
 	/*
 	// *******************************************************
 	// * Load caused by internal pressure need to be fixed.  *
