@@ -102,10 +102,7 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	const decltype(Ro) rz = prop->get_material_prop(MaterialProp::DENS)*Izz;
 	const decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
 	
-	{
-		decltype(Ro) fluid_dens = sect->get_sect_prop(SectionProp::DENSFL);
-		if(fluid_dens>EPS<>())Me += fluid_dens*PI<U>()*Ri*Ri*Le;
-	}
+
 	
 	// Lumped Mass.
 	if(0<opt[0]){
@@ -141,6 +138,15 @@ varargout<U> StructuralElement<T, U>::pipe16(
 		
 		mass(10, 2) = mass( 2, 10) = -mass(4, 8);
 		mass(10, 8) = mass( 8, 10) = -mass(4, 2);
+	}
+	{
+		decltype(Ro) fluid_dens = sect->get_sect_prop(SectionProp::DENSFL);
+		if(fluid_dens>EPS<>()){
+			for(int i: {0, 1, 2, 6, 7, 8}){
+				mass(i, i) += fluid_dens*PI<U>()*Ri*Ri*Le*0.5;
+			}
+			fmt::print("Pipe16 Fluid mass:{}\n", fluid_dens*PI<U>()*Ri*Ri*Le);
+		}
 	}
 	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
 	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
@@ -219,6 +225,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	{
 		decltype(Ro) fluid_dens = sect->get_sect_prop(SectionProp::DENSFL);
 		if(fluid_dens>EPS<>())Me += fluid_dens*PI<U>()*Ri*Ri*l;
+		if(fluid_dens>EPS<>())fmt::print("PIPE18 Fluid mass:{}\n", fluid_dens*PI<U>()*Ri*Ri*l);
 	}
 	
 	decltype(Ro) kp;
