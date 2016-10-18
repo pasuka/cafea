@@ -89,6 +89,7 @@ TEST_CASE("CDB examples", "[Solution Modal]")
 		example->solve();
 		cafea::matrix_<double> rst = example->get_result();
 		fmt::print("\nFile Name:{}\n\n", p.cdb_name.c_str());
+		for(const auto s: cafea::split(p.cdb_name.data(), ".c"))std::cout << s << "\n";
 		fmt::print("***************************************************************************\n");
 		fmt::print("\tNo.\t  Present  \t  Reference\t  Error\n");
 		for(int i=0; i<rst.rows(); i++){

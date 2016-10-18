@@ -5,7 +5,10 @@
 #include <cstddef>
 
 #include <tuple>
+#include <regex>
+#include <vector>
 #include <limits>
+#include <string>
 #include <complex>
 #include <unordered_map>
 #include <initializer_list>
@@ -57,6 +60,9 @@ template <class T>
 using dict_ = std::unordered_map<int, T>;
 
 //! Gauss integrate point and weight.
-std::tuple<vecX_<>, vecX_<>> gauss_quad(size_t);	
+std::tuple<vecX_<>, vecX_<>> gauss_quad(size_t);
+
+//! 
+std::vector<std::string> split(const std::string&, const std::string&);
 }
 #endif
