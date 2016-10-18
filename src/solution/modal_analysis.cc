@@ -417,7 +417,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 template <class FP, class T, class U>
 void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, init_list_<U> val)
 {
-	fmt::print("Modal parameter in numeric.\n");
+	// fmt::print("Modal parameter in numeric.\n");
 	int flag{0};
 	switch(chk){
 	case SolutionOption::MODAL_NUMBER:
@@ -452,7 +452,7 @@ void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, init_list_<U> va
 template <class FP, class T, class U>
 void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, bool val)
 {
-	fmt::print("Modal parameter in boolean.\n");
+	// fmt::print("Modal parameter in boolean.\n");
 	switch(chk){
 	case SolutionOption::LUMPED_MASS:
 		this->set_mass_lumped(val);
