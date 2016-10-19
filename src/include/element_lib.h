@@ -3,6 +3,8 @@
 
 #include <map>
 #include <tuple>
+#include <array>
+#include <vector>
 #include <string>
 
 #include "node.h"
@@ -15,10 +17,12 @@ namespace
 {
 using std::map;
 using std::tuple;
+using std::array;
+using std::vector;
 using std::string;
 
 template <class T>
-using varargout_basic = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
+using var_out_ = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
 }
 
 /**
@@ -29,23 +33,31 @@ struct StructuralElement{
 	/**
 	 *  \brief 2-node straight pipe element.
 	 */
-	static varargout_basic<U> pipe16(const NodeBase<T>*, const NodeBase<T>*,
-		const Material<T>*, const Section<T>*, const int*);
+	static var_out_<U> pipe16(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
+		const Section<T>*, const int*);
+	
+	static var_out_<U> pipe16(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+		const int*);
 	/**
 	 *  \brief 2-node elbow pipe element.
 	 */
-	static varargout_basic<U> pipe18(const NodeBase<T>*, const NodeBase<T>*,
-		const NodeBase<T>*, const Material<T>*, const Section<T>*);
+	static var_out_<U> pipe18(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
+		const Material<T>*, const Section<T>*);
+	static var_out_<U> pipe18(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
 	/**
 	 *  \brief 1-node mass element.
 	 */
-	static varargout_basic<U> mass21(const NodeBase<T>*, const Material<T>*,
-		const Section<T>*, const int[]);
+	static var_out_<U> mass21(const NodeBase<T>*, const Material<T>*, const Section<T>*,
+		const int[]);
+	static var_out_<U> mass21(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+		const int[]);
 	/**
 	 *  \brief 2-node spring element.
 	 */
-	static varargout_basic<U> combin14(const NodeBase<T>*, const NodeBase<T>*, 
-		const Material<T>*, const Section<T>*, const int[]);
+	static var_out_<U> combin14(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
+		const Section<T>*, const int[]);
+	static var_out_<U> combin14(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+		const int[]);
 };
 /**
  *  \brief Interface for structural element post process.

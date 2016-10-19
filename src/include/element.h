@@ -70,7 +70,11 @@ class Element: public ObjectBase {
 			id)}, matl_(mp), sect_(st) {assert(sect_>0&&matl_>0);};
 			
 		//! Generate stifness mass matrix of element.
-		void form_matrix(const Node<REAL4, T>[], const Material<REAL4>*, const Section<REAL4>*);
+		template <class U=REAL4>
+		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*);
+		
+		template <class U=REAL4>
+		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*);
 		
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};
@@ -222,6 +226,8 @@ class Element: public ObjectBase {
 		matrix_<std::complex<T>> result_cmplx_;//!< Result of element in complex.
 		
 };
+
+#include "element_ext.hpp"
 
 //! Specialization.
 template class Element<REAL8>;

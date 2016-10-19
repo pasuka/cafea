@@ -25,11 +25,31 @@ template <class T>
 using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
 }
 /**
+ *  \brief Mass Element.
+ */
+template <class T, class U>
+varargout<U> StructuralElement<T, U>::mass21(const vector<Node<T, U>> pt, const Material<T> *mp,
+	const Section<T> *sect, const int opt[])
+{
+	assert(1==pt.size());
+	return StructuralElement<T, U>::mass21(&pt[0], mp, sect, opt);
+}
+/**
+ *  \brief Spring Element.
+ */
+template <class T, class U>
+varargout<U> StructuralElement<T, U>::combin14(const vector<Node<T, U>> pt, const Material<T> *mp,
+	const Section<T> *sect, const int opt[])
+{
+	assert(2==pt.size());
+	return StructuralElement<T, U>::combin14(&pt[0], &pt[1], mp, sect, opt);
+}
+/**
  *  \brief Mass.
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p,
-	const Material<T> *prop, const Section<T> *sect, const int opt[])
+varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p, const Material<T> *prop,
+	const Section<T> *sect, const int opt[])
 {
 	matrix_<U> stif = matrix_<U>::Zero(6, 6);
 	matrix_<U> mass = matrix_<U>::Zero(6, 6);
@@ -49,9 +69,8 @@ varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p,
  *  \brief Spring.
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1,
-	const NodeBase<T> *p2, const Material<T> *prop, const Section<T> *sect,
-	const int opt[])
+varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
+	const Material<T> *prop, const Section<T> *sect, const int opt[])
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);

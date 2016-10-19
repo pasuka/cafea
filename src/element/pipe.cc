@@ -25,6 +25,28 @@ using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string
 }
 /**
  *  \brief Straight Pipe Element No.16
+ *
+ */
+template <class T, class U>
+varargout<U> StructuralElement<T, U>::pipe16(const vector<Node<T, U>> pt, const Material<T> *mp,
+	const Section<T> *sect, const int *opt)
+{
+	assert(2==pt.size());
+	return StructuralElement<T, U>::pipe16(&pt[0], &pt[1], mp, sect, opt);
+}
+/**
+ *  \brief Straight Pipe Element No.18
+ *
+ */
+template <class T, class U>
+varargout<U> StructuralElement<T, U>::pipe18(const vector<Node<T, U>> pt, const Material<T> *mp,
+	const Section<T> *sect)
+{
+	assert(3==pt.size());
+	return StructuralElement<T, U>::pipe18(&pt[0], &pt[1], &pt[2], mp, sect);
+}
+/**
+ *  \brief Straight Pipe Element No.16
  *  
  *  \param [in] p1 Start node of element
  *  \param [in] p2 End node of element
