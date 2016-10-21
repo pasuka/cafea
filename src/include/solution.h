@@ -199,6 +199,20 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
 		
 };
+/*
+struct aa3{
+	virtual ~aa3(){fmt::print("This is a test\n");};
+	virtual void clear()=0;
+};
+template <class T=int, int N=4>
+class bb3: public aa3{
+	public:
+		~bb3()override{fmt::print("destroy bb3\n");};
+		void clear()override{fmt::print("This is bb3 clear\n");};
+	private:
+		T block_[N];
+};
+*/
 /*template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 	public:

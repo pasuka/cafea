@@ -278,7 +278,8 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 		}
 	}
 }
-
+template <class U, class T=Eigen::SparseLU<Eigen::SparseMatrix<U>>>
+using solver_basic=EigenSolver<U, T>;
 /**
  *  \brief Solve.
  */
@@ -290,6 +291,18 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	auto nnz = this->mat_pair_.get_nnz();
 	auto eps = EPS<ResultScalar>();
 	auto hz2rad = [=](ResultScalar x) {return ResultScalar(pow(x*2.0*PI<>(), 2.));};
+	/*
+	std::unique_ptr<aa3> ptr_bb3(new bb3<double, 6>);
+	int aa{2};
+	switch(aa){
+	case 0:
+	case 1:
+	case 2:
+	default:
+		ptr_bb3.reset(nullptr);
+		std::unique_ptr<aa3> p(new bb3<float, 8>);
+		ptr_bb3 = std::move(p);
+	}*/
 	
 	this->solver_->load(this->mat_pair_.get_stif_ptr(), this->mat_pair_.get_mass_ptr(),
 		this->mat_pair_.get_coord_ptr(), nnz, dim);
