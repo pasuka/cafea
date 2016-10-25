@@ -313,7 +313,8 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		{"Thick", t}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
 		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
-	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
+	fmt::print("PRES:{}\tRi:{}\tPrxy:{}\t", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
+	fmt::print("Ro:{}\tCurvature:{}\n", Ro, R);
 	/*
 	// *******************************************************
 	// * Load caused by internal pressure need to be fixed.  *
@@ -325,6 +326,11 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	// rhs = Fp*loc2gbl.transpose()*stif*loc2gbl*rhs;
 	rhs = .5*Fp*stif*loc2gbl*rhs;
 	*/
+	auto Fp = PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
+	rhs(1) = rhs(7) = -Fp*sin_b;
+	rhs(0) = -Fp*cos_b;
+	rhs(6) = -rhs(0);
+	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
 

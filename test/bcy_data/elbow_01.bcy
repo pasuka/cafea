@@ -7,7 +7,7 @@ $NODE
 $END_NODE
 $ELEM
 1, 1
-1, 18, 1, 1, 3,  2,4,1
+1, 18, 1, 1, 3,  1,3,4
 $END_ELEM
 $MATL
 1, 1

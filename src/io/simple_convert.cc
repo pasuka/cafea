@@ -150,8 +150,8 @@ Section<T> AdapterF2Cpp<T, U>::bcy2sect(const sect_bcy *p)
 	st.set_sect_prop(SectionProp::RADCUR, p->val_[2]);
 	st.set_sect_prop(SectionProp::DENSFL, p->val_[3]);
 	st.set_sect_prop(SectionProp::PRESIN, p->val_[4]);
-	st.set_sect_prop(SectionProp::ADDONMASS, p->val_[5]);
-	st.set_sect_prop(SectionProp::ADDONSPRING, p->val_[6]);
+	//st.set_sect_prop(SectionProp::ADDONMASS, p->val_[5]);
+	//st.set_sect_prop(SectionProp::ADDONSPRING, p->val_[6]);
 	return st;
 };
 /**

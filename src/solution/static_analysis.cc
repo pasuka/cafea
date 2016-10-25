@@ -317,7 +317,6 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::assembly()
 			auto got = this->node_group_.find(node_list[i]);
 			if(got!=this->node_group_.end())pt[i] = got->second;
 		}
-		const size_t N = node_list.size();
 		p_elem.template form_matrix<Scalar>(pt, &(got_mt->second), &(got_st->second));
 		auto p_stif = p_elem.get_stif();
 		auto p_mass = p_elem.get_mass();
