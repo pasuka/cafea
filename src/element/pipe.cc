@@ -170,7 +170,7 @@ varargout<U> StructuralElement<T, U>::pipe16(
 			fmt::print("Pipe16 Fluid mass:{}\n", fluid_dens*PI<U>()*Ri*Ri*Le);
 		}
 	}
-	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
+	rhs(0) = PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
 	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
 	rhs(6) = -rhs(0);
 	
@@ -291,7 +291,25 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	stif.block(0, 6, 6, 6) = H*sij;
 	stif.block(6, 0, 6, 6) = sij*H.transpose();
 	stif.block(6, 6, 6, 6) = sij;
-	
+	{
+		auto r = Ro-0.5*t;
+		auto pres = sect->get_sect_prop(SectionProp::PRESIN);
+		auto DUM = PI<U>()*pres*the*pow(r, 4.0)*0.5/EI;
+		auto DU2 = r/R;
+		auto BTA = DUM*(2.-2.*v+(3.+1.5*v)*pow(DU2, 2.0));
+		
+		vecX_<U> B = vecX_<U>::Zero(6);
+		
+		DUM = R*BTA/the;
+		B(0) = DUM*(sin_the - the*cos_the);
+		B(1) = DUM*(1.0 - cos_the - the*sin_the);
+		B(5) = -BTA;
+		
+		DUM = pres*r*(0.5-v)*R/(t*prop->get_material_prop(MaterialProp::YOUNG));
+		B(0) += DUM*sin_the;
+		B(1) += DUM*(1.0-cos_the);
+		rhs = stif.block(0, 6, 12, 6)*B;
+	}	
 	matrix_<U> tmp = matrix_<U>::Zero(3, 3);
 	matrix_<U> t2 = matrix_<U>::Zero(12, 12);
 	const decltype(Ro) cos_b = cos(.5*the), sin_b = sin(.5*the);
@@ -302,6 +320,9 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	
 	for(int i: {0, 1, 2, 3})t2.block(i*3, i*3, 3, 3) = tmp;
 	stif = t2.transpose()*stif*t2;
+	{
+		rhs = t2.transpose()*rhs;
+	}
 	
 	for(int i: {0, 1, 2, 6, 7, 8})mass(i, i) = 0.5*Me;
 	//! From Code-Aster reference formulation.
@@ -326,10 +347,8 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	// rhs = Fp*loc2gbl.transpose()*stif*loc2gbl*rhs;
 	rhs = .5*Fp*stif*loc2gbl*rhs;
 	*/
-	auto Fp = PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
-	rhs(1) = rhs(7) = -Fp*sin_b;
-	rhs(0) = -Fp*cos_b;
-	rhs(6) = -rhs(0);
+
+	
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
