@@ -170,7 +170,7 @@ varargout<U> StructuralElement<T, U>::pipe16(
 			fmt::print("Pipe16 Fluid mass:{}\n", fluid_dens*PI<U>()*Ri*Ri*Le);
 		}
 	}
-	rhs(0) = PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
+	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
 	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
 	rhs(6) = -rhs(0);
 	
@@ -261,7 +261,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 			Xk = pow(r/t, 4./3.)*pow(R/r, 1./3.);
 		}
 		kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
-		// kp = 1.65/h;		
+		kp = 1.65/h;		
 		if(kp<1.)kp = 1.;
 	}
 	
@@ -297,6 +297,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		auto DUM = PI<U>()*pres*the*pow(r, 4.0)*0.5/EI;
 		auto DU2 = r/R;
 		auto BTA = DUM*(2.-2.*v+(3.+1.5*v)*pow(DU2, 2.0));
+		auto young = prop->get_material_prop(MaterialProp::YOUNG);
 		
 		vecX_<U> B = vecX_<U>::Zero(6);
 		
@@ -305,7 +306,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		B(1) = DUM*(1.0 - cos_the - the*sin_the);
 		B(5) = -BTA;
 		
-		DUM = pres*r*(0.5-v)*R/(t*prop->get_material_prop(MaterialProp::YOUNG));
+		DUM = pres*r*(0.5-v)*R/(t*young);
 		B(0) += DUM*sin_the;
 		B(1) += DUM*(1.0-cos_the);
 		rhs = stif.block(0, 6, 12, 6)*B;

@@ -15,7 +15,7 @@ endif
 endif
 
 INCLUDE := -I../src/include -I../src/include/matio -I../matio/src -I../eigen
-INCLUDE += -I../cppformat -I../Catch/single_include
+INCLUDE += -I../fmt -I../Catch/single_include
 CXXFLAGS += $(INCLUDE)
 
 ASTERISK4 := "****"
@@ -23,7 +23,7 @@ ASTERISK16 := $(ASTERISK4)$(ASTERISK4)$(ASTERISK4)$(ASTERISK4)
 ASTERISK := $(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
-SRC = ../cppformat/fmt/format.o ../src/core/coord_tran.o ../src/core/integration.o
+SRC = ../fmt/fmt/format.o ../src/core/coord_tran.o ../src/core/integration.o
 SRC += ../src/core/sparse_matrix.o ../src/core/eigensolver.o
 SRC += ../src/base/material.o ../src/base/section.o ../src/base/node.o
 SRC += ../src/base/dof_handler.o

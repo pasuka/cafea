@@ -387,7 +387,7 @@ void SolutionStatic<FileReader, T, U>::post_process()
 		vecX_<U> x = vecX_<U>::Zero(va.size());
 		for(int i=0; i<x.size(); i++)x(i) = va[i]<0 ? U(0): sol(va[i]);
 		// fmt::print("Element ID:{}\tDisplacement:\n", p_elem.get_id());
-		std::cout << x << "\n";
+		// std::cout << x << "\n";
 		p_elem.post_stress(x);
 	}
 };
