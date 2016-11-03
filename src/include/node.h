@@ -341,7 +341,7 @@ template class Node<REAL8, REAL4>;
 /**
  *  \brief Coordinate transform uitiliy.
  */
-template <class T, class U>
+template <class T=REAL4, class U=REAL8>
 struct NodeFunc{
 	//! Coordinate transform for 2-node element.
 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*);
@@ -361,6 +361,19 @@ template struct NodeFunc<REAL4, REAL4>;
 template struct NodeFunc<REAL4, REAL8>;
 template struct NodeFunc<REAL8, REAL4>;
 template struct NodeFunc<REAL8, REAL8>;
+
+/**
+ * \brief Quadrilateral Area Coordinate Method.
+ */
+template <class T=REAL8>
+struct QACM{
+	//! 
+	static tuple<T, vecX_<T>, vecX_<T>, vecX_<T>> shape_2d(T, T, const matrix_<T>, int);
+};
+
+//! Specialization.
+template struct QACM<REAL4>;
+template struct QACM<REAL8>;
 
 }
 #endif
