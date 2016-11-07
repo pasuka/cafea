@@ -64,11 +64,6 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
 	vecX_<U> rhs = vecX_<U>::Zero(12);
 	
-	// material prop2 = prop;
-	// prop2.mtype =21;
-	// float up[]={0.1, 0., 1.};
-	// return beam_elem_lib::beam188(p1, p2, prop2, up);
-	
 	U Ro = 0.5*sect->get_sect_prop(SectionProp::OD);
 	const decltype(Ro) Ri = Ro - sect->get_sect_prop(SectionProp::TKWALL);
 	const decltype(Ro) Ax = PI<U>()*(Ro*Ro-Ri*Ri);
@@ -124,8 +119,6 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	const decltype(Ro) rz = prop->get_material_prop(MaterialProp::DENS)*Izz;
 	const decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
 	
-
-	
 	// Lumped Mass.
 	if(0<opt[0]){
  		mass(0, 0) = mass(6, 6) = Me/2.;
@@ -171,7 +164,6 @@ varargout<U> StructuralElement<T, U>::pipe16(
 		}
 	}
 	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
-	// fmt::print("PRES:{}\tRi:{}\tPrxy:{}\n", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
 	rhs(6) = -rhs(0);
 	
 	map<string, U> attr{{"Length", Le}, {"Area", Ax}, {"Volume", Ax*Le}, {"Mass", Me}, {"Aw", Ax},
@@ -196,7 +188,6 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	matrix_<U> fij = matrix_<U>::Zero(6, 6);
 	matrix_<U> sij = matrix_<U>::Zero(6, 6);
 	matrix_<U> H = matrix_<U>::Zero(6, 6);
-	
 	
 	U Ro = 0.5*sect->get_sect_prop(SectionProp::OD);
 	const decltype(Ro) Ri = Ro-sect->get_sect_prop(SectionProp::TKWALL);
@@ -294,19 +285,22 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	{
 		auto r = Ro-0.5*t;
 		auto pres = sect->get_sect_prop(SectionProp::PRESIN);
-		auto DUM = PI<U>()*pres*the*pow(r, 4.0)*0.5/EI;
-		auto DU2 = r/R;
-		auto BTA = DUM*(2.-2.*v+(3.+1.5*v)*pow(DU2, 2.0));
 		auto young = prop->get_material_prop(MaterialProp::YOUNG);
 		
 		vecX_<U> B = vecX_<U>::Zero(6);
-		
+		// ANSYS PIPE 18 element ignore angle changes.
+		/*
+		auto DU2 = r/R;
+		auto BTA = DUM*(2.-2.*v+(3.+1.5*v)*pow(DU2, 2.0));
+		auto DUM = PI<U>()*pres*the*pow(r, 4.0)*0.5/EI;
+		BTA = pres*r*the/(2.*t*young+(2.-v)*pres*r);
 		DUM = R*BTA/the;
 		B(0) = DUM*(sin_the - the*cos_the);
 		B(1) = DUM*(1.0 - cos_the - the*sin_the);
 		B(5) = -BTA;
-		
-		DUM = pres*r*(0.5-v)*R/(t*young);
+		*/
+
+		auto DUM = pres*(1.-2.*v)*Ri*Ri*R/(Ro+Ri)/(young*t);
 		B(0) += DUM*sin_the;
 		B(1) += DUM*(1.0-cos_the);
 		rhs = stif.block(0, 6, 12, 6)*B;
@@ -335,8 +329,6 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		{"Thick", t}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
 		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
-	fmt::print("PRES:{}\tRi:{}\tPrxy:{}\t", sect->get_sect_prop(SectionProp::PRESIN), Ri, v);
-	fmt::print("Ro:{}\tCurvature:{}\n", Ro, R);
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }

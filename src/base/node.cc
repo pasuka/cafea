@@ -47,21 +47,59 @@ void Node<Scalar, ResultScalar>::dof_accum(int *it, DofType mt)
 /**
  *  \brief Initialize result variables.
  */
-/*template <class T, class U>
+template <class T, class U>
 void Node<T, U>::init_result(SolutionType sol, int n)
 {
 	if(!this->is_activated())return;
 	auto m = this->dof_mgr_.get_num_dofs();
 	switch(sol){
 	case SolutionType::STATIC:
-		this->disp_ = matrix_<U>::Zero(m, 1);
-	case SolutionType::MODAL:
-		this->disp_ = matrix_<U>::Zero(m, n);
-	case SolutionType::HARMONIC:
-	
-	case SolutionType::UNKNOWN:
+		this->disp_ = matrix_<U>::Zero(m, 1); 
+		break;
+	case SolutionType::MODAL: 
+		this->disp_ = matrix_<U>::Zero(m, n); 
+		break;
+	case SolutionType::HARMONIC_FULL:
+	case SolutionType::HARMONIC_MODAL_SUPERPOSITION:
 	default:
 		fmt::print("Unsupported solution type definition\n");
 	}
-}*/
+}
+
+/**
+ *  \brief 
+ */
+template <class T, class U>
+void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, const matrix_<U> rst)
+{
+	if(!this->is_activated())return;
+	
+	switch(sol){
+	case SolutionType::STATIC:
+		switch(lt){
+		case LoadType::DISP:
+			this->disp_ = rst;
+			fmt::print("Node ID:{:02d} {:7.3g} {:7.3g} {:7.3g} {:7.3g} {:7.3g} {:7.3g}\n",
+				this->get_id(), this->disp_(0), this->disp_(1), this->disp_(2), this->disp_(3), 
+				this->disp_(4), this->disp_(5));
+			break;
+		default:
+			fmt::print("Unsupported result type\n");
+		}
+		break;
+	case SolutionType::MODAL:
+		switch(lt){
+		case LoadType::DISP:
+			this->disp_ = rst;
+			break;
+		default:
+			fmt::print("Unsupported result type\n");
+		}
+		break;
+	case SolutionType::HARMONIC_FULL:
+	case SolutionType::HARMONIC_MODAL_SUPERPOSITION:
+	default:
+		fmt::print("Unsupported solution type definition\n");
+	}
+}
 }

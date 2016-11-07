@@ -381,6 +381,18 @@ void SolutionStatic<FileReader, T, U>::post_process()
 		return;
 	}
 	auto sol = this->solver_->get_X();
+	for(auto &it: this->node_group_){
+		auto &p_node = it.second;
+		p_node.init_result(SolutionType::STATIC, 0);
+		if(p_node.is_activated()){
+			auto tmp = p_node.dof_list();
+			vecX_<U> x = vecX_<U>::Zero(tmp.size());
+			for(int i=0; i<x.size(); i++)x(i) = tmp[i]<0 ? U(0): sol(tmp[i]);
+			p_node.set_result(SolutionType::STATIC, LoadType::DISP, 0, x);
+			// fmt::print("Node ID:{}\n", p_node.get_id());
+			// std::cout << x << "\n";
+		}
+	}
 	for(auto &it: this->elem_group_){
 		auto &p_elem = it.second;
 		auto va = p_elem.get_element_dofs();

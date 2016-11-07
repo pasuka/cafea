@@ -1,6 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <tuple>
 #include <ostream>
 
 #include <Eigen/Dense>
@@ -316,7 +317,8 @@ class Node: public NodeBase<Scalar> {
 			return cout;
 		};
 		//! Initialize result container.
-		bool init_result(SolutionType, int);
+		void init_result(SolutionType, int);
+		void set_result(SolutionType, LoadType, int, matrix_<ResultScalar>);
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
@@ -368,7 +370,7 @@ template struct NodeFunc<REAL8, REAL8>;
 template <class T=REAL8>
 struct QACM{
 	//! 
-	static tuple<T, vecX_<T>, vecX_<T>, vecX_<T>> shape_2d(T, T, const matrix_<T>, int);
+	static std::tuple<T, vecX_<T>, vecX_<T>, vecX_<T>> shape_2d(T, T, const matrix_<T>, int);
 };
 
 //! Specialization.
