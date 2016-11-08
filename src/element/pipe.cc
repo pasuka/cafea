@@ -310,8 +310,8 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	const decltype(Ro) cos_b = cos(.5*the), sin_b = sin(.5*the);
 	
 	tmp.row(0) << cos_b, -sin_b, 0.;
-	tmp.row(1) << sin_b, cos_b, 0.;
-	tmp.row(2) << 0., 0., 1.;	
+	tmp.row(1) << sin_b,  cos_b, 0.;
+	tmp.row(2) <<    0.,     0., 1.;	
 	
 	for(int i: {0, 1, 2, 3})t2.block(i*3, i*3, 3, 3) = tmp;
 	stif = t2.transpose()*stif*t2;

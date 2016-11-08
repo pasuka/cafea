@@ -46,11 +46,21 @@ var_out4_<T> QACM<T>::shape_2d(T kesi, T yita, const matrix_<T> xy, int num)
 	auto b3 = xy(3, 1) - xy(0, 1);
 	auto b4 = xy(0, 1) - xy(1, 1);
 	
-	auto s123 =;
-	auto s134 =;
+	matrix_<T> tmp = matrix_<T>::Zero(3, 3);
+	
+	tmp.row(0) << xy(0, 0), xy(0, 1), 1.;
+	tmp.row(1) << xy(1, 0), xy(1, 1), 1.;
+	tmp.row(2) << xy(2, 0), xy(2, 1), 1.;
+	auto s123 = .5*tmp.determinant();
+	
+	tmp.row(2) << xy(3, 0), xy(3, 1), 1.;
+	auto s124 = .5*tmp.determinant();
+	
+	tmp.row(1) << xy(2, 0), xy(2, 1), 1.;
+	auto s134 = .5*tmp.determinant();
+	
 	auto area = s123 + s134;
-
-	auto s124 = ;
+	
 	auto s234 = area - s124;
 
 	auto g1 = s124/area;

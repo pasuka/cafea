@@ -367,6 +367,17 @@ void SolutionStatic<FileReader, T, U>::solve()
 	}
 	else{
 		fmt::print("Solve Success.\n");
+		auto sol = this->solver_->get_X();
+		for(auto &it: this->node_group_){
+			auto &p_node = it.second;
+			p_node.init_result(SolutionType::STATIC, 0);
+			if(p_node.is_activated()){
+				auto tmp = p_node.dof_list();
+				vecX_<U> x = vecX_<U>::Zero(tmp.size());
+				for(int i=0; i<x.size(); i++)x(i) = tmp[i]<0 ? U(0): sol(tmp[i]);
+				p_node.set_result(SolutionType::STATIC, LoadType::DISP, 0, x);
+			}
+		}
 	}
 };
 
@@ -381,25 +392,12 @@ void SolutionStatic<FileReader, T, U>::post_process()
 		return;
 	}
 	auto sol = this->solver_->get_X();
-	for(auto &it: this->node_group_){
-		auto &p_node = it.second;
-		p_node.init_result(SolutionType::STATIC, 0);
-		if(p_node.is_activated()){
-			auto tmp = p_node.dof_list();
-			vecX_<U> x = vecX_<U>::Zero(tmp.size());
-			for(int i=0; i<x.size(); i++)x(i) = tmp[i]<0 ? U(0): sol(tmp[i]);
-			p_node.set_result(SolutionType::STATIC, LoadType::DISP, 0, x);
-			// fmt::print("Node ID:{}\n", p_node.get_id());
-			// std::cout << x << "\n";
-		}
-	}
+
 	for(auto &it: this->elem_group_){
 		auto &p_elem = it.second;
 		auto va = p_elem.get_element_dofs();
 		vecX_<U> x = vecX_<U>::Zero(va.size());
 		for(int i=0; i<x.size(); i++)x(i) = va[i]<0 ? U(0): sol(va[i]);
-		// fmt::print("Element ID:{}\tDisplacement:\n", p_elem.get_id());
-		// std::cout << x << "\n";
 		p_elem.post_stress(x);
 	}
 };
@@ -421,8 +419,7 @@ void SolutionStatic<FileReader, Scalar, U>::write2mat(const char* fname)
 	const char *fieldnames[nfields] = {"id", "etype", "mtype", "stype", "nodes",
 		"stif", "mass", "tran", "rhs", "result"};
 	size_t elem_dims[2] = {this->elem_group_.size(), 1};
-	matvar_t *elem_list = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames,
-		nfields);
+	matvar_t *elem_list = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames, nfields);
 	
 	size_t num{0}, dim_vec[2] = {1, 1}, dim1x1[2] = {1, 1};
 	double val[4];
@@ -471,6 +468,44 @@ void SolutionStatic<FileReader, Scalar, U>::write2mat(const char* fname)
 	}
 	Mat_VarWrite(matfp, elem_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(elem_list);
+	
+	const size_t nfields2{4};
+	const char *fieldnames2[nfields2] = {"id", "csys", "xyz", "result"};
+	size_t node_dims[2] = {this->node_group_.size(), 1};
+	matvar_t *node_list = Mat_VarCreateStruct("node", 2, node_dims, fieldnames2, nfields2);
+	size_t dim3x1[2] = {3, 1};
+	double xyz[3] = {0., 0., 0.};
+	num = 0;
+	for(const auto &it: this->node_group_){
+		auto &p_node = it.second;
+		matvar_t *matvar[nfields2];
+		val[0] = double(p_node.get_id());
+		val[1] = double(0);
+		for(size_t i=0; i<2; i++){
+			matvar[i] = Mat_VarCreate(fieldnames2[i], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &val[i], 0);
+		}
+		xyz[0] = double(p_node.get_x());
+		xyz[1] = double(p_node.get_y());
+		xyz[2] = double(p_node.get_z());
+		matvar[2] = Mat_VarCreate(fieldnames2[2], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim3x1, xyz, 0);
+		if(p_node.is_activated()){
+			auto rst = p_node.get_result(SolutionType::STATIC, LoadType::DISP, 0);
+			size_t sz[2] = {1, 1};
+			if(1<rst.rows())sz[0] = rst.rows();
+			if(1<rst.cols())sz[1] = rst.cols();
+			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, sz, rst.data(), 0);
+		}
+		else{
+			val[1] = double(-1);
+			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &val[1], 0);
+		}
+		for(auto i=0; i<nfields2; i++){
+			Mat_VarSetStructFieldByName(node_list, fieldnames2[i], num, matvar[i]);
+		}
+		num++;
+	}
+	Mat_VarWrite(matfp, node_list, MAT_COMPRESSION_ZLIB);
+	Mat_VarFree(node_list);
 	Mat_Close(matfp);
 	return;
 };

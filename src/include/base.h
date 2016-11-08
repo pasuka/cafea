@@ -7,6 +7,8 @@
 #include <ostream>
 #include <algorithm>
 
+#include <cstdlib>
+
 #include "utils.h"
 #include "enum_lib.h"
 

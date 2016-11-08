@@ -319,6 +319,7 @@ class Node: public NodeBase<Scalar> {
 		//! Initialize result container.
 		void init_result(SolutionType, int);
 		void set_result(SolutionType, LoadType, int, matrix_<ResultScalar>);
+		matrix_<ResultScalar> get_result(SolutionType, LoadType, int) const;
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.

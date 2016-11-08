@@ -79,9 +79,6 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, const matrix_<
 		switch(lt){
 		case LoadType::DISP:
 			this->disp_ = rst;
-			fmt::print("Node ID:{:02d} {:7.3g} {:7.3g} {:7.3g} {:7.3g} {:7.3g} {:7.3g}\n",
-				this->get_id(), this->disp_(0), this->disp_(1), this->disp_(2), this->disp_(3), 
-				this->disp_(4), this->disp_(5));
 			break;
 		default:
 			fmt::print("Unsupported result type\n");
@@ -101,5 +98,46 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, const matrix_<
 	default:
 		fmt::print("Unsupported solution type definition\n");
 	}
+}
+/**
+ *  \brief
+ */
+template <class T, class U>
+matrix_<U> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const
+{
+	matrix_<U> tmp;
+	
+	if(!this->is_activated())return tmp;
+	
+	switch(sol){
+	case SolutionType::STATIC:
+		switch(lt){
+		case LoadType::DISP:
+			tmp = this->disp_;
+			break;
+		default:
+			fmt::print("Unsupported result type\n");
+		}
+		break;
+	case SolutionType::MODAL:
+		switch(lt){
+		case LoadType::DISP:
+			if(0<=n){
+				tmp = this->disp_.col(n);
+			}
+			else{
+				tmp = this->disp_;
+			}
+			break;
+		default:
+			fmt::print("Unsupported result type\n");
+		}
+		break;
+	case SolutionType::HARMONIC_FULL:
+	case SolutionType::HARMONIC_MODAL_SUPERPOSITION:
+	default:
+		fmt::print("Unsupported solution type definition\n");
+	}
+	return tmp;
 }
 }

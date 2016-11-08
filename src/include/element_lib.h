@@ -61,19 +61,19 @@ struct StructuralElement{
 	/**
 	 *  \brief 8-node Mindlin shell element.
 	 */
-	static var_out_<U> shell8R(
+	static var_out_<U> shell8r(
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,	const NodeBase<T>*,
 		const Material<T>*, const Section<T>*);
-	static var_out_<U> shell8R(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
+	static var_out_<U> shell8r(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
 	/**
 	 * \ brief 9-node Mindlin shell elment.
 	 */
-	static var_out_<U> shell9R(
+	static var_out_<U> shell9r(
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,	const NodeBase<T>*,
 		const NodeBase<T>*, const Material<T>*, const Section<T>*);
-	static var_out_<U> shell9R(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
+	static var_out_<U> shell9r(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
 };
 /**
  *  \brief Interface for structural element post process.

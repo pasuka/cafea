@@ -321,6 +321,18 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 		this->natural_freq_ = val;
 		this->mode_shape_ = shp;
 		fmt::print("Solve finished.\n");
+		for(auto &it: this->node_group_){
+			auto &p_node = it.second;
+			p_node.init_result(SolutionType::MODAL, val.rows());
+			if(p_node.is_activated()){
+				auto tmp = p_node.dof_list();
+				matrix_<ResultScalar> x = matrix_<ResultScalar>::Zero(tmp.size(), val.rows());
+				for(int i=0; i<x.rows(); i++){
+					if(0<=tmp[i])x.row(i) = shp.row(tmp[i]);
+				}
+				p_node.set_result(SolutionType::MODAL, LoadType::DISP, -1, x);
+			}
+		}
 	}
 	// ResultScalar fspan[2] = {ResultScalar(0), ResultScalar(0)};
 	// fspan[0] = PI<ResultScalar>()*PI<ResultScalar>()*ResultScalar(1e10);
@@ -395,6 +407,45 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 	}
 	Mat_VarWrite(matfp, elem_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(elem_list);
+	
+	const size_t nfields2{4};
+	const char *fieldnames2[nfields2] = {"id", "csys", "xyz", "result"};
+	size_t node_dims[2] = {this->node_group_.size(), 1};
+	matvar_t *node_list = Mat_VarCreateStruct("node", 2, node_dims, fieldnames2, nfields2);
+	size_t dim3x1[2] = {3, 1};
+	double xyz[3] = {0., 0., 0.};
+	num = 0;
+	for(const auto &it: this->node_group_){
+		auto &p_node = it.second;
+		matvar_t *matvar[nfields2];
+		val[0] = double(p_node.get_id());
+		val[1] = double(0);
+		for(size_t i=0; i<2; i++){
+			matvar[i] = Mat_VarCreate(fieldnames2[i], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &val[i], 0);
+		}
+		xyz[0] = double(p_node.get_x());
+		xyz[1] = double(p_node.get_y());
+		xyz[2] = double(p_node.get_z());
+		matvar[2] = Mat_VarCreate(fieldnames2[2], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim3x1, xyz, 0);
+		if(p_node.is_activated()){
+			auto rst = p_node.get_result(SolutionType::MODAL, LoadType::DISP, -1);
+			size_t sz[2] = {1, 1};
+			if(1<rst.rows())sz[0] = rst.rows();
+			if(1<rst.cols())sz[1] = rst.cols();
+			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, sz, rst.data(), 0);
+		}
+		else{
+			val[1] = double(-1);
+			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &val[1], 0);
+		}
+		for(auto i=0; i<nfields2; i++){
+			Mat_VarSetStructFieldByName(node_list, fieldnames2[i], num, matvar[i]);
+		}
+		num++;
+	}
+	Mat_VarWrite(matfp, node_list, MAT_COMPRESSION_ZLIB);
+	Mat_VarFree(node_list);
+	
 	auto coord = this->mat_pair_.get_coord_ptr();
 	auto pk = this->mat_pair_.get_stif_ptr();
 	auto pm = this->mat_pair_.get_mass_ptr();
