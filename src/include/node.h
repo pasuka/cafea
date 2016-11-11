@@ -7,6 +7,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include "fmt/format.h"
+#include "fmt/printf.h"
 
 #include "base.h"
 #include "dof_handler.h"
