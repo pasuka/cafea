@@ -403,6 +403,25 @@ void SolutionStatic<FileReader, T, U>::post_process()
 };
 
 /**
+ *  \brief
+ */
+template <class FP, class T, class U>
+matrix_<U> SolutionStatic<FP, T, U>::get_node_result(int node_id, LoadType res_tp, int res_span)const
+{
+	assert(0<node_id);
+	auto got = this->node_group_.find(node_id);
+	matrix_<U> res;
+	if(got!=this->node_group_.end()){
+		res = (got->second).get_result(SolutionType::STATIC, res_tp, 0);
+	}
+	else{
+		res = matrix_<U>::Zero(1, 1);
+	}
+	return res;
+}
+
+
+/**
  *  \brief Write element matrix to MAT file.
  *  \param[in] fname file name.
  */

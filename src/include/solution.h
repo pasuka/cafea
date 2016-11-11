@@ -77,6 +77,11 @@ class SolutionBase {
 			matrix_<ResultScalar> tmp;
 			return tmp;
 		};
+		//! Get node result.
+		virtual matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp, int res_span=0) const
+		{
+			return get_result();
+		};
 };
 
 /**
@@ -114,6 +119,8 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		{
 			mass_type_ = val ? MassType::LUMPED : MassType::CONSISTENT;
 		};
+		//!
+		matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp, int res_span=0)const override;
 	protected:
 		FileReader file_parser_;//!< Input file loader.
 		

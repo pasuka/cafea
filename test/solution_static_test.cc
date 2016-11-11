@@ -19,8 +19,9 @@ struct node_disp{
 };
 
 node_disp nrc02_disp[]={
-    { 1, {  0.0000    ,  0.0000    ,   0.0000    ,  0.0000     ,  0.0000     ,  0.0000     ,}},
-    { 2, {-0.17875e-02, 0.33544e-02, -0.67314e-03, -0.20649e-04,  0.16372e-04,  0.55236e-04,}},
+    { 1, {  0.0000    ,  0.0000    ,   0.0000    ,  0.0000     ,  0.0000     ,  0.0000     ,}}, 
+    {19, {  0.0000    ,  0.0000    ,   0.0000    ,  0.0000     ,  0.0000     ,  0.0000     ,}},
+	{ 2, {-0.17875e-02, 0.33544e-02, -0.67314e-03, -0.20649e-04,  0.16372e-04,  0.55236e-04,}},
     { 3, {-0.24549e-03, 0.11181e-02, -0.93133e-04, -0.89718e-05,  0.54575e-05,  0.23752e-04,}},
     { 4, {-0.87362e-03, 0.22363e-02, -0.33015e-03, -0.15855e-04,  0.10915e-04,  0.42164e-04,}},
     { 5, {-0.52741e-02, 0.67089e-02, -0.19589e-02, -0.22500e-04,  0.32745e-04,  0.62411e-04,}},
@@ -37,7 +38,6 @@ node_disp nrc02_disp[]={
     {16, { 0.16904e-03, 0.15520e-03, -0.12652e-02,  0.12025e-04, -0.12946e-04, -0.17194e-04,}},
     {17, { 0.39900e-03, 0.36911e-03, -0.21087e-02,  0.16716e-04, -0.17792e-04, -0.28657e-04,}},
     {18, { 0.27573e-03, 0.25414e-03, -0.16870e-02,  0.14703e-04, -0.15748e-04, -0.22925e-04,}},
-    {19, {  0.0000    ,  0.0000    ,   0.0000    ,   0.0000    ,   0.0000    ,   0.0000    ,}},
     {20, { 0.84068e-04, 0.76838e-04, -0.84351e-03,  0.86825e-05, -0.93879e-05, -0.11463e-04,}},
     {21, { 0.25993e-04, 0.23583e-04, -0.42172e-03,  0.46736e-05, -0.50721e-05, -0.57311e-05,}},
     {22, {-0.54395e-02, 0.84793e-02, -0.26598e-02, -0.99496e-06,  0.35346e-04, -0.10954e-04,}},
@@ -63,13 +63,19 @@ TEST_CASE("Internal Pressure", "[Solution Static]")
 	example->solve();
 	example->post_process();
 	example->write2mat("nrc02.mat");
-	fmt::print("Node ID    UX    UY    UZ    URX    URY    URZ\n");
 	for(const auto &p: nrc02_disp){
-		fmt::print("{:02d}", p.id_);
-		for(const auto &x: p.disp_)fmt::print(" {:12.4e}", x);
-		fmt::print("\n");
+		auto res = example->get_node_result(p.id_, cafea::LoadType::DISP);
+		for(int i=0; i<6; i++){
+			auto tol = sqrt(cafea::EPS<>()) + fabs(p.disp_[i])*0.05;
+			REQUIRE(res(i) == Approx(p.disp_[i]).epsilon(tol));
+		}
 	}
 }
+
+node_disp eblow01_disp[]={
+    { 1, { 0.0000    , 0.0000    ,  0.0000    , 0.0000     ,  0.0000     ,  0.0000     ,}},
+	{ 3, { 0.22455E-2, 0.22455E-2,  0.0000    , 0.0000     ,  0.0000     ,  0.60388E-18,}},
+};
 
 TEST_CASE("Internal Pressure Single Element", "[Solution Static]")
 {
@@ -82,5 +88,12 @@ TEST_CASE("Internal Pressure Single Element", "[Solution Static]")
 	example->solve();
 	example->post_process();
 	example->write2mat("eblow01.mat");
+	for(const auto &p: eblow01_disp){
+		auto res = example->get_node_result(p.id_, cafea::LoadType::DISP);
+		for(int i=0; i<6; i++){
+			auto tol = sqrt(cafea::EPS<>()) + fabs(p.disp_[i])*0.05;
+			REQUIRE(res(i) == Approx(p.disp_[i]).epsilon(tol));
+		}
+	}
 }
 }
