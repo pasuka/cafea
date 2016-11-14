@@ -42,7 +42,8 @@ void Element<T>::post_stress(const vecX_<T> x)
 	case ElementType::PIPE16:
 	case ElementType::PIPE18:
 		// fmt::print("Not yet finish stress result.\n");
-		this->result_ = StructuralElementPost<T>::pipe(this->stif_, this->tran_, x, this->attr_);
+		fmt::print("Element ID: {}\n", this->get_id());
+		this->result_ = StructuralElementPost<T>::pipe(this->stif_, this->tran_, x, this->rhs_, this->attr_);
 		break;
 	case ElementType::MASS21:
 	case ElementType::COMBIN14:

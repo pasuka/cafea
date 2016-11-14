@@ -338,12 +338,15 @@ varargout<U> StructuralElement<T, U>::pipe18(
  */
 template <class T>
 matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T> tran,
-	const matrix_<T> x, const map<string, T> attr)
+	const matrix_<T> x, const matrix_<T> rhs, const map<string, T> attr)
 {
 	fmt::print("This is for pipe post process in real domain.\n");
 	matrix_<T> esol = matrix_<T>::Zero(99, 2);
-	auto tmp = stif*tran*x;
-	// Member force and moment at node I and J.
+	matrix_<T> tmp = stif*tran*x;
+	
+	tmp.col(0) = rhs.col(0) - tmp.col(0);
+	
+	// Member force and moment at node I and J in local coordinate.
 	esol.block(0, 0, 6, 1) = tmp.block(0, 0, 6, 1);
 	esol.block(0, 1, 6, 1) = tmp.block(6, 0, 6, 1);
 	
@@ -361,14 +364,24 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	auto PresOut = T(0);
 	auto Fe = PI<T>()*(Pres*Ri*Ri-PresOut*Ro*Ro);
 	auto Jx = T(2)*Ir;
+	/*
+	ANSYS stress result.
+	|	    |:   pipe #16 :|:   pipe #18 :|
+	|:SDIR: |:SMISC 13, 15:|:SMISC 13, 15:|
+	|:SBEND:|:NMISC 90, 92:|:NMISC 91, 93:|
+	|:ST:   |:SMISC 14, 16:|:SMISC 14, 16:|
+	|:SH:   |::|::|
+	|:SSF:  |:NMISC 91, 93:|:NMISC 92, 94:|
 	
+	*/
 	for(auto i: {0, 1}){
 		// SDIR: Direct stress.
-		esol(6, i) = esol(0, i)/Aw;//(esol(0, i) + Fe)/Aw;
+		// esol(6, i) = esol(0, i)/Aw;
+		esol(6, i) = (esol(0, i) + Fe)/Aw;
 		// SBEND: Bending stress.
 		esol(7, i) = hypot(esol(4, i), esol(5, i))*Ro/Ir;
 		// ST: Torsional shear stress.
-		esol(8, i) = esol(3, i)*Ro*Jx;
+		esol(8, i) = esol(3, i)*Ro/Jx;
 		// SH: hoop pressure stress at the outside surface of the pipe.
 		esol(9, i) = (T(2)*Pres*Din*Din - PresOut*(Dout*Dout + Din*Din))/(Dout*Dout - Din*Din);
 		// SSF: lateral force shear stress.
