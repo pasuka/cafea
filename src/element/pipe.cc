@@ -423,7 +423,7 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 		// S2MN: the smallest of the four minimum principal stresses.
 		for(int j=0; j<8; j++)esol(35+j, i) = esol(11+j, i)/T(2) - hypot(esol(11+j, i)/T(2), esol(19+j, i));
 		// SEQVMX: the largest of the four equivalent stresses.
-		for(int j=0; j<8; j++)esol(43+j, i) = hypot(esol(11+j, i), sqrt(T(3))*esol(19+j, i));
+		for(int j=0; j<8; j++)esol(43+j, i) = hypot(esol(11+j, i)-esol(9, i), T(2)*esol(19+j, i));
 	}
 	for(int i=0; i<11; i++){
 		// esol(i, 0) = tmp(i, 0);
