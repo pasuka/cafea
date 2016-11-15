@@ -166,9 +166,13 @@ varargout<U> StructuralElement<T, U>::pipe16(
 	rhs(0) = -PI<U>()*Ri*Ri*(1.-2.*v)*sect->get_sect_prop(SectionProp::PRESIN);
 	rhs(6) = -rhs(0);
 	
+	decltype(Ro) SIF = U(1);
+	
 	map<string, U> attr{{"Length", Le}, {"Area", Ax}, {"Volume", Ax*Le}, {"Mass", Me}, {"Aw", Ax},
 		{"Thick", Ro-Ri}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
-		{"Iz", Izz}, {"Jx", Jxx}, {"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
+		{"Iz", Izz}, {"Jx", Jxx}, {"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},
+		{"StressIntensificationFactor", SIF},
+		{"CurvatureRadius", U(-1)}, {"Angle", U(-1)},};
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
@@ -325,10 +329,17 @@ varargout<U> StructuralElement<T, U>::pipe18(
 	// mass(4, 4) = mass(10, 10) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
 	// mass(5, 5) = mass(11, 11) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
 	
+	decltype(Ro) SIF = U(1);
+	{
+		decltype(Ro) he = U(4)*t*R/pow(Ro+Ri, 2.0);
+		decltype(Ro) val = U(0.9)/pow(he, 2./3.);
+		if(val>1.0)SIF = val;
+	}
 	map<string, U> attr{{"Length", l}, {"Area", Ax}, {"Volume", Ax*l}, {"Mass", Me}, {"Aw", Ax}, 
 		{"Thick", t}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri}, {"Iy", Iyy},
-		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R},
-		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},};
+		{"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R}, {"Angle", the},
+		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},
+		{"StressIntensificationFactor", SIF},};
 	
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
@@ -346,17 +357,34 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	
 	tmp.col(0) = rhs.col(0) - tmp.col(0);
 	
+	auto get_val = [=](auto k){auto p = attr.find(k); return p!=attr.end() ? p->second: EPS<T>();};
+	
+	auto the = get_val("Angle");
+	if(the>EPS<T>()){
+		auto cb = cos(0.5*the);
+		auto sb = sin(0.5*the);
+		matrix_<T> tran = matrix_<T>::Zero(12, 12);
+		for(int i: {2, 5, 8, 11})tran(i, i) = 1.0;
+		for(int i: {0, 1, 3, 4, 6, 7, 9, 10})tran(i, i) = cb;
+		tran(1, 0) = tran(4, 3) = tran(6, 7) = tran(9, 10) =  sb;
+		tran(0, 1) = tran(3, 4) = tran(7, 6) = tran(10, 9) = -sb;
+		tmp = tran*tmp;
+	}
+	
+	
+	
 	// Member force and moment at node I and J in local coordinate.
 	esol.block(0, 0, 6, 1) = tmp.block(0, 0, 6, 1);
 	esol.block(0, 1, 6, 1) = tmp.block(6, 0, 6, 1);
 	
-	auto get_val = [=](auto k){auto p = attr.find(k); return p!=attr.end() ? p->second: EPS<T>();};
+	
 	
 	auto Aw   = get_val("Aw");
 	auto Pres = get_val("InternalPressure");
 	auto Dout = get_val("OuterDiameter");
 	auto Din  = get_val("InnerDiameter");
 	auto Ir   = get_val("Iy");
+	auto SIF  = get_val("StressIntensificationFactor");
 	
 	auto Ro = Dout/T(2); 
 	auto Ri = Din/T(2);
@@ -379,9 +407,9 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 		// esol(6, i) = esol(0, i)/Aw;
 		esol(6, i) = (esol(0, i) + Fe)/Aw;
 		// SBEND: Bending stress.
-		esol(7, i) = hypot(esol(4, i), esol(5, i))*Ro/Ir;
+		esol(7, i) = SIF*hypot(esol(4, i), esol(5, i))*Ro/Ir;
 		// ST: Torsional shear stress.
-		esol(8, i) = esol(3, i)*Ro/Jx;
+		esol(8, i) = fabs(esol(3, i))*Ro/Jx;
 		// SH: hoop pressure stress at the outside surface of the pipe.
 		esol(9, i) = (T(2)*Pres*Din*Din - PresOut*(Dout*Dout + Din*Din))/(Dout*Dout - Din*Din);
 		// SSF: lateral force shear stress.
