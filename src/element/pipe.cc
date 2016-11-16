@@ -255,7 +255,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
 		else{
 			Xk = pow(r/t, 4./3.)*pow(R/r, 1./3.);
 		}
-		kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
+		// kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
 		kp = 1.65/h;		
 		if(kp<1.)kp = 1.;
 	}
@@ -354,11 +354,12 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	fmt::print("This is for pipe post process in real domain.\n");
 	matrix_<T> esol = matrix_<T>::Zero(99, 2);
 	matrix_<T> tmp = stif*tran*x;
-	
+	// Element force in local.
 	tmp.col(0) = rhs.col(0) - tmp.col(0);
 	
 	auto get_val = [=](auto k){auto p = attr.find(k); return p!=attr.end() ? p->second: EPS<T>();};
 	
+	// Elbow pipe.
 	auto the = get_val("Angle");
 	if(the>EPS<T>()){
 		auto cb = cos(0.5*the);
@@ -371,13 +372,9 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 		tmp = tran*tmp;
 	}
 	
-	
-	
 	// Member force and moment at node I and J in local coordinate.
 	esol.block(0, 0, 6, 1) = tmp.block(0, 0, 6, 1);
 	esol.block(0, 1, 6, 1) = tmp.block(6, 0, 6, 1);
-	
-	
 	
 	auto Aw   = get_val("Aw");
 	auto Pres = get_val("InternalPressure");
@@ -398,9 +395,7 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	|:SDIR: |:SMISC 13, 15:|:SMISC 13, 15:|
 	|:SBEND:|:NMISC 90, 92:|:NMISC 91, 93:|
 	|:ST:   |:SMISC 14, 16:|:SMISC 14, 16:|
-	|:SH:   |::|::|
 	|:SSF:  |:NMISC 91, 93:|:NMISC 92, 94:|
-	
 	*/
 	for(auto i: {0, 1}){
 		// SDIR: Direct stress.
@@ -414,18 +409,29 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 		esol(9, i) = (T(2)*Pres*Din*Din - PresOut*(Dout*Dout + Din*Din))/(Dout*Dout - Din*Din);
 		// SSF: lateral force shear stress.
 		esol(10, i) = T(2)*hypot(esol(1, i), esol(2, i))/Aw;
-		// SAXL: axial stress on outside surface.
-		for(int j=0; j<8; j++)esol(11+j, i) = esol(6, i) + sin(PI<T>()/T(4)*T(j))*esol(7, i);
-		// SXH: hoop stress on outside surface.
-		for(int j=0; j<8; j++)esol(19+j, i) = esol(8, i) + cos(PI<T>()/T(4)*T(j))*esol(10, i);
-		// S1MX: the largest of the four maximum principal stresses.
-		for(int j=0; j<8; j++)esol(27+j, i) = esol(11+j, i)/T(2) + hypot(esol(11+j, i)/T(2), esol(19+j, i));
-		// S2MN: the smallest of the four minimum principal stresses.
-		for(int j=0; j<8; j++)esol(35+j, i) = esol(11+j, i)/T(2) - hypot(esol(11+j, i)/T(2), esol(19+j, i));
-		// SEQVMX: the largest of the four equivalent stresses.
-		for(int j=0; j<8; j++)esol(43+j, i) = hypot(esol(11+j, i)-esol(9, i), T(2)*esol(19+j, i));
+		for(int j=0; j<8; j++){
+			auto phi = .25*T(j)*PI<T>();
+			// SAXL: axial stress on outside surface.
+			esol(11+j, i) = esol(6, i) + sin(phi)*esol(7, i);
+			// SXH: hoop stress on outside surface.
+			esol(19+j, i) = esol(8, i) + cos(phi)*esol(10, i);
+			// Center of Mohr circle.
+			auto xc = .5*(esol(9, i) + esol(11+j, i));
+			// Radius of Mohr circle.
+			auto rr = .5*hypot(esol(9, i) - esol(11+j, i), 2.*esol(19+j, i));
+			// S1MX: the largest of the four maximum principal stresses.
+			esol(27+j, i) = xc + rr;
+			// S2MN: the smallest of the four minimum principal stresses.
+			esol(35+j, i) = xc - rr;
+			// Von Mises = sqrt(.5*((s1-s2)**2+(s2-s3)**2+(s3-s1)**2)).
+			// S3 .eq. zero.
+			// Von Mises = sqrt(s1*s1 + s2*s2 - s1*s2).
+			// Von Mises = sqrt(xc*xc + 3*rr*rr).
+			// SEQVMX: the largest of the four equivalent stresses.
+			esol(43+j, i) = hypot(xc, sqrt(3.)*rr);
+		}
 	}
-	for(int i=0; i<11; i++){
+	/* for(int i=0; i<11; i++){
 		// esol(i, 0) = tmp(i, 0);
 		// esol(i, 1) = tmp(i+6, 0);
 		switch(i){
@@ -442,7 +448,7 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 		case 10: fmt::print("SSF   I:{}\tJ:{}\n", esol(i, 0), esol(i, 1)); break;
 		default: fmt::print("Default.\n");
 		}
-	}
+	} */
 	
 	return esol;
 }

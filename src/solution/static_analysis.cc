@@ -54,12 +54,7 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::load(const char* fn)
 		assert(a2>0);
 		assert(a3>0);
 		assert(a4>0);
-#if(PRINT_ON==1)
-		fmt::print("*************************************************\n");
-		fmt::print("Number of nodes:{}\nNumber of elements:{}\n", a1, a2);
-		fmt::print("Number of materials:{}\nNumber of real constants:{}\n", a3, a4);
-		fmt::print("*************************************************\n");
-#endif
+
 		for(int i=0; i<a1; i++, p_node++){
 			auto got = (*this).node_group_.find(p_node->id_);
 			if(got==(*this).node_group_.end()){
@@ -210,13 +205,6 @@ std::array<size_t, 5> SolutionStatic<FileReader, Scalar, ResultScalar>::get_info
 {
 	std::array<size_t, 5> param{this->node_group_.size(), this->elem_group_.size(),
 		this->matl_group_.size(), this->sect_group_.size(), this->bc_group_.size()};
-#if(PRINT_ON==1)		
-	fmt::print("Number of node:{}\n", param[0]);
-	fmt::print("Number of element:{}\n", param[1]);
-	fmt::print("Number of material:{}\n", param[2]);
-	fmt::print("Number of section:{}\n", param[3]);
-	fmt::print("Number of boundary:{}\n", param[4]);
-#endif	
 	return param;
 };
 
