@@ -1,4 +1,5 @@
 #include <tuple>
+#include <vector>
 #include <cmath>
 
 #include <Eigen/Dense>
@@ -60,7 +61,18 @@ varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p, const Materia
 	
 	//! Mass on X Y Z direction.
 	//! Notice: mass element do not need transform in most cases.
-	for(auto i: {0, 1, 2})mass(i, i) = sect->get_sect_prop(SectionProp::ADDONMASS);
+	auto val = sect->get_sect_prop(SectionProp::ADDONMASS);
+	if(EPS<U>()<val){
+		for(auto i: {0, 1, 2})mass(i, i) = val;
+	}
+	else{
+		if(prop->get_material_type()==MaterialType::MASS_VALUES){
+			auto val_list = prop->get_material_prop_vec();
+			for(int i=0; i<6; i++){
+				if(EPS<U>()<val_list[i])mass(i, i) = val_list[i];
+			}
+		}
+	}
 	// fmt::print("Mass add-on:{}\n", mass(0, 0));
 	return make_tuple(stif, mass, tran, rhs, attr);
 }

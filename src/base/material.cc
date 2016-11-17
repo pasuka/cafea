@@ -65,4 +65,21 @@ Scalar Material<Scalar>::get_material_prop(MaterialProp mp) const
 	};
 	return val;
 }
+/**
+ *  \brief
+ */
+template <class Scalar>
+std::vector<Scalar> Material<Scalar>::get_material_prop_vec() const
+{
+	std::vector<Scalar> tmp;
+	switch(this->mtype_){
+	case MaterialType::SPRING_STIFFNESS:
+	case MaterialType::MASS_VALUES:
+		for(int i=0; i<6; i++)tmp.push_back(this->param_[i]);
+		break;
+	default:
+		fmt::print("Do not find matched property name.\n");
+	}
+	return tmp;
+};
 }

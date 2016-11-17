@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include <array>
+#include <vector>
 #include <string>
 #include <iostream>
 #include <algorithm>
@@ -69,6 +70,9 @@ class Material: public ObjectBase {
 		void set_material_prop(MaterialProp mp, Scalar val);
 		//! Get property of material.
 		Scalar get_material_prop(MaterialProp mp) const;
+		
+		//! Get property vector of material.
+		std::vector<Scalar> get_material_prop_vec() const;
 		
 		//! Print material info.
 		friend std::ostream& operator<<(std::ostream& cout, const Material &a)

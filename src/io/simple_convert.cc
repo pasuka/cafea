@@ -129,6 +129,12 @@ template <class T, class U>
 Material<T> AdapterF2Cpp<T, U>::bcy2matl(const matl_bcy *p)
 {
 	Material<T> mp(p->id_, MaterialType::LINEAR_ELASTIC);
+	switch(p->tp_){
+	case 14: mp.set_material_type(MaterialType::SPRING_STIFFNESS); break;
+	case 21: mp.set_material_type(MaterialType::MASS_VALUES); break;
+	case 1:
+	default: fmt::print("Default linear elastic material.\n");
+	}
 	mp.set_material_prop(MaterialProp::DENS, p->val_[0]);
 	mp.set_material_prop(MaterialProp::EX, p->val_[1]);
 	mp.set_material_prop(MaterialProp::GXY, p->val_[2]);
@@ -145,6 +151,14 @@ template <class T, class U>
 Section<T> AdapterF2Cpp<T, U>::bcy2sect(const sect_bcy *p)
 {
 	Section<T> st(p->id_, SectionType::UNKNOWN);
+	switch(p->tp_){
+	case 14: st.set_sect_type(SectionType::SPRING); break;
+	case 16:
+	case 18: st.set_sect_type(SectionType::PIPE); break;
+	case 21: st.set_sect_type(SectionType::MASS); break;
+	default:
+		fmt::print("Unsupported section type.\n");
+	}
 	st.set_sect_prop(SectionProp::OD, p->val_[0]);
 	st.set_sect_prop(SectionProp::TKWALL, p->val_[1]);
 	st.set_sect_prop(SectionProp::RADCUR, p->val_[2]);

@@ -76,6 +76,8 @@ enum struct LoadDomain {
  */
 enum struct MaterialType {
 	LINEAR_ELASTIC,
+	SPRING_STIFFNESS,
+	MASS_VALUES,
 	UNKNOWN,
 };
 
