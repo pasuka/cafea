@@ -117,7 +117,7 @@ contains
                     read(fid, *)p%id, p%etype, p%mtype, p%stype, j, p%node_list(1:j)
                     end associate
                 enddo
-            elseif(line(2:5)=='MATL')then
+            elseif(line(2:5)=='MATL'.OR.line(2:9)=='MATERIAL')then
                 read(fid, *)num_matl, max_matl
                 allocate(model_matl(num_matl))
                 do i = 1, num_matl
@@ -145,7 +145,7 @@ contains
                         end associate
                     enddo
                 endif
-            elseif(line(2:5)=='BNDY')then
+            elseif(line(2:5)=='BNDY'.OR.line(2:9)=='BOUNDARY')then
                 read(fid, *)num_bndy, max_bndy
                 if(num_bndy<1)then
                     cycle

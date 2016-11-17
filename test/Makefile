@@ -104,6 +104,15 @@ matio_lib:
 	@echo "MATIO Library"
 	$(MAKE) -f matio.mk libs
 	$(MAKE) -f matio.mk clean
+
+compile_modal: $(SRC) ./modal_main.o
+	$(COMMENT)
+	@echo -ne "\033[33m"Modal Analysis Exectue"\033[0m\n"
+	$(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o modal_analysis
+	$(COMMENT)
+	@echo -ne "\033[35m"Run test"\033[0m\n"
+	$(COMMENT)
 	
 clean:
 	@echo "Clean files"
@@ -114,4 +123,4 @@ all:
 	./test_node
 	$(MAKE) clean
 	
-.PHONY: clean test_node test_cdb test_cdb_cpp test_solution test_modal matio_lib all
+.PHONY: clean test_node test_cdb test_cdb_cpp test_solution test_modal matio_lib compile_modal all
