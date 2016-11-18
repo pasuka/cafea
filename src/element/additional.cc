@@ -97,11 +97,17 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const Node
 	
 	if(opt[1]==0){
 		for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
+		if(prop->get_material_type()==MaterialType::SPRING_STIFFNESS){
+			auto stif_list = prop->get_material_prop_vec();
+			for(int i=0; i<6; i++){
+				stif(i, i) = stif(i+6, i+6) = stif_list[i];
+				stif(i, i+6) = stif(6+i, i) = -stif(i, i);
+			}
+		}
+		/*
 		for(int i: {0, 1, 2, 6, 7, 8})stif(i, i) = sect->get_sect_prop(SectionProp::ADDONSPRING);
 		for(int i: {0, 1, 2})stif(i+6, i) = stif(i, i+6) = -stif(i, i);
-		if(opt[2]==0){}
-		else if(opt[2]==1){}
-		else{}
+		*/
 	}
 	else{
 		euler_tran = p1->get_euler_tran();

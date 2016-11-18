@@ -414,10 +414,16 @@ matrix_<U> SolutionStatic<FP, T, U>::get_node_result(int node_id, LoadType res_t
  *  \param[in] fname file name.
  */
 template <class FileReader, class Scalar, class U>
-void SolutionStatic<FileReader, Scalar, U>::write2mat(const char* fname)
+void SolutionStatic<FileReader, Scalar, U>::write2mat(const char* fname, bool is_ver73)
 {
 	mat_t *matfp;
-	matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT73);
+	if(is_ver73){
+		matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT73);
+	}
+	else{
+		matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT5);
+	}
+	
 	if(NULL==matfp){
 		fmt::print("Error creating MAT file\n");
 		return;

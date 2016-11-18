@@ -220,10 +220,16 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::post_process()
  *  \param[in] fname file name.
  */
 template <class FileReader, class Scalar, class ResultScalar>
-void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fname)
+void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fname, bool is_ver73)
 {
 	mat_t *matfp;
-	matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT73);
+	if(is_ver73){
+		matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT73);
+	}
+	else{
+		matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT5);
+	}
+	
 	if(NULL==matfp){
 		fmt::print("Error creating MAT file\n");
 		return;
@@ -305,6 +311,21 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 	Mat_VarWrite(matfp, node_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(node_list);
 	
+	{
+		matvar_t *freq;
+		size_t dims[2] = {1, 1};
+		if(1>this->natural_freq_.rows()){
+			double val{-1.0};
+			freq = Mat_VarCreate("freq", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, &val, 0);
+		}
+		else{
+			dims[0] = this->natural_freq_.rows();
+			dims[1] = this->natural_freq_.cols();
+			freq = Mat_VarCreate("freq", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, this->natural_freq_.data(), 0);
+		}
+		Mat_VarWrite(matfp, freq, MAT_COMPRESSION_ZLIB);
+		Mat_VarFree(freq);
+	}
 	auto coord = this->mat_pair_.get_coord_ptr();
 	auto pk = this->mat_pair_.get_stif_ptr();
 	auto pm = this->mat_pair_.get_mass_ptr();

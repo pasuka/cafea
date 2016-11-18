@@ -48,7 +48,7 @@ class SolutionBase {
 		//! Solve.
 		virtual void solve() {fmt::print("Solve problem.\n");};
 		//! Save MAT file.
-		virtual void write2mat(const char* mat) {fmt::print("Save :{}\n", mat);};
+		virtual void write2mat(const char* mat, bool ver_73=false) {fmt::print("Save :{}\n", mat);};
 		//! Save MAT file.
 		// virtual void write2mat(const std::string mat) {write2mat(mat.c_str());};
 		//! Post process.
@@ -109,7 +109,7 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! Solve.
 		void solve() override;
 		//! Save MAT file.
-		void write2mat(const char*) override;
+		void write2mat(const char *mat, bool ver_73=false) override;
 		//! Post process.
 		void post_process() override;
 		//! Get model information.
@@ -166,7 +166,7 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		//! Post process.
 		void post_process() override;
 		//! Save variables to MAT files.
-		void write2mat(const char*) override;
+		void write2mat(const char *mat, bool ver_73=false) override;
 		//! Get information.
 		std::array<size_t, 5> get_info()const override;
 		//! Print information.
