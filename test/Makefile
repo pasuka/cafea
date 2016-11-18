@@ -9,7 +9,7 @@ GCCVERSIONEQ5 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 5.0)
 GCCVERSIONEQ6 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 6.0)
 ifeq "$(GCCVERSIONEQ6)" "0"
 ifeq "$(GCCVERSIONEQ5)" "1"
-CXXFLAGS += -std=c++14
+CXXFLAGS += -std=c++14 -fopenmp
 else
 endif
 endif
