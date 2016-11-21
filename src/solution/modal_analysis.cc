@@ -187,7 +187,14 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 		std::tie(val, shp) = this->solver_->subspace(1);
 	}
 	if(val.rows()){
-		for(int i=0; i<val.rows(); i++)val(i, 0) = sqrt(val(i, 0))/2./PI<>();
+		for(int i=0; i<val.rows(); i++){
+			if(val(i, 0)>EPS<>()){
+				val(i, 0) = sqrt(val(i, 0))/2./PI<>();
+			}
+			else{
+				val.row(i) << 0., -1.0;
+			}
+		}
 		this->natural_freq_ = val;
 		this->mode_shape_ = shp;
 		fmt::print("Solve finished.\n");
