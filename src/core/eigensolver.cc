@@ -177,7 +177,7 @@ tuple<matrix_<T>, matrix_<T>> EigenSolver<T, U>::subspace(int nreq, T tol, T sig
 	this->lambda_.resize(nreq, 2);
 	this->X_.resize(this->matA_.rows(), nreq);
 	// Get eigenvalues.
-	this->lambda_.col(0) = (w.head(nreq).array()+sigma).abs();
+	this->lambda_.col(0) = w.head(nreq).array()+sigma;
 	// Get relative error.
 	for(int i=0; i<nreq; i++)this->lambda_(i, 1) = Res.col(i).norm();
 	// Get eigenvectors.
