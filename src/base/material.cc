@@ -74,6 +74,8 @@ std::vector<Scalar> Material<Scalar>::get_material_prop_vec() const
 	std::vector<Scalar> tmp;
 	switch(this->mtype_){
 	case MaterialType::SPRING_STIFFNESS:
+		for(int i=0; i<2; i++)tmp.push_back(this->param_[i]);
+		break;
 	case MaterialType::MASS_VALUES:
 		for(int i=0; i<6; i++)tmp.push_back(this->param_[i]);
 		break;

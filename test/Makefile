@@ -31,7 +31,9 @@ SRC += ../src/base/dof_handler.o
 SRC += ../src/element/element_attr.o ../src/element/pipe.o
 SRC += ../src/element/additional.o ../src/element/element.o
 SRC += ../src/solution/static_analysis.o 
-SRC += ../src/solution/modal_analysis.o ../src/io/simple_convert.o
+SRC += ../src/solution/modal_analysis.o 
+SRC += ../src/solution/harmonic_full_analysis.o
+SRC += ../src/io/simple_convert.o
 SRC += ../src/fortran/common_reader.o
 SRC += ../src/fortran/cdb_reader.o ../src/fortran/bcy_reader.o
 
@@ -113,7 +115,7 @@ compile_modal: $(SRC) ./modal_main.o
 	$(COMMENT)
 	@echo -ne "\033[35m"Run test"\033[0m\n"
 	$(COMMENT)
-	
+
 clean:
 	@echo "Clean files"
 	- $(RM) $(CLEAN) *.o *.mod *.mat test_*

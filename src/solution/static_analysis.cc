@@ -52,8 +52,8 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::load(const char* fn)
 	
 		assert(a1>0);
 		assert(a2>0);
-		assert(a3>0);
-		assert(a4>0);
+		assert(a3>=0);
+		assert(a4>=0);
 
 		for(int i=0; i<a1; i++, p_node++){
 			auto got = (*this).node_group_.find(p_node->id_);

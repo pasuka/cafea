@@ -99,9 +99,13 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const Node
 		for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
 		if(prop->get_material_type()==MaterialType::SPRING_STIFFNESS){
 			auto stif_list = prop->get_material_prop_vec();
-			for(int i=0; i<6; i++){
-				stif(i, i) = stif(i+6, i+6) = stif_list[i];
-				stif(i, i+6) = stif(6+i, i) = -stif(i, i);
+			if(stif_list[0]>EPS<>()){
+				stif(0, 0) = stif(6, 6) = stif_list[0];
+				stif(0, 6) = stif(6, 0) = -stif(0, 0);
+			}
+			if(stif_list[1]>EPS<>()){
+				stif(3, 3) = stif(9, 9) = stif_list[1];
+				stif(3, 9) = stif(9, 3) = -stif(3, 3);
 			}
 		}
 		/*

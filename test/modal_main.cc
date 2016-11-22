@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
 		example->load(argv[1]);
 		example->analyze();
 		example->assembly();
-		example->set_parameter(cafea::SolutionOption::MODAL_FREQ_RANGE, {0.0, 1.0e2});
+		// example->set_parameter(cafea::SolutionOption::MODAL_FREQ_RANGE, {0.0, 1.0e2});
+		example->set_parameter(cafea::SolutionOption::MODAL_NUMBER, {30, });
 		example->solve();
 		cafea::matrix_<double> rst = example->get_result();
 		fmt::print("***************************************************************************\n");

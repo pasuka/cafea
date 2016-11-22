@@ -201,9 +201,40 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		//! Default constructor.
 		SolutionHarmonicFull(){};
 		//! Destructor.
-		~SolutionHarmonicFull();
+		~SolutionHarmonicFull()override{fmt::print("Destructor of harmonic analysis.\n"); clear();};
+		//! Initialize environment.
+		void init() override;
+		//! Clear variables.
+		void clear() override;
+		//! Check input model data.
+		void check() override;
+		//! Analyze pattern.
+		void analyze() override;
+		//! Assemble global matrix.
+		void assembly() override;
+		//! Solve.
+		void solve() override;
+		//! Post process.
+		void post_process() override;
+		//! Save variables to MAT files.
+		void write2mat(const char *mat, bool ver_73=false) override;
+		//! Get information.
+		std::array<size_t, 5> get_info()const override;
+		//! Print information.
+		friend std::ostream& operator<<(std::ostream& cout, const SolutionHarmonicFull &a)
+		{
+			return cout << "This is solution of harmonic analysis.\n";
+		};
+		//! Set solve option in numeric values.
+		void set_parameter(SolutionOption chk, init_list_<ResultScalar> val) override;
+		//! Set solve option in boolean values.
+		void set_parameter(SolutionOption chk, bool val=false) override;
+		//! Get result.
+		// matrix_<ResultScalar> get_result() const override {return natural_freq_;};
 	private:
-		
+		vecX_<ResultScalar> damping_;
+		vecX_<ResultScalar> freq_range_;
+		matrix_<std::complex<ResultScalar>> disp_cmplx;
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
 		
 };
@@ -247,10 +278,14 @@ template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL8>;
 template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL4>;
 template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL8>;
 template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL4>;
+template class SolutionHarmonicFull<AnsysCdbReader<REAL4>, REAL4, REAL8>;
+template class SolutionHarmonicFull<AnsysCdbReader<REAL4>, REAL4, REAL4>;
 
 template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL8>;
 template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL4>;
 template class SolutionModal<BcyReader<REAL4>, REAL4, REAL8>;
 template class SolutionModal<BcyReader<REAL4>, REAL4, REAL4>;
+template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL8>;
+template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL4>;
 }
 #endif
