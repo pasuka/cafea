@@ -85,7 +85,7 @@ struct StructuralElementPost
 	 *  \brief 2-node straight/elbow pipe element post process.
 	 */
 	static matrix_<T> pipe(const matrix_<T>, const matrix_<T>, const matrix_<T>, const matrix_<T>, const map<string, T>);
-	//static matrix_<COMPLEX<T>> pipe(const matrix_<T>, const matrix_<T>, const matrix_<COMPLEX<T>>, const map<string, T>);
+	// static matrix_<COMPLEX<T>> pipe(const matrix_<T>, const matrix_<T>, const matrix_<COMPLEX<T>>, const map<string, T>);
 };
 //!< Specialization.
 template struct StructuralElement<REAL4, REAL4>;

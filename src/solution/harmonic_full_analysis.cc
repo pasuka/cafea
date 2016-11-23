@@ -117,8 +117,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::analyze()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 {
-	fmt::print("Assembly matrix in harmonic full analysis.\n");
-	/* bool lumped{false};
+	// fmt::print("Assembly matrix in harmonic full analysis.\n");
+	bool lumped{false};
 	if(this->mass_type_==MassType::LUMPED)lumped = true;
 	for(auto &it: this->elem_group_){
 		auto &p_elem = it.second;
@@ -139,28 +139,34 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 		auto p_stif = p_elem.get_stif();
 		auto p_mass = p_elem.get_mass();
 		auto p_tran = p_elem.get_tran();
+		auto p_rhs = p_elem.get_rhs();
+		
 		p_stif = p_tran.transpose()*p_stif*p_tran;
 		p_mass = p_tran.transpose()*p_mass*p_tran;
+		p_rhs = p_tran.transpose()*p_rhs;
+		
 		auto nn = p_elem.get_active_num_of_node();
 		auto ndof = p_elem.get_dofs_per_node();
-		for(size_t ia=0; ia<nn; ia++){
+		for(auto ia=0; ia<nn; ia++){
 			auto va = pt[ia].dof_list();
 			for(auto ja=0; ja<ndof; ja++){
+				p_elem.set_element_dofs(va[ja]);
 				if(va[ja]<0)continue;
-				for(size_t ib=0; ib<nn; ib++){
+				auto row_ = ia*ndof+ja;
+				this->mat_pair_.add_rhs_data(va[ja], p_rhs(row_));
+				for(auto ib=0; ib<nn; ib++){
 					auto vb = pt[ib].dof_list();
 					for(auto jb=0; jb<ndof; jb++){
 						if(vb[jb]<0)continue;
-						auto row_ = ia*ndof+ja;
 						auto col_ = ib*ndof+jb;
-						this->mat_pair_.add_matrix_data_KM(va[ja], vb[jb],
+						this->mat_pair_.add_matrix_data(va[ja], vb[jb],
 							p_stif(row_, col_), p_mass(row_, col_));
 					}
 				}
 			}
 			
 		}
-	} */
+	}
 }
 
 /**
@@ -169,6 +175,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 template <class FileReader, class Scalar, class ResultScalar>
 void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::solve()
 {
+	Eigen::SparseLU<Eigen::SparseMatrix<COMPLEX<ResultScalar>>, Eigen::COLAMDOrdering<int>> solver;
+	Eigen::SparseMatrix<COMPLEX<ResultScalar>> mat_K;
+	vecX_<COMPLEX<ResultScalar>> rhs;
 	fmt::print("Harmonic full solve.\n");
 };
 
