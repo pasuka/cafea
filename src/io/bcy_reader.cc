@@ -34,21 +34,22 @@ int FEModelReader<T>::load_model(const std::string fn)
 					this->parse_node_blk();
 				}
 				else if(cmp(line, "$ELEMENT")){	
+					this->parse_element_blk();
 				}
 				else if(cmp(line, "$FORMAT_INFO")){
 					
 				}
 				else if(cmp(line, "$MATERIAL")){
-					
+					this->parse_material_blk();
 				}
 				else if(cmp(line, "$SECTION")){
-					
+					this->parse_section_blk();
 				}
 				else if(cmp(line, "$BOUNDARY")){
-					
+					this->parse_boundary_blk();
 				}
 				else if(cmp(line, "$SOLUTION")){
-					
+					this->parse_solution_blk();
 				}
 				else if(cmp(line, "$END")){
 					
@@ -92,7 +93,94 @@ int FEModelReader<T>::parse_node_blk()
 		}
 		this->node_list_.push_back(pt);
 	}
+	return 0;
 };
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::parse_element_blk()
+{
+	std::string line;
+	std::getline(this->fp_, line);
+	auto list = this->parse_line(line);
+	auto str2i = [](std::string a){return std::stoi(a);};
+	int num_elem = str2i(list[0]);
+	int max_elem_id = str2i(list[1]);
+	for(int i=0; i<num_elem; i++){
+		std::getline(this->fp_, line);
+		auto per_elem = this->parse_line(line);
+		wrapper_::elem_bcy pp{str2i(per_elem[0]), str2i(per_elem[1]), str2i(per_elem[2]), str2i(per_elem[3])};
+		for(int j=0; j<str2i(per_elem[4]); j++)pp.node_list_[j] = str2i(per_elem[5+j]);
+		this->elem_list_.push_back(pp);
+	}
+}
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::parse_material_blk()
+{
+	std::string line;
+	std::getline(this->fp_, line);
+	auto list = this->parse_line(line);
+	auto str2i = [](std::string a){return std::stoi(a);};
+	auto str2f = [](std::string a){return std::stof(a);};
+	int num_matl = str2i(list[0]);
+	int max_matl_id = str2i(list[1]);
+	for(int i=0; i<num_matl; i++){
+		std::getline(this->fp_, line);
+		auto per_matl = this->parse_line(line);
+		wrapper_::matl_bcy pm{str2i(per_matl[0]), str2i(per_matl[1])};
+		for(int j=0; j<str2i(per_matl[2]); j++)pm.val_[j] = str2f(per_matl[3+j]);
+		this->matl_list_.push_back(pm);
+	}
+}
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::parse_section_blk()
+{
+	std::string line;
+	std::getline(this->fp_, line);
+	auto list = this->parse_line(line);
+	auto str2i = [](std::string a){return std::stoi(a);};
+	auto str2f = [](std::string a){return std::stof(a);};
+	int num_sect = str2i(list[0]);
+	int max_sect_id = str2i(list[1]);
+	for(int i=0; i<num_sect; i++){
+		std::getline(this->fp_, line);
+		auto per_sect = this->parse_line(line);
+		wrapper_::sect_bcy ps{str2i(per_sect[0]), str2i(per_sect[1])};
+		for(int j=0; j<str2i(per_sect[2]); j++)ps.val_[j] = str2f(per_sect[3+j]);
+		this->sect_list_.push_back(ps);
+	}
+}
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::parse_boundary_blk()
+{
+	
+}
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::parse_load_blk()
+{
+	
+}
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::parse_solution_blk()
+{
+	
+} 
 }
 
 // #include <vector>

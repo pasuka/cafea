@@ -135,7 +135,7 @@ class FEModelReader{
 			if(fp_.is_open())fp_.close();
 			if(!node_list_.empty())node_list_.clear();
 			if(!elem_list_.empty())elem_list_.clear();
-			if(!matp_list_.empty())matp_list_.clear();
+			if(!matl_list_.empty())matl_list_.clear();
 			if(!sect_list_.empty())sect_list_.clear();
 			if(!load_list_.empty())load_list_.clear();
 			// if(!solu_list_.empty())solu_list_.clear();
@@ -146,7 +146,7 @@ class FEModelReader{
 		std::ifstream fp_;
 		std::vector<wrapper_::node_bcy> node_list_;
 		std::vector<wrapper_::elem_bcy> elem_list_;
-		std::vector<wrapper_::matl_bcy> matp_list_;
+		std::vector<wrapper_::matl_bcy> matl_list_;
 		std::vector<wrapper_::sect_bcy> sect_list_;
 		std::vector<wrapper_::load_bcy> load_list_;
 		std::vector<wrapper_::bndy_bcy> bc_list_;
