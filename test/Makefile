@@ -1,7 +1,7 @@
 CC := gcc
 CXX := g++
 FC := gfortran
-CXXFLAGS := -lgfortran -L./ -lmatio -O3
+CXXFLAGS := -lgfortran -lboost_system-mt -lboost_filesystem-mt -L./ -lmatio -O3
 FFLAGS := -cpp
 
 # Check version of gcc
@@ -33,9 +33,9 @@ SRC += ../src/element/additional.o ../src/element/element.o
 SRC += ../src/solution/static_analysis.o 
 SRC += ../src/solution/modal_analysis.o 
 SRC += ../src/solution/harmonic_full_analysis.o
-SRC += ../src/io/simple_convert.o
+SRC += ../src/io/simple_convert.o ../src/io/bcy_reader.o
 SRC += ../src/fortran/common_reader.o
-SRC += ../src/fortran/cdb_reader.o ../src/fortran/bcy_reader.o
+SRC += ../src/fortran/cdb_reader.o ../src/fortran/bcy_reader_2.o
 
 %.o: %.cc
 	$(COMMENT)
@@ -116,6 +116,11 @@ compile_modal: $(SRC) ./modal_main.o
 	@echo -ne "\033[35m"Run test"\033[0m\n"
 	$(COMMENT)
 
+compile_harmonic: $(SRC) ./harmonic_main.o
+	$(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o harmonic_analysis
+	$(COMMENT)
+
 clean:
 	@echo "Clean files"
 	- $(RM) $(CLEAN) *.o *.mod *.mat test_*
@@ -125,4 +130,4 @@ all:
 	./test_node
 	$(MAKE) clean
 	
-.PHONY: clean test_node test_cdb test_cdb_cpp test_solution test_modal matio_lib compile_modal all
+.PHONY: clean test_node test_cdb test_cdb_cpp test_solution test_modal matio_lib compile_modal compile_harmonic all

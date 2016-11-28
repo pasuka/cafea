@@ -2,6 +2,12 @@
 #define FORTRAN_WRAPPER_H
 
 #include "base.h"
+#include "boundary.h"
+#include "node.h"
+#include "element.h"
+#include "material.h"
+#include "section.h"
+#include "load.h"
 
 namespace cafea
 {

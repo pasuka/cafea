@@ -1,42 +1,139 @@
-#include <vector>
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <algorithm>
-#include <boost/algorithm/string.hpp>
+#include "mesh_reader.h"
 
-int main(int argc, char* argv[])
+namespace cafea
 {
-	if(1<argc){
-		std::ifstream infile(argv[1]);
-		if(infile.is_open()){
-			std::string line;
-			while(std::getline(infile, line)){
-			boost::trim(line);
-			if(!line.empty()){
-				if(std::equal(line.begin(), line.begin() + 4, "$END")){
-					std::cout << "This is END\n";
-				}
-				else if(std::equal(line.begin(), line.begin()+5, "$NODE")){
-					std::cout << "This is keyword NODE begin\n";
-					std::getline(infile, line);
-					std::vector<std::string> list;
-					boost::split(list, line, boost::is_any_of(","));
-					if(2<list.size())std::cout << "Node Num: " << list[0] << " Max Id. " << list[1] << "\n";
-				}
-				else{
-					std::cout << line << "\n";
-				}
-				
-				
-			}
-		}
+
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::load_model(const std::string fn)
+{
+	fs::path p = fn;
+	if(fs::exists(p)){
+		if(!p.empty()){
+			this->file_ = p;
 		}
 		else{
-			std::cout << "Could not find file: " << argv[1] << "!\n";
+			fmt::print("Input file: {} is empty!\n", fn);
+			return -1;
 		}
-		
-		
+	}
+	else{
+		fmt::print("Input file: {} is not exists!\n", fn);
+		return -2;
+	}
+	if(this->fp_.is_open())this->fp_.close();
+	this->fp_.open(fn);
+	auto cmp = [](std::string s1, std::string s2){return 0==s1.compare(0, s2.size(), s2);};
+	if(this->fp_.is_open()){
+		std::string line;
+		while(std::getline(this->fp_, line)){
+			if(!line.empty()){
+				if(cmp(line, "$NODE")){
+					this->parse_node_blk();
+				}
+				else if(cmp(line, "$ELEMENT")){	
+				}
+				else if(cmp(line, "$FORMAT_INFO")){
+					
+				}
+				else if(cmp(line, "$MATERIAL")){
+					
+				}
+				else if(cmp(line, "$SECTION")){
+					
+				}
+				else if(cmp(line, "$BOUNDARY")){
+					
+				}
+				else if(cmp(line, "$SOLUTION")){
+					
+				}
+				else if(cmp(line, "$END")){
+					
+				}
+				else if(cmp(line, "#")){
+					fmt::print("Comment line.\n");
+				}
+				else{
+					fmt::print("Data block.\n");
+				}
+			}
+		}
 	}
 	return 0;
+	
+};
+
+/**
+ *
+ */
+template <class T>
+int FEModelReader<T>::parse_node_blk()
+{
+	std::string line;
+	std::getline(this->fp_, line);
+	auto list = this->parse_line(line);
+	int num_node = std::stoi(list[0]);
+	int max_node_id = std::stoi(list[1]);
+	int csys = std::stoi(list[2]);
+	int has_rot = std::stoi(list[3]);
+	// fmt::print("Num. node: {}\tMax id: {}\t Coord. :{}\t xyz len: {}\n", num_node, max_node_id, csys, has_rot);
+	for(int i=0; i<num_node; i++){
+		std::getline(this->fp_, line);
+		auto per_node = this->parse_line(line);
+		wrapper_::node_bcy pt{std::stoi(per_node[0]), csys,
+			{std::stof(per_node[1]), std::stof(per_node[2]), std::stof(per_node[3])}};
+		if(6==has_rot){
+			pt.rot_[0] = std::stof(per_node[4]);
+			pt.rot_[1] = std::stof(per_node[5]);
+			pt.rot_[2] = std::stof(per_node[6]);
+		}
+		this->node_list_.push_back(pt);
+	}
+};
 }
+
+// #include <vector>
+// #include <string>
+// #include <fstream>
+// #include <iostream>
+// #include <algorithm>
+// #include <boost/algorithm/string.hpp>
+
+// int main(int argc, char* argv[])
+// {
+	// if(1<argc){
+		// std::ifstream infile(argv[1]);
+		// if(infile.is_open()){
+			// std::string line;
+			// while(std::getline(infile, line)){
+			// boost::trim(line);
+			// if(!line.empty()){
+				// if(std::equal(line.begin(), line.begin() + 4, "$END")){
+					// std::cout << "This is END\n";
+				// }
+				// else if(std::equal(line.begin(), line.begin()+5, "$NODE")){
+					// std::cout << "This is keyword NODE begin\n";
+					// std::getline(infile, line);
+					// std::vector<std::string> list;
+					// boost::split(list, line, boost::is_any_of(","));
+					// if(2<list.size())std::cout << "Node Num: " << list[0] << " Max Id. " << list[1] << "\n";
+				// }
+				// else{
+					// std::cout << line << "\n";
+				// }
+				
+				
+			// }
+		// }
+		// }
+		// else{
+			// std::cout << "Could not find file: " << argv[1] << "!\n";
+		// }
+		
+		
+	// }
+	// return 0;
+// }

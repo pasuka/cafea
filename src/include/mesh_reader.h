@@ -2,10 +2,21 @@
 #define MESH_READER_H
 
 #include <string>
+#include <fstream>
 #include <iostream>
+#include <algorithm>
 #include <functional>
+// #include <experimental/filesystem>
+
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
+
+#include "fmt/format.h"
+#include "fmt/printf.h"
 
 #include "fortran_wrapper.h"
+
+namespace fs = boost::filesystem;
 
 namespace cafea
 {
@@ -100,5 +111,71 @@ class BcyReader{
 	private:
 		std::string file_;
 };
+/**
+ *
+ */
+template <class T=float>
+class FEModelReader{
+	public:
+		//! A constructor.
+		FEModelReader(){};
+		//! Destructor.
+		~FEModelReader() { clean_model();};
+		//! Load bcy file.
+		int load_model(const std::string fn);
+		//! Load bcy file.
+		int load_model(const char* fn)
+		{
+			const std::string fn2(fn);
+			return load_model(fn2);
+		};
+		//! Clear model data in memory.
+		void clean_model() {
+			file_.clear();
+			if(fp_.is_open())fp_.close();
+			if(!node_list_.empty())node_list_.clear();
+			if(!elem_list_.empty())elem_list_.clear();
+			if(!matp_list_.empty())matp_list_.clear();
+			if(!sect_list_.empty())sect_list_.clear();
+			if(!load_list_.empty())load_list_.clear();
+			// if(!solu_list_.empty())solu_list_.clear();
+			if(!bc_list_.empty())bc_list_.clear();
+		};
+	private:
+		fs::path file_;
+		std::ifstream fp_;
+		std::vector<wrapper_::node_bcy> node_list_;
+		std::vector<wrapper_::elem_bcy> elem_list_;
+		std::vector<wrapper_::matl_bcy> matp_list_;
+		std::vector<wrapper_::sect_bcy> sect_list_;
+		std::vector<wrapper_::load_bcy> load_list_;
+		std::vector<wrapper_::bndy_bcy> bc_list_;
+		// std::vector<> solu_list_;
+		//! Split line by delimer.
+		std::vector<std::string> parse_line(std::string line, std::string delim = ",")
+		{
+			std::vector<std::string> list;
+			boost::trim(line);
+			boost::split(list, line, boost::is_any_of(delim));
+			return list;
+		};
+		//! 
+		int parse_node_blk();
+		//!
+		int parse_element_blk();
+		//!
+		int parse_material_blk();
+		//!
+		int parse_section_blk();
+		//!
+		int parse_boundary_blk();
+		//!
+		int parse_solution_blk();
+		//!
+		int parse_load_blk();
+};
+//! Specialization.
+template class FEModelReader<REAL4>;
+template class FEModelReader<REAL8>;
 }
 #endif
