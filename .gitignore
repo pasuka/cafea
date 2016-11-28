@@ -35,3 +35,6 @@
 
 # Matlab auto save files
 *.asv
+
+# Make
+*.stackdump
