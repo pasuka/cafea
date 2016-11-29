@@ -452,4 +452,6 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	
 	return esol;
 }
+
+
 }

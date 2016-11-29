@@ -208,6 +208,8 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		void clear() override;
 		//! Check input model data.
 		void check() override;
+		//! Load input file.
+		void load(const char*) override;
 		//! Analyze pattern.
 		void analyze() override;
 		//! Assemble global matrix.
@@ -287,5 +289,8 @@ template class SolutionModal<BcyReader<REAL4>, REAL4, REAL8>;
 template class SolutionModal<BcyReader<REAL4>, REAL4, REAL4>;
 template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL8>;
 template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL4>;
+
+template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL4>;
+template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL8>;
 }
 #endif

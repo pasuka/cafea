@@ -111,6 +111,22 @@ class BcyReader{
 	private:
 		std::string file_;
 };
+//! simplest load set.
+struct load_simple{
+	int id_{-1};
+	int type_{-1};
+	int dof_{-1};
+	int group_{-1};
+	float range_{0.0f};
+	float val_[2]={0.0f, 0.0f};
+};
+
+//! Simplest solution parameter set.
+struct solu_simple{
+	int antype_{-1};
+	int num_step{-1};
+	float damp_[2]={0.0f, -1.0f};
+};
 /**
  *
  */
@@ -130,16 +146,23 @@ class FEModelReader{
 			return load_model(fn2);
 		};
 		//! Clear model data in memory.
-		void clean_model() {
+		void clean_model()
+		{
 			file_.clear();
 			if(fp_.is_open())fp_.close();
 			if(!node_list_.empty())node_list_.clear();
 			if(!elem_list_.empty())elem_list_.clear();
 			if(!matl_list_.empty())matl_list_.clear();
 			if(!sect_list_.empty())sect_list_.clear();
-			if(!load_list_.empty())load_list_.clear();
-			// if(!solu_list_.empty())solu_list_.clear();
 			if(!bc_list_.empty())bc_list_.clear();
+			
+			if(!solu_list_.empty())solu_list_.clear();
+			if(!load_list_.empty()){
+				for(auto &x: load_list_){
+					if(!x.empty())x.clear();
+				}
+				load_list_.clear();
+			}
 		};
 	private:
 		fs::path file_;
@@ -148,9 +171,10 @@ class FEModelReader{
 		std::vector<wrapper_::elem_bcy> elem_list_;
 		std::vector<wrapper_::matl_bcy> matl_list_;
 		std::vector<wrapper_::sect_bcy> sect_list_;
-		std::vector<wrapper_::load_bcy> load_list_;
 		std::vector<wrapper_::bndy_bcy> bc_list_;
-		// std::vector<> solu_list_;
+		
+		std::vector<std::vector<load_simple>> load_list_;
+		std::vector<solu_simple> solu_list_;
 		//! Split line by delimer.
 		std::vector<std::string> parse_line(std::string line, std::string delim = ",")
 		{

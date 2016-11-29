@@ -62,7 +62,11 @@ using dict_ = std::unordered_map<int, T>;
 //! Gauss integrate point and weight.
 std::tuple<vecX_<>, vecX_<>> gauss_quad(size_t);
 
-//! 
-std::vector<std::string> split(const std::string&, const std::string&);
+//! Starts with special string.
+bool startswith(std::string s1, std::string header);
+//! Convert to integer.
+int str2int(std::string a);
+//! Convert to float.
+float str2float(std::string a);
 }
 #endif

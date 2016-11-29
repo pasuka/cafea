@@ -25,36 +25,37 @@ int FEModelReader<T>::load_model(const std::string fn)
 	}
 	if(this->fp_.is_open())this->fp_.close();
 	this->fp_.open(fn);
-	auto cmp = [](std::string s1, std::string s2){return 0==s1.compare(0, s2.size(), s2);};
+	
 	if(this->fp_.is_open()){
 		std::string line;
+		fmt::print("Begin to read file: {}\n", fn);
 		while(std::getline(this->fp_, line)){
 			if(!line.empty()){
-				if(cmp(line, "$NODE")){
+				if(startswith(line, "$NODE")){
 					this->parse_node_blk();
 				}
-				else if(cmp(line, "$ELEMENT")){	
+				else if(startswith(line, "$ELEMENT")){	
 					this->parse_element_blk();
 				}
-				else if(cmp(line, "$FORMAT_INFO")){
+				else if(startswith(line, "$FORMAT_INFO")){
 					
 				}
-				else if(cmp(line, "$MATERIAL")){
+				else if(startswith(line, "$MATERIAL")){
 					this->parse_material_blk();
 				}
-				else if(cmp(line, "$SECTION")){
+				else if(startswith(line, "$SECTION")){
 					this->parse_section_blk();
 				}
-				else if(cmp(line, "$BOUNDARY")){
+				else if(startswith(line, "$BOUNDARY")){
 					this->parse_boundary_blk();
 				}
-				else if(cmp(line, "$SOLUTION")){
+				else if(startswith(line, "$SOLUTION")){
 					this->parse_solution_blk();
 				}
-				else if(cmp(line, "$END")){
+				else if(startswith(line, "$END")){
 					
 				}
-				else if(cmp(line, "#")){
+				else if(startswith(line, "#")){
 					fmt::print("Comment line.\n");
 				}
 				else{
@@ -76,20 +77,20 @@ int FEModelReader<T>::parse_node_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	int num_node = std::stoi(list[0]);
-	int max_node_id = std::stoi(list[1]);
-	int csys = std::stoi(list[2]);
-	int has_rot = std::stoi(list[3]);
-	// fmt::print("Num. node: {}\tMax id: {}\t Coord. :{}\t xyz len: {}\n", num_node, max_node_id, csys, has_rot);
+	int num_node = str2int(list[0]);
+	int max_node_id = str2int(list[1]);
+	int csys = str2int(list[2]);
+	int has_rot = str2int(list[3]);
+	fmt::print("Num. node: {} Max id: {} Coord. :{} xyz len: {}\n", num_node, max_node_id, csys, has_rot);
 	for(int i=0; i<num_node; i++){
 		std::getline(this->fp_, line);
 		auto per_node = this->parse_line(line);
-		wrapper_::node_bcy pt{std::stoi(per_node[0]), csys,
-			{std::stof(per_node[1]), std::stof(per_node[2]), std::stof(per_node[3])}};
+		wrapper_::node_bcy pt{str2int(per_node[0]), csys,
+			{str2float(per_node[1]), str2float(per_node[2]), str2float(per_node[3])}};
 		if(6==has_rot){
-			pt.rot_[0] = std::stof(per_node[4]);
-			pt.rot_[1] = std::stof(per_node[5]);
-			pt.rot_[2] = std::stof(per_node[6]);
+			pt.rot_[0] = str2float(per_node[4]);
+			pt.rot_[1] = str2float(per_node[5]);
+			pt.rot_[2] = str2float(per_node[6]);
 		}
 		this->node_list_.push_back(pt);
 	}
@@ -104,16 +105,17 @@ int FEModelReader<T>::parse_element_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	auto str2i = [](std::string a){return std::stoi(a);};
-	int num_elem = str2i(list[0]);
-	int max_elem_id = str2i(list[1]);
+	int num_elem = str2int(list[0]);
+	int max_elem_id = str2int(list[1]);
+	fmt::print("Num. element: {} Max id: {}\n", num_elem, max_elem_id);
 	for(int i=0; i<num_elem; i++){
 		std::getline(this->fp_, line);
 		auto per_elem = this->parse_line(line);
-		wrapper_::elem_bcy pp{str2i(per_elem[0]), str2i(per_elem[1]), str2i(per_elem[2]), str2i(per_elem[3])};
-		for(int j=0; j<str2i(per_elem[4]); j++)pp.node_list_[j] = str2i(per_elem[5+j]);
+		wrapper_::elem_bcy pp{str2int(per_elem[0]), str2int(per_elem[1]), str2int(per_elem[2]), str2int(per_elem[3])};
+		for(int j=0; j<str2int(per_elem[4]); j++)pp.node_list_[j] = str2int(per_elem[5+j]);
 		this->elem_list_.push_back(pp);
 	}
+	return 0;
 }
 /**
  *
@@ -124,17 +126,18 @@ int FEModelReader<T>::parse_material_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	auto str2i = [](std::string a){return std::stoi(a);};
-	auto str2f = [](std::string a){return std::stof(a);};
-	int num_matl = str2i(list[0]);
-	int max_matl_id = str2i(list[1]);
+	
+	int num_matl = str2int(list[0]);
+	int max_matl_id = str2int(list[1]);
+	fmt::print("Num. material: {} Max id: {}\n", num_matl, max_matl_id);
 	for(int i=0; i<num_matl; i++){
 		std::getline(this->fp_, line);
 		auto per_matl = this->parse_line(line);
-		wrapper_::matl_bcy pm{str2i(per_matl[0]), str2i(per_matl[1])};
-		for(int j=0; j<str2i(per_matl[2]); j++)pm.val_[j] = str2f(per_matl[3+j]);
+		wrapper_::matl_bcy pm{str2int(per_matl[0]), str2int(per_matl[1])};
+		for(int j=0; j<str2int(per_matl[2]); j++)pm.val_[j] = str2float(per_matl[3+j]);
 		this->matl_list_.push_back(pm);
 	}
+	return 0;
 }
 /**
  *
@@ -145,17 +148,18 @@ int FEModelReader<T>::parse_section_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	auto str2i = [](std::string a){return std::stoi(a);};
-	auto str2f = [](std::string a){return std::stof(a);};
-	int num_sect = str2i(list[0]);
-	int max_sect_id = str2i(list[1]);
+	
+	int num_sect = str2int(list[0]);
+	int max_sect_id = str2int(list[1]);
+	fmt::print("Num. section: {} Max id: {}\n", num_sect, max_sect_id);
 	for(int i=0; i<num_sect; i++){
 		std::getline(this->fp_, line);
 		auto per_sect = this->parse_line(line);
-		wrapper_::sect_bcy ps{str2i(per_sect[0]), str2i(per_sect[1])};
-		for(int j=0; j<str2i(per_sect[2]); j++)ps.val_[j] = str2f(per_sect[3+j]);
+		wrapper_::sect_bcy ps{str2int(per_sect[0]), str2int(per_sect[1])};
+		for(int j=0; j<str2int(per_sect[2]); j++)ps.val_[j] = str2float(per_sect[3+j]);
 		this->sect_list_.push_back(ps);
 	}
+	return 0;
 }
 /**
  *
@@ -163,7 +167,20 @@ int FEModelReader<T>::parse_section_blk()
 template <class T>
 int FEModelReader<T>::parse_boundary_blk()
 {
+	std::string line;
+	std::getline(this->fp_, line);
+	auto list = this->parse_line(line);
 	
+	int num_bc = str2int(list[0]);
+	int num_dof_per = str2int(list[1]);
+	fmt::print("Num. boundary: {} Max dof per node: {}\n", num_bc, num_dof_per);
+	for(int i=0; i<num_bc; i++){
+		std::getline(this->fp_, line);
+		auto per_bc = this->parse_line(line);
+		wrapper_::bndy_bcy bc{str2int(per_bc[0]), str2int(per_bc[1])};
+		for(int j=0; j<str2int(per_bc[2]); j++)bc.val_[j] = str2int(per_bc[3+j]);
+	}
+	return 0;
 }
 /**
  *
@@ -171,7 +188,58 @@ int FEModelReader<T>::parse_boundary_blk()
 template <class T>
 int FEModelReader<T>::parse_load_blk()
 {
-	
+	std::string line;
+	std::getline(this->fp_, line);
+	if(startswith(line, "$FREQ")){
+		auto list = this->parse_line(line);
+		int step_id = str2int(list[1]);
+		float freq = str2float(list[2]);
+		std::vector<load_simple> tmp;
+		while(true){
+			std::getline(this->fp_, line);
+			if(startswith(line, "$END_FREQ")){
+				break;
+			}
+			else if(startswith(line, "$NUMPRES")){
+				auto list = this->parse_line(line);
+				int num_pres = str2int(list[1]);
+				for(int i=0; i<num_pres; i++){
+					std::getline(this->fp_, line);
+					auto va = this->parse_line(line);
+					load_simple pres_load{str2int(va[1]), str2int(va[3]), -1, str2int(va[2]), freq, {str2float(va[4]), str2float(va[5])}};
+					tmp.push_back(pres_load);
+				}
+			}
+			else if(startswith(line, "$NUMFORCE")){
+				auto list = this->parse_line(line);
+				int num_force = str2int(list[1]);
+				for(int i=0; i<num_force; i++){
+					std::getline(this->fp_, line);
+					auto va = this->parse_line(line);
+					load_simple force_load{str2int(va[1]), 1, str2int(va[2]), -1, freq, {str2float(va[3]), str2float(va[4])}};
+					tmp.push_back(force_load);
+				}
+			}
+			else if(startswith(line, "$NUMDISP")){
+				auto list = this->parse_line(line);
+				int num_disp = str2int(list[1]);
+				for(int i=0; i<num_disp; i++){
+					std::getline(this->fp_, line);
+					auto va = this->parse_line(line);
+					load_simple disp_load{str2int(va[1]), 2, str2int(va[2]), -1, freq, {str2float(va[3]), str2float(va[4])}};
+					tmp.push_back(disp_load);
+				}
+			}
+			else{
+				
+			}
+		}
+		if(!tmp.empty())this->load_list_.push_back(tmp);
+	}
+	else{
+		return -1;
+	}
+	return 0;
 }
 /**
  *
@@ -179,7 +247,39 @@ int FEModelReader<T>::parse_load_blk()
 template <class T>
 int FEModelReader<T>::parse_solution_blk()
 {
+	std::string line;
+	std::getline(this->fp_, line);
+	int num_param = str2int(line);
 	
+	int antype{0};
+	int numfreq{0};
+	float damp{0.0f};
+	
+	for(int i=0; i<num_param; i++){
+		std::getline(this->fp_, line);
+		auto list = this->parse_line(line);
+		if(startswith(line, "$ANTYPE")){
+			antype = str2int(list[1]);
+			fmt::print("Analysis type: {}\n", antype);
+		}
+		else if(startswith(line, "$DMPSTR")){
+			damp = str2float(list[1]);
+			fmt::print("Damp coeff: {}\n", damp);
+		}
+		else if(startswith(line, "$NUMFREQ")){
+			numfreq = str2int(list[1]);
+			fmt::print("Num. Freq: {}\n", numfreq);
+		}
+		else{
+			
+		}
+	}
+	for(int i=0; i<numfreq; i++){
+		this->parse_load_blk();
+	}
+	solu_simple solu{antype, numfreq, {damp, -1.0f}};
+	this->solu_list_.push_back(solu);
+	return 0;
 } 
 }
 
