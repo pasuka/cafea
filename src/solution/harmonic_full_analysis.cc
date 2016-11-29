@@ -187,7 +187,12 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::solve()
 template <class FileReader, class T, class U>
 void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 {
-	this->file_parser_.load_model(fn);
+	int flag = this->file_parser_.load_model(fn);
+	if(0==flag){
+		fmt::print("load model success!\n");
+		this->file_parser_.print_info();
+		
+	}
 };
 /**
  *  \brief Post-process.

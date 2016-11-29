@@ -92,7 +92,7 @@ int FEModelReader<T>::parse_node_blk()
 			pt.rot_[1] = str2float(per_node[5]);
 			pt.rot_[2] = str2float(per_node[6]);
 		}
-		this->node_list_.push_back(pt);
+		this->node_list_.push_back(std::move(pt));
 	}
 	return 0;
 };
@@ -113,7 +113,7 @@ int FEModelReader<T>::parse_element_blk()
 		auto per_elem = this->parse_line(line);
 		wrapper_::elem_bcy pp{str2int(per_elem[0]), str2int(per_elem[1]), str2int(per_elem[2]), str2int(per_elem[3])};
 		for(int j=0; j<str2int(per_elem[4]); j++)pp.node_list_[j] = str2int(per_elem[5+j]);
-		this->elem_list_.push_back(pp);
+		this->elem_list_.push_back(std::move(pp));
 	}
 	return 0;
 }
@@ -135,7 +135,7 @@ int FEModelReader<T>::parse_material_blk()
 		auto per_matl = this->parse_line(line);
 		wrapper_::matl_bcy pm{str2int(per_matl[0]), str2int(per_matl[1])};
 		for(int j=0; j<str2int(per_matl[2]); j++)pm.val_[j] = str2float(per_matl[3+j]);
-		this->matl_list_.push_back(pm);
+		this->matl_list_.push_back(std::move(pm));
 	}
 	return 0;
 }
@@ -157,7 +157,7 @@ int FEModelReader<T>::parse_section_blk()
 		auto per_sect = this->parse_line(line);
 		wrapper_::sect_bcy ps{str2int(per_sect[0]), str2int(per_sect[1])};
 		for(int j=0; j<str2int(per_sect[2]); j++)ps.val_[j] = str2float(per_sect[3+j]);
-		this->sect_list_.push_back(ps);
+		this->sect_list_.push_back(std::move(ps));
 	}
 	return 0;
 }
@@ -179,6 +179,7 @@ int FEModelReader<T>::parse_boundary_blk()
 		auto per_bc = this->parse_line(line);
 		wrapper_::bndy_bcy bc{str2int(per_bc[0]), str2int(per_bc[1])};
 		for(int j=0; j<str2int(per_bc[2]); j++)bc.val_[j] = str2int(per_bc[3+j]);
+		this->bc_list_.push_back(std::move(bc));
 	}
 	return 0;
 }
@@ -207,7 +208,7 @@ int FEModelReader<T>::parse_load_blk()
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
 					load_simple pres_load{str2int(va[1]), str2int(va[3]), -1, str2int(va[2]), freq, {str2float(va[4]), str2float(va[5])}};
-					tmp.push_back(pres_load);
+					tmp.push_back(std::move(pres_load));
 				}
 			}
 			else if(startswith(line, "$NUMFORCE")){
@@ -217,7 +218,7 @@ int FEModelReader<T>::parse_load_blk()
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
 					load_simple force_load{str2int(va[1]), 1, str2int(va[2]), -1, freq, {str2float(va[3]), str2float(va[4])}};
-					tmp.push_back(force_load);
+					tmp.push_back(std::move(force_load));
 				}
 			}
 			else if(startswith(line, "$NUMDISP")){
@@ -227,7 +228,7 @@ int FEModelReader<T>::parse_load_blk()
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
 					load_simple disp_load{str2int(va[1]), 2, str2int(va[2]), -1, freq, {str2float(va[3]), str2float(va[4])}};
-					tmp.push_back(disp_load);
+					tmp.push_back(std::move(disp_load));
 				}
 			}
 			else{
@@ -278,7 +279,7 @@ int FEModelReader<T>::parse_solution_blk()
 		this->parse_load_blk();
 	}
 	solu_simple solu{antype, numfreq, {damp, -1.0f}};
-	this->solu_list_.push_back(solu);
+	this->solu_list_.push_back(std::move(solu));
 	return 0;
 } 
 }

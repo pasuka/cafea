@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <utility>
 #include <iostream>
 #include <algorithm>
 #include <functional>
@@ -53,6 +54,7 @@ class AnsysCdbReader{
 			wrapper_::load_cdb_file(file_.c_str(), file_.size());
 			return 0;
 		};
+		void print_info() {fmt::print("This ANSYS cdb file reader.\n");};
 		//! Print model information.
 		friend std::ostream& operator<<(std::ostream& cout, const AnsysCdbReader &a)
 		{
@@ -97,6 +99,8 @@ class BcyReader{
 			wrapper_::load_bcy_file(file_.c_str(), file_.size());
 			return 0;
 		};
+		//! 
+		void print_info() {fmt::print("This is Fortran bcy file reader.\n");};
 		//! Clear model data in memory.
 		std::function<void()> clean_model = std::bind(wrapper_::model_data_clean_bcy);
 		//! Get model data pointer.
@@ -163,6 +167,17 @@ class FEModelReader{
 				}
 				load_list_.clear();
 			}
+		};
+		//! Check and print.
+		void print_info()
+		{
+			fmt::print("Num. node: {}\n", node_list_.size());
+			fmt::print("Num. element: {}\n", elem_list_.size());
+			fmt::print("Num. material: {}\n", matl_list_.size());
+			fmt::print("Num. section: {}\n", sect_list_.size());
+			fmt::print("Num. boundary: {}\n", bc_list_.size());
+			fmt::print("Num. load: {}\n", load_list_.size());
+			fmt::print("Num. solution: {}\n", solu_list_.size());
 		};
 	private:
 		fs::path file_;
