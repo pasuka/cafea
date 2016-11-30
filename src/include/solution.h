@@ -234,9 +234,11 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		//! Get result.
 		// matrix_<ResultScalar> get_result() const override {return natural_freq_;};
 	private:
+		bool has_pressure_{false};
 		vecX_<ResultScalar> damping_;
 		vecX_<ResultScalar> freq_range_;
-		matrix_<std::complex<ResultScalar>> disp_cmplx;
+		vecX_<std::complex<ResultScalar>> pres_cmplx_;
+		matrix_<std::complex<ResultScalar>> disp_cmplx_;
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
 		
 };

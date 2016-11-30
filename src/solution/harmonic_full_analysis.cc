@@ -2,6 +2,7 @@
 
 namespace cafea
 {
+using namespace std::complex_literals;
 /**
  *  \brief Initilize variables.
  */
@@ -191,7 +192,96 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 	if(0==flag){
 		fmt::print("load model success!\n");
 		auto info = this->file_parser_.print_info();
-		fmt::print("Node: {}\n", info["node"]);
+		assert(0<info["node"]);
+		assert(0<info["element"]);
+		assert(0<info["material"]);
+		assert(0<info["section"]);
+		assert(0<info["solution"]);
+		assert(0<info["load"]);
+		
+		auto p_node = this->file_parser_.get_node_ptr(); 
+		auto p_elem = this->file_parser_.get_element_ptr();
+		auto p_matl = this->file_parser_.get_material_ptr();
+		auto p_sect = this->file_parser_.get_section_ptr();
+		auto p_bc = this->file_parser_.get_boundary_ptr();
+		auto p_solu = this->file_parser_.get_solution_ptr();
+		auto p_load = this->file_parser_.get_load_ptr();
+		
+		wrapper_::AdapterF2Cpp<T, U> f2cpp;
+		
+		for(int i=0; i<info["node"]; i++, p_node++){
+			auto got = this->node_group_.find(p_node->id_);
+			if(got==this->node_group_.end()){
+				this->node_group_[p_node->id_] = f2cpp.bcy2node(p_node);
+			}
+			else{
+				fmt::print("Duplicated node id:{}\n", p_node->id_);
+			}
+		}
+		
+		for(int i=0; i<info["element"]; i++, p_elem++){
+			auto got = this->elem_group_.find(p_elem->id_);
+			if(got==this->elem_group_.end()){
+				this->elem_group_[p_elem->id_] = f2cpp.bcy2elem(p_elem);
+			}
+			else{
+				fmt::print("Duplicated element id:{}\n", p_elem->id_);
+			}
+		}
+			
+		for(int i=0; i<info["material"]; i++, p_matl++){
+			auto got = this->matl_group_.find(p_matl->id_);
+			if(got==this->matl_group_.end()){
+				this->matl_group_[p_matl->id_] = f2cpp.bcy2matl(p_matl);
+			}
+			else{
+				fmt::print("Duplicated material id:{}\n", p_matl->id_);
+			}
+		}
+		
+		for(int i=0; i<info["section"]; i++, p_sect++){
+			auto got = this->sect_group_.find(p_sect->id_);
+			if(got==this->sect_group_.end()){
+				this->sect_group_[p_sect->id_] = f2cpp.bcy2sect(p_sect);
+			}
+			else{
+				fmt::print("Duplicated section id:{}\n", p_sect->id_);
+			}
+		}
+		
+		for(int i=0; i<info["boundary"]; i++, p_bc++){
+			this->bc_group_.push_back(f2cpp.bcy2bndy(p_bc));
+		}
+		
+		fmt::print("analysis type: {}\n", p_solu->antype_);
+		fmt::print("Step of analysis: {}\n", p_solu->num_step_);
+		fmt::print("Damp coeff: {}\n", p_solu->damp_[0]);
+		this->damping_ = vecX_<U>::Zero(2);
+		this->freq_range_ = vecX_<U>::Zero(p_solu->num_step_);
+		this->pres_cmplx_ = vecX_<std::complex<U>>::Zero(p_solu->num_step_);
+		this->damping_ << p_solu->damp_[0], p_solu->damp_[1];
+		for(int i=0; i<info["load"]; i++, p_load++){
+			for(int j=0; j<p_load->size(); j++){
+				auto it = p_load->data()[j];
+				if(0==j)this->freq_range_[i] = it.range_;
+				switch(it.type_){
+				case 5:
+					this->set_parameter(SolutionOption::PRESSURE_INTERNAL, true);
+					this->pres_cmplx_[i] = std::complex<U>(it.val_[0], it.val_[1]);//it.val_[0]+it.val_[1]*1i;
+					break;
+				case 1:
+					fmt::print("This is force:\n");
+					break;
+				case 2:
+					fmt::print("This is disp:\n");
+					break;
+				default: fmt::print("Unsupported load type: {}\n", it.type_);
+				};
+				fmt::print("Frequency: {} ", it.range_);
+				fmt::print("Type: {} ", it.type_);
+				fmt::print("Value: {} {}\n", it.val_[0], it.val_[1]);
+			}
+		}
 	}
 };
 /**
@@ -367,6 +457,9 @@ void SolutionHarmonicFull<FP, T, U>::set_parameter(SolutionOption chk, bool val)
 	switch(chk){
 	case SolutionOption::LUMPED_MASS:
 		this->set_mass_lumped(val);
+		break;
+	case SolutionOption::PRESSURE_INTERNAL:
+		this->has_pressure_ = val;
 		break;
 	default: fmt::print("Unsupport boolean parameter in modal analyze.\n");
 	}

@@ -35,7 +35,7 @@ struct load_simple{
 //! Simplest solution parameter set.
 struct solu_simple{
 	int antype_{-1};
-	int num_step{-1};
+	int num_step_{-1};
 	float damp_[2]={0.0f, -1.0f};
 };
 /**
