@@ -1,9 +1,5 @@
 #include "utils.h"
 
-using std::string;
-using std::stoi;
-using std::stof;
-
 namespace cafea
 {
 //! Starts with special string.

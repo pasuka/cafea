@@ -221,6 +221,7 @@ class Element: public ObjectBase {
 		matrix_<T> mass_;//!< Mass matrix of element.
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		vecX_<T> rhs_;//!< Right-hand side of element.
+		matrix_<std::complex<T>> rhs_cmplx_;//!< Right-hand matrix of element in complex.
 		
 		matrix_<T> result_;//!< Result of element.
 		matrix_<std::complex<T>> result_cmplx_;//!< Result of element in complex.
