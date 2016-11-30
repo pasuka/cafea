@@ -190,8 +190,8 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 	int flag = this->file_parser_.load_model(fn);
 	if(0==flag){
 		fmt::print("load model success!\n");
-		this->file_parser_.print_info();
-		
+		auto info = this->file_parser_.print_info();
+		fmt::print("Node: {}\n", info["node"]);
 	}
 };
 /**

@@ -4,7 +4,7 @@ namespace cafea
 {
 
 /**
- *
+ * \brief Load input files.
  */
 template <class T>
 int FEModelReader<T>::load_model(const std::string fn)
@@ -69,7 +69,7 @@ int FEModelReader<T>::load_model(const std::string fn)
 };
 
 /**
- *
+ * \brief Parse block of nodes.
  */
 template <class T>
 int FEModelReader<T>::parse_node_blk()
@@ -96,8 +96,9 @@ int FEModelReader<T>::parse_node_blk()
 	}
 	return 0;
 };
+
 /**
- *
+ * \brief Parse block of elements.
  */
 template <class T>
 int FEModelReader<T>::parse_element_blk()
@@ -116,9 +117,10 @@ int FEModelReader<T>::parse_element_blk()
 		this->elem_list_.push_back(std::move(pp));
 	}
 	return 0;
-}
+};
+
 /**
- *
+ * \brief Parse block of materials.
  */
 template <class T>
 int FEModelReader<T>::parse_material_blk()
@@ -138,9 +140,10 @@ int FEModelReader<T>::parse_material_blk()
 		this->matl_list_.push_back(std::move(pm));
 	}
 	return 0;
-}
+};
+
 /**
- *
+ * \brief Parse block of sections.
  */
 template <class T>
 int FEModelReader<T>::parse_section_blk()
@@ -160,9 +163,10 @@ int FEModelReader<T>::parse_section_blk()
 		this->sect_list_.push_back(std::move(ps));
 	}
 	return 0;
-}
+};
+
 /**
- *
+ * \brief Parse block of boundary.
  */
 template <class T>
 int FEModelReader<T>::parse_boundary_blk()
@@ -182,9 +186,10 @@ int FEModelReader<T>::parse_boundary_blk()
 		this->bc_list_.push_back(std::move(bc));
 	}
 	return 0;
-}
+};
+
 /**
- *
+ * \brief Parse block of loads.
  */
 template <class T>
 int FEModelReader<T>::parse_load_blk()
@@ -241,9 +246,10 @@ int FEModelReader<T>::parse_load_blk()
 		return -1;
 	}
 	return 0;
-}
+};
+
 /**
- *
+ * \brief Parse block of solution.
  */
 template <class T>
 int FEModelReader<T>::parse_solution_blk()

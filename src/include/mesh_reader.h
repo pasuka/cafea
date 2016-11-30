@@ -1,6 +1,7 @@
 #ifndef MESH_READER_H
 #define MESH_READER_H
 
+#include <map>
 #include <string>
 #include <fstream>
 #include <utility>
@@ -21,6 +22,22 @@ namespace fs = boost::filesystem;
 
 namespace cafea
 {
+//! simplest load set.
+struct load_simple{
+	int id_{-1};
+	int type_{-1};
+	int dof_{-1};
+	int group_{-1};
+	float range_{0.0f};
+	float val_[2]={0.0f, 0.0f};
+};
+
+//! Simplest solution parameter set.
+struct solu_simple{
+	int antype_{-1};
+	int num_step{-1};
+	float damp_[2]={0.0f, -1.0f};
+};
 /**
  *  CDB file reader
  */
@@ -54,7 +71,18 @@ class AnsysCdbReader{
 			wrapper_::load_cdb_file(file_.c_str(), file_.size());
 			return 0;
 		};
-		void print_info() {fmt::print("This ANSYS cdb file reader.\n");};
+		std::map<std::string, int> print_info()
+		{
+			fmt::print("This ANSYS cdb file reader.\n");
+			return {{"node", -1}};
+		};
+		const wrapper_::node_bcy* get_node_ptr() const {return nullptr;};
+		const wrapper_::elem_bcy* get_element_ptr() const {return nullptr;};
+		const wrapper_::matl_bcy* get_material_ptr() const {return nullptr;};
+		const wrapper_::sect_bcy* get_section_ptr() const {return nullptr;};
+		const wrapper_::bndy_bcy* get_boundary_ptr() const {return nullptr;};
+		const solu_simple* get_solution_ptr() const {return nullptr;};
+		const std::vector<load_simple>* get_load_ptr() const {return nullptr;};
 		//! Print model information.
 		friend std::ostream& operator<<(std::ostream& cout, const AnsysCdbReader &a)
 		{
@@ -100,7 +128,18 @@ class BcyReader{
 			return 0;
 		};
 		//! 
-		void print_info() {fmt::print("This is Fortran bcy file reader.\n");};
+		std::map<std::string, int> print_info() 
+		{
+			fmt::print("This is Fortran bcy file reader.\n");
+			return {{"node", -1}};
+		};
+		const wrapper_::node_bcy* get_node_ptr() const {return nullptr;};
+		const wrapper_::elem_bcy* get_element_ptr() const {return nullptr;};
+		const wrapper_::matl_bcy* get_material_ptr() const {return nullptr;};
+		const wrapper_::sect_bcy* get_section_ptr() const {return nullptr;};
+		const wrapper_::bndy_bcy* get_boundary_ptr() const {return nullptr;};
+		const solu_simple* get_solution_ptr() const {return nullptr;};
+		const std::vector<load_simple>* get_load_ptr() const {return nullptr;};
 		//! Clear model data in memory.
 		std::function<void()> clean_model = std::bind(wrapper_::model_data_clean_bcy);
 		//! Get model data pointer.
@@ -115,22 +154,7 @@ class BcyReader{
 	private:
 		std::string file_;
 };
-//! simplest load set.
-struct load_simple{
-	int id_{-1};
-	int type_{-1};
-	int dof_{-1};
-	int group_{-1};
-	float range_{0.0f};
-	float val_[2]={0.0f, 0.0f};
-};
 
-//! Simplest solution parameter set.
-struct solu_simple{
-	int antype_{-1};
-	int num_step{-1};
-	float damp_[2]={0.0f, -1.0f};
-};
 /**
  *
  */
@@ -169,16 +193,35 @@ class FEModelReader{
 			}
 		};
 		//! Check and print.
-		void print_info()
+		std::map<std::string, int> print_info()
 		{
-			fmt::print("Num. node: {}\n", node_list_.size());
-			fmt::print("Num. element: {}\n", elem_list_.size());
-			fmt::print("Num. material: {}\n", matl_list_.size());
-			fmt::print("Num. section: {}\n", sect_list_.size());
-			fmt::print("Num. boundary: {}\n", bc_list_.size());
-			fmt::print("Num. load: {}\n", load_list_.size());
-			fmt::print("Num. solution: {}\n", solu_list_.size());
+			int num_node = node_list_.size();
+			int num_elem = elem_list_.size();
+			int num_matl = matl_list_.size();
+			int num_sect = sect_list_.size();
+			int num_load = load_list_.size();
+			int num_solu = solu_list_.size();
+			int num_bc = bc_list_.size();
+			fmt::print("Num. node: {}\n", num_node);
+			fmt::print("Num. element: {}\n", num_elem);
+			fmt::print("Num. material: {}\n", num_matl);
+			fmt::print("Num. section: {}\n", num_sect);
+			fmt::print("Num. boundary: {}\n", num_bc);
+			fmt::print("Num. load: {}\n", num_load);
+			fmt::print("Num. solution: {}\n", num_solu);
+			
+			std::map<std::string, int>  tmp{{"node", num_node}, {"element", num_elem},
+				{"material", num_matl}, {"section", num_sect}, {"load", num_load},
+				{"solution", num_solu}, {"boundary", num_bc}};
+			return tmp;
 		};
+		const wrapper_::node_bcy* get_node_ptr() const {return node_list_.data();};
+		const wrapper_::elem_bcy* get_element_ptr() const {return elem_list_.data();};
+		const wrapper_::matl_bcy* get_material_ptr() const {return matl_list_.data();};
+		const wrapper_::sect_bcy* get_section_ptr() const {return sect_list_.data();};
+		const wrapper_::bndy_bcy* get_boundary_ptr() const {return bc_list_.data();};
+		const solu_simple* get_solution_ptr() const {return solu_list_.data();};
+		const std::vector<load_simple>* get_load_ptr() const {return load_list_.data();};
 	private:
 		fs::path file_;
 		std::ifstream fp_;
