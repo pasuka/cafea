@@ -130,14 +130,15 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
 		
 		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary list.
-		std::vector<Load<Scalar>> load_group_;//!< Load list.
+		
 		
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
-		
-		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
-		
+			
 		MassType mass_type_{MassType::CONSISTENT};
+		
 	private:
+		std::vector<Load<Scalar>> load_group_;//!< Load list.
+		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
 		SolutionType sol_type_{SolutionType::STATIC};
 };
  
@@ -184,11 +185,11 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
 
-		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};//!< Eigenpair solver.
 	private:
-		SolutionType sol_type_{SolutionType::MODAL};
 		int freq_num_{1};
+		SolutionType sol_type_{SolutionType::MODAL};
 		ResultScalar freq_range_[2]={ResultScalar(0), ResultScalar(-1)};
+		std::unique_ptr<EigenSolver<ResultScalar>> solver_{nullptr};//!< Eigenpair solver.
 };
 
 
@@ -237,7 +238,8 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		bool has_pressure_{false};
 		vecX_<ResultScalar> damping_;
 		vecX_<ResultScalar> freq_range_;
-		vecX_<std::complex<ResultScalar>> pres_cmplx_;
+		std::vector<LoadSet<Scalar>> load_group_;
+		
 		matrix_<std::complex<ResultScalar>> disp_cmplx_;
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
 		

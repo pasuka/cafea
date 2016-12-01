@@ -10,6 +10,7 @@
 #include "node.h"
 #include "material.h"
 #include "section.h"
+#include "load.h"
 
 namespace cafea
 {
@@ -22,7 +23,10 @@ using std::vector;
 using std::string;
 
 template <class T>
-using var_out_ = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
+using var_out_5 = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
+
+template <class T>
+using var_out_6 = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>, matrix_<COMPLEX<T>>>;
 }
 
 /**
@@ -33,47 +37,59 @@ struct StructuralElement{
 	/**
 	 *  \brief 2-node straight pipe element.
 	 */
-	static var_out_<U> pipe16(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
+	static var_out_5<U> pipe16(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
 		const Section<T>*, const int*);
 	
-	static var_out_<U> pipe16(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+	static var_out_5<U> pipe16(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
 		const int*);
+	
+	static var_out_6<U> pipe16(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
+		const Section<T>*, const int*, const vector<LoadCell<T>>);
+	
+	static var_out_6<U> pipe16(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+		const int*, const vector<LoadCell<T>>);
+	
 	/**
 	 *  \brief 2-node elbow pipe element.
 	 */
-	static var_out_<U> pipe18(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
+	static var_out_5<U> pipe18(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
 		const Material<T>*, const Section<T>*);
-	static var_out_<U> pipe18(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
+	static var_out_5<U> pipe18(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
+	
+	static var_out_6<U> pipe18(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
+		const Material<T>*, const Section<T>*, const vector<LoadCell<T>>);
+	static var_out_6<U> pipe18(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+		const vector<LoadCell<T>>);
 	/**
 	 *  \brief 1-node mass element.
 	 */
-	static var_out_<U> mass21(const NodeBase<T>*, const Material<T>*, const Section<T>*,
+	static var_out_5<U> mass21(const NodeBase<T>*, const Material<T>*, const Section<T>*,
 		const int[]);
-	static var_out_<U> mass21(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+	static var_out_5<U> mass21(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
 		const int[]);
 	/**
 	 *  \brief 2-node spring element.
 	 */
-	static var_out_<U> combin14(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
+	static var_out_5<U> combin14(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
 		const Section<T>*, const int[]);
-	static var_out_<U> combin14(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
+	static var_out_5<U> combin14(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
 		const int[]);
 	/**
 	 *  \brief 8-node Mindlin shell element.
 	 */
-	static var_out_<U> shell8r(
+	static var_out_5<U> shell8r(
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,	const NodeBase<T>*,
 		const Material<T>*, const Section<T>*);
-	static var_out_<U> shell8r(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
+	static var_out_5<U> shell8r(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
 	/**
 	 * \ brief 9-node Mindlin shell elment.
 	 */
-	static var_out_<U> shell9r(
+	static var_out_5<U> shell9r(
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
 		const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,	const NodeBase<T>*,
 		const NodeBase<T>*, const Material<T>*, const Section<T>*);
-	static var_out_<U> shell9r(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
+	static var_out_5<U> shell9r(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
 };
 /**
  *  \brief Interface for structural element post process.

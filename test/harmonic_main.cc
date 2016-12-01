@@ -23,8 +23,11 @@ int main(int argc, char *argv[])
 		file_parser.clean_model();
 		*/
 		std::unique_ptr<SolutionBase<FEModelReader<float>>> example(new SolutionSimple);
+		// SolutionBase<FEModelReader<float>> *example(new SolutionSimple);
 		example->init();
 		example->load(argv[1]);
+		example->analyze();
+		example->assembly();
 	}
 	return 0;
 }

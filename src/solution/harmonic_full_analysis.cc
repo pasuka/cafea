@@ -10,8 +10,6 @@ template <class FileReader, class Scalar, class ResultScalar>
 void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::init()
 {
 	this->clear();
-	// std::unique_ptr<EigenSolver<ResultScalar>> p(new EigenSolver<ResultScalar>);
-	// this->solver_ = std::move(p);
 };
 /**
  *  \brief Clear member variables.
@@ -24,10 +22,13 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::clear()
 	if(!this->matl_group_.empty())this->matl_group_.clear();
 	if(!this->sect_group_.empty())this->sect_group_.clear();
 	if(!this->bc_group_.empty())this->bc_group_.clear();
+	if(!this->load_group_.empty())this->load_group_.clear();
 	this->mat_pair_.clear();
-	// (*this).mode_shape_.resize(0, 0);
-	// (*this).natural_freq_.resize(0, 0);
-	// if(this->solver_)this->solver_.reset(nullptr);
+	
+	this->damping_.resize(0);
+	this->freq_range_.resize(0);
+	
+	this->disp_cmplx_.resize(0, 0);
 };
 /**
  *  \brief Get model info.
@@ -121,6 +122,15 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 	// fmt::print("Assembly matrix in harmonic full analysis.\n");
 	bool lumped{false};
 	if(this->mass_type_==MassType::LUMPED)lumped = true;
+	
+	// 
+	std::vector<LoadCell<Scalar>> pres;
+	if(this->has_pressure_){
+		for(auto p: this->load_group_){
+			auto y = p.get_load_by_type();
+			if(0<y.size())pres.push_back(std::move(y[0]));
+		}
+	}
 	for(auto &it: this->elem_group_){
 		auto &p_elem = it.second;
 		p_elem.set_lumped_mass(lumped);
@@ -136,7 +146,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 			auto got = this->node_group_.find(node_list[i]);
 			if(got!=this->node_group_.end())pt[i] = got->second;
 		}
-		p_elem.template form_matrix<Scalar>(pt, &(got_mt->second), &(got_st->second));
+		// p_elem.template form_matrix<Scalar>(pt, &(got_mt->second), &(got_st->second));
+		p_elem.template form_matrix<Scalar>(pt, &(got_mt->second), &(got_st->second), pres);
 		auto p_stif = p_elem.get_stif();
 		auto p_mass = p_elem.get_mass();
 		auto p_tran = p_elem.get_tran();
@@ -258,29 +269,46 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 		fmt::print("Damp coeff: {}\n", p_solu->damp_[0]);
 		this->damping_ = vecX_<U>::Zero(2);
 		this->freq_range_ = vecX_<U>::Zero(p_solu->num_step_);
-		this->pres_cmplx_ = vecX_<std::complex<U>>::Zero(p_solu->num_step_);
 		this->damping_ << p_solu->damp_[0], p_solu->damp_[1];
+		
 		for(int i=0; i<info["load"]; i++, p_load++){
+			LoadSet<T> tmp_frame = {i+1, LoadDomain::FREQ, T(0)};
 			for(int j=0; j<p_load->size(); j++){
-				auto it = p_load->data()[j];
-				if(0==j)this->freq_range_[i] = it.range_;
+				auto &it = p_load->data()[j];
+				if(0==j){
+					this->freq_range_(i) = it.range_;
+					tmp_frame.set_value(it.range_);
+				}
+				DofLabel label = DofLabel::UNKNOWN;
+				
+				switch(it.dof_){
+				case 1: label = DofLabel::UX; break;
+				case 2: label = DofLabel::UY; break;
+				case 3: label = DofLabel::UZ; break;
+				case 4: label = DofLabel::URX; break;
+				case 5: label = DofLabel::URY; break;
+				case 6: label = DofLabel::URZ; break;
+				default: label = DofLabel::UNKNOWN; // fmt::print("Unsupported dof label: {}\n", it.dof_);
+				}
+				
 				switch(it.type_){
 				case 5:
+					// fmt::print("Add pressure:\n");
 					this->set_parameter(SolutionOption::PRESSURE_INTERNAL, true);
-					this->pres_cmplx_[i] = std::complex<U>(it.val_[0], it.val_[1]);//it.val_[0]+it.val_[1]*1i;
+					tmp_frame.add_load(it.id_, LoadType::PRES, DofLabel::ALL, it.val_[0], it.val_[1]);
 					break;
 				case 1:
-					fmt::print("This is force:\n");
+					// fmt::print("Add force:\n");
+					tmp_frame.add_load(it.id_, LoadType::FORCE, label, it.val_[0], it.val_[1]);
 					break;
 				case 2:
-					fmt::print("This is disp:\n");
+					// fmt::print("Add disp:\n");
+					tmp_frame.add_load(it.id_, LoadType::DISP, label, it.val_[0], it.val_[1]);
 					break;
 				default: fmt::print("Unsupported load type: {}\n", it.type_);
-				};
-				fmt::print("Frequency: {} ", it.range_);
-				fmt::print("Type: {} ", it.type_);
-				fmt::print("Value: {} {}\n", it.val_[0], it.val_[1]);
+				}
 			}
+			this->load_group_.push_back(tmp_frame);
 		}
 	}
 };

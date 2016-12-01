@@ -19,6 +19,7 @@
 #include "material.h"
 #include "section.h"
 #include "element_lib.h"
+#include "load.h"
 
 namespace cafea
 {
@@ -75,6 +76,12 @@ class Element: public ObjectBase {
 		
 		template <class U=REAL4>
 		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*);
+		
+		template <class U=REAL4>
+		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*, const std::vector<LoadCell<T>>);
+		
+		template <class U=REAL4>
+		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<T>>);
 		
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};
@@ -229,6 +236,7 @@ class Element: public ObjectBase {
 };
 
 #include "element_ext.hpp"
+#include "element_cmplx_ext.hpp"
 
 //! Specialization.
 template class Element<REAL8>;
