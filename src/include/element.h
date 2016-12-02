@@ -78,10 +78,10 @@ class Element: public ObjectBase {
 		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*);
 		
 		template <class U=REAL4>
-		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*, const std::vector<LoadCell<T>>);
+		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 		
 		template <class U=REAL4>
-		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<T>>);
+		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 		
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};

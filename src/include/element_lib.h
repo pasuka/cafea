@@ -24,9 +24,6 @@ using std::string;
 
 template <class T>
 using var_out_5 = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
-
-template <class T>
-using var_out_6 = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>, matrix_<COMPLEX<T>>>;
 }
 
 /**
@@ -43,12 +40,6 @@ struct StructuralElement{
 	static var_out_5<U> pipe16(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
 		const int*);
 	
-	static var_out_6<U> pipe16(const NodeBase<T>*, const NodeBase<T>*, const Material<T>*,
-		const Section<T>*, const int*, const vector<LoadCell<T>>);
-	
-	static var_out_6<U> pipe16(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
-		const int*, const vector<LoadCell<T>>);
-	
 	/**
 	 *  \brief 2-node elbow pipe element.
 	 */
@@ -56,10 +47,6 @@ struct StructuralElement{
 		const Material<T>*, const Section<T>*);
 	static var_out_5<U> pipe18(const vector<Node<T, U>>, const Material<T>*, const Section<T>*);
 	
-	static var_out_6<U> pipe18(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*,
-		const Material<T>*, const Section<T>*, const vector<LoadCell<T>>);
-	static var_out_6<U> pipe18(const vector<Node<T, U>>, const Material<T>*, const Section<T>*,
-		const vector<LoadCell<T>>);
 	/**
 	 *  \brief 1-node mass element.
 	 */

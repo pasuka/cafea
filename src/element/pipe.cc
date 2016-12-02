@@ -36,30 +36,6 @@ varargout<U> StructuralElement<T, U>::pipe16(const vector<Node<T, U>> pt, const 
 }
 
 /**
- *
- */
-template <class T, class U>
-var_out_6<U> StructuralElement<T, U>::pipe16(const vector<Node<T, U>> pt, const Material<T> *mp,
-	const Section<T> *sect, const int *opt, const vector<LoadCell<T>> load)
-{
-	assert(2==pt.size());
-	assert(!load.empty());
-	return StructuralElement<T, U>::pipe16(&pt[0], &pt[1], mp, sect, opt, load);
-}
-
-/**
- *
- */
-template <class T, class U>
-var_out_6<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const Material<T> *mp, const Section<T> *sect, const int *opt, const vector<LoadCell<T>> load)
-{
-	Section<T> tmp_sect = const_cast<Section<T>>(*sect);
-	tmp_sect.set_sect_prop(SectionProp::PRESIN, T(1));
-	
-}
-
-/**
  *  \brief Straight Pipe Element No.18
  *
  */
@@ -71,17 +47,6 @@ varargout<U> StructuralElement<T, U>::pipe18(const vector<Node<T, U>> pt, const 
 	return StructuralElement<T, U>::pipe18(&pt[0], &pt[1], &pt[2], mp, sect);
 }
 
-/**
- *
- */
-template <class T, class U>
-var_out_6<U> StructuralElement<T, U>::pipe18(const vector<Node<T, U>> pt, const Material<T> *mp,
-	const Section<T> *sect, const vector<LoadCell<T>> load)
-{
-	assert(3==pt.size());
-	assert(!load.empty());
-	return StructuralElement<T, U>::pipe18(&pt[0], &pt[1], &pt[2], mp, sect, load);
-}
 /**
  *  \brief Straight Pipe Element No.16
  *  

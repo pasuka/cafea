@@ -127,8 +127,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 	std::vector<LoadCell<Scalar>> pres;
 	if(this->has_pressure_){
 		for(auto p: this->load_group_){
-			auto y = p.get_load_by_type();
-			if(0<y.size())pres.push_back(std::move(y[0]));
+			auto y = p.get_load_by_type(LoadType::PRES);
+			pres.push_back(y);
 		}
 	}
 	for(auto &it: this->elem_group_){
@@ -253,7 +253,10 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 		for(int i=0; i<info["section"]; i++, p_sect++){
 			auto got = this->sect_group_.find(p_sect->id_);
 			if(got==this->sect_group_.end()){
-				this->sect_group_[p_sect->id_] = f2cpp.bcy2sect(p_sect);
+				auto st = f2cpp.bcy2sect(p_sect);
+				st.set_sect_prop(SectionProp::PRESIN, T(1));
+				this->sect_group_[p_sect->id_] = st;
+				
 			}
 			else{
 				fmt::print("Duplicated section id:{}\n", p_sect->id_);
