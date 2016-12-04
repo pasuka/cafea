@@ -18,6 +18,7 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::clear()
 	if(!this->bc_group_.empty())this->bc_group_.clear();
 	this->mat_pair_.clear();
 	if(this->solver_)this->solver_.reset(nullptr);
+	fmt::print("This is static clear.\n");
 };
 /**
  *  \brief Initliazation member variables.
@@ -28,6 +29,7 @@ void SolutionStatic<FileReader, Scalar, ResultScalar>::init()
 	this->clear();
 	std::unique_ptr<LinearSolver<ResultScalar>> p(new LinearSolver<ResultScalar>);
 	this->solver_ = std::move(p);
+	fmt::print("This is static init.\n");
 };
 /**
  *  \brief Load input file.

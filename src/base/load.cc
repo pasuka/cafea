@@ -1,4 +1,5 @@
 #include <complex>
+#include <algorithm>
 
 #include "load.h"
 
@@ -11,6 +12,12 @@ using namespace std::complex_literals;
 template <class T>
 LoadCell<T> LoadSet<T>::get_load_by_type(LoadType lt)
 {
+	LoadCell<T> tmp{-999, };
+	for(auto &it: this->list_){
+		if(it.lt_==lt)tmp = it;
+	}
+	return tmp;
+	/*
 	auto cmp = [lt](const LoadCell<T> &a){return static_cast<int>(lt)==static_cast<int>(a.lt_);};
 	auto it = std::find(this->list_.begin(), this->list_.end(), cmp);
 	if(it!=this->list_.end()){
@@ -21,6 +28,7 @@ LoadCell<T> LoadSet<T>::get_load_by_type(LoadType lt)
 		LoadCell<T> tmp{-999, };
 		return tmp;
 	}
+	*/
 };
 /**
  *

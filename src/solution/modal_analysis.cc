@@ -24,9 +24,10 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::clear()
 	if(!this->sect_group_.empty())this->sect_group_.clear();
 	if(!this->bc_group_.empty())this->bc_group_.clear();
 	this->mat_pair_.clear();
-	(*this).mode_shape_.resize(0, 0);
-	(*this).natural_freq_.resize(0, 0);
 	if(this->solver_)this->solver_.reset(nullptr);
+	if(0<this->mode_shape_.rows())(*this).mode_shape_.resize(0, 0);
+	if(0<this->natural_freq_.rows())(*this).natural_freq_.resize(0, 0);
+	
 };
 /**
  *  \brief Get model info.

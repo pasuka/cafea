@@ -233,14 +233,15 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		//! Set solve option in boolean values.
 		void set_parameter(SolutionOption chk, bool val=false) override;
 		//! Get result.
-		// matrix_<ResultScalar> get_result() const override {return natural_freq_;};
+		matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp, int res_span=0)const override;
 	private:
 		bool has_pressure_{false};
 		vecX_<ResultScalar> damping_;
 		vecX_<ResultScalar> freq_range_;
 		std::vector<LoadSet<Scalar>> load_group_;
 		
-		matrix_<std::complex<ResultScalar>> disp_cmplx_;
+		matrix_<COMPLEX<ResultScalar>> disp_cmplx_;
+		matrix_<COMPLEX<ResultScalar>> rhs_cmplx_;
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
 		
 };

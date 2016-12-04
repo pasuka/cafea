@@ -10,6 +10,18 @@ template <class FileReader, class Scalar, class ResultScalar>
 void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::init()
 {
 	this->clear();
+	if(!this->node_group_.empty())this->node_group_.clear();
+	if(!this->elem_group_.empty())this->elem_group_.clear();
+	if(!this->matl_group_.empty())this->matl_group_.clear();
+	if(!this->sect_group_.empty())this->sect_group_.clear();
+	if(!this->bc_group_.empty())this->bc_group_.clear();
+	if(!this->load_group_.empty())this->load_group_.clear();
+	this->mat_pair_.clear();
+	fmt::print("This is harmonic init.\n");
+	/*fmt::print("Damping size{}\n", this->damping_.size());
+	fmt::print("Frequency size{}\n", this->freq_range_.size());
+	fmt::print("rhs row {} col {}\n", this->rhs_cmplx_.rows(), this->rhs_cmplx_.cols());
+	fmt::print("disp row{} col{}\n", this->disp_cmplx_.rows(), this->disp_cmplx_.cols());*/
 };
 /**
  *  \brief Clear member variables.
@@ -25,10 +37,16 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::clear()
 	if(!this->load_group_.empty())this->load_group_.clear();
 	this->mat_pair_.clear();
 	
-	this->damping_.resize(0);
-	this->freq_range_.resize(0);
+	fmt::print("This is harmonic clear.\n");
+	// fmt::print("Damping size{}\n", this->damping_.size());
+	// fmt::print("Frequency size{}\n", this->freq_range_.size());
+	// fmt::print("rhs row {} col {}\n", this->rhs_cmplx_.rows(), this->rhs_cmplx_.cols());
+	// fmt::print("disp row{} col{}\n", this->disp_cmplx_.rows(), this->disp_cmplx_.cols());
+	if(0<this->damping_.size())this->damping_.resize(0);
+	if(0<this->freq_range_.size())this->freq_range_.resize(0);
 	
-	this->disp_cmplx_.resize(0, 0);
+	if(0<this->rhs_cmplx_.rows()&&0<this->rhs_cmplx_.cols())this->rhs_cmplx_.resize(0, 0);
+	if(0<this->disp_cmplx_.rows()&&0<this->disp_cmplx_.cols())this->disp_cmplx_.resize(0, 0);
 };
 /**
  *  \brief Get model info.
@@ -111,6 +129,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::analyze()
 	this->mat_pair_.unique();
 	fmt::print("Non Zeros: {}\n", this->mat_pair_.get_nnz());
 	fmt::print("Dimension: {}\n", this->mat_pair_.get_dim());
+	
+	this->rhs_cmplx_.resize(this->mat_pair_.get_nnz(), this->load_group_.size());
 };
 
 /**
@@ -467,6 +487,27 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	global_mass.reset(nullptr);
 	Mat_Close(matfp);
 	return; */
+};
+/**
+ *
+ */
+template <class FP, class T, class U>
+matrix_<U> SolutionHarmonicFull<FP, T, U>::get_node_result(int node_id, LoadType res_tp, int res_span)const
+{
+	/*
+	assert(0<node_id);
+	auto got = this->node_group_.find(node_id);
+	matrix_<U> res;
+	if(got!=this->node_group_.end()){
+		res = (got->second).get_result(SolutionType::STATIC, res_tp, 0);
+	}
+	else{
+		res = matrix_<U>::Zero(1, 1);
+	}
+	return res;
+	*/
+	matrix_<U> res = matrix_<U>::Zero(1, 1);
+	return res;
 };
 
 /**
