@@ -172,11 +172,13 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 		auto p_mass = p_elem.get_mass();
 		auto p_tran = p_elem.get_tran();
 		auto p_rhs = p_elem.get_rhs();
-		
+		auto p_rhs_cmplx = p_elem.get_rhs_cmplx();
+		if(p_elem.get_element_type_id()==16)std::cout << p_rhs_cmplx << "\n";
+		if(p_elem.get_element_type_id()==18)std::cout << p_rhs_cmplx << "\n";
 		p_stif = p_tran.transpose()*p_stif*p_tran;
 		p_mass = p_tran.transpose()*p_mass*p_tran;
 		p_rhs = p_tran.transpose()*p_rhs;
-		
+		p_rhs_cmplx = p_tran.transpose()*p_rhs_cmplx;
 		auto nn = p_elem.get_active_num_of_node();
 		auto ndof = p_elem.get_dofs_per_node();
 		for(auto ia=0; ia<nn; ia++){

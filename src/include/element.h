@@ -93,6 +93,8 @@ class Element: public ObjectBase {
 		vecX_<T> get_rhs() const {return rhs_;};
 		//! Get result matrix.
 		matrix_<T> get_result() const {return result_;};
+		//!
+		matrix_<COMPLEX<T>> get_rhs_cmplx() const {return rhs_cmplx_;};
 		
 		//! Get raw pointer of stiffness matrix.
 		const T *get_stif_ptr() const {return stif_.data();};

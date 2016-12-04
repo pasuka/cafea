@@ -21,7 +21,11 @@ void Element<T>::form_matrix(const Node<U, T> p[], const Material<U> *matl, cons
 		}
 		break;
 	case ElementType::MASS21:
+		this->rhs_cmplx_ = matrix_<COMPLEX<T>>::Zero(6, n2);
+		break;
 	case ElementType::COMBIN14:
+		this->rhs_cmplx_ = matrix_<COMPLEX<T>>::Zero(12, n2);
+		break;
 	case ElementType::BEAM188:
 	case ElementType::B31:
 	case ElementType::C3D4:
@@ -64,7 +68,11 @@ void Element<T>::form_matrix(const vector<Node<U, T>> pt, const Material<U> *mp,
 		}
 		break;
 	case ElementType::MASS21:
+		this->rhs_cmplx_ = matrix_<COMPLEX<T>>::Zero(6, n2);
+		break;
 	case ElementType::COMBIN14:
+		this->rhs_cmplx_ = matrix_<COMPLEX<T>>::Zero(12, n2);
+		break;
 	case ElementType::BEAM188:
 	case ElementType::B31:
 	case ElementType::C3D4:
