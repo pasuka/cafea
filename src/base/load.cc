@@ -10,25 +10,15 @@ using namespace std::complex_literals;
  *
  */
 template <class T>
-LoadCell<T> LoadSet<T>::get_load_by_type(LoadType lt)
+std::vector<LoadCell<T>> LoadSet<T>::get_load_by_type(LoadType lt)
 {
-	LoadCell<T> tmp{-999, };
-	for(auto &it: this->list_){
-		if(it.lt_==lt)tmp = it;
+	auto func = std::bind(LoadCell<T>::sort_by_load_type, std::placeholders::_1, std::placeholders::_2);
+	std::sort(this->list_.begin(), this->list_.end(), func);
+	std::vector<LoadCell<T>> tmp;
+	for(auto &x: this->list_){
+		if(x.lt_==lt)tmp.push_back(x);
 	}
-	return tmp;
-	/*
-	auto cmp = [lt](const LoadCell<T> &a){return static_cast<int>(lt)==static_cast<int>(a.lt_);};
-	auto it = std::find(this->list_.begin(), this->list_.end(), cmp);
-	if(it!=this->list_.end()){
-		auto index = std::distance(this->list_.begin(), it);
-		return this->list_[index];
-	}
-	else{
-		LoadCell<T> tmp{-999, };
-		return tmp;
-	}
-	*/
+	return std::move(tmp);
 };
 /**
  *

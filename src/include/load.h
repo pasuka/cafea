@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <iostream>
 
+#include <boost/variant.hpp>
+// #include <variant>
+
 #include "fmt/format.h"
 
 #include "base.h"
@@ -62,7 +65,31 @@ struct LoadCell
 		T val_;
 		std::complex<T> val_cmplx_;
 	};
+	int get_id() const {return id_;};
+	DofLabel get_dof_label() const {return df_;};
+	boost::variant<T, COMPLEX<T>> get_value() const
+	{
+		if(ld_!=LoadDomain::FREQ){
+			return val_;
+		}
+		else{
+			return val_cmplx_;
+		}
+	};
+	static bool sort_by_load_type(const LoadCell<T> &a, const LoadCell<T> &b)
+	{
+		return a.lt_ == b.lt_;
+	};
+	static bool sort_by_dof_label(const LoadCell<T> &a, const LoadCell<T> &b)
+	{
+		return a.df_ == b.df_;
+	};
+	static bool sort_by_load_domain(const LoadCell<T> &a, const LoadCell<T> &b)
+	{
+		return a.ld_ == b.ld_;
+	};
 };
+
 
 template struct LoadCell<REAL4>;
 template struct LoadCell<REAL8>;
@@ -79,7 +106,7 @@ class LoadSet: public ObjectBase {
 		void set_value(const T a) { val_ = a;};
 		T get_value() const {return val_;};
 		void clear() {list_.clear();};
-		LoadCell<T> get_load_by_type(LoadType lt=LoadType::PRES);
+		std::vector<LoadCell<T>> get_load_by_type(LoadType lt=LoadType::PRES);
 		~LoadSet() override {clear();};
 	private:
 		LoadDomain ld_;

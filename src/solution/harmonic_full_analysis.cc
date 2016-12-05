@@ -130,7 +130,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::analyze()
 	fmt::print("Non Zeros: {}\n", this->mat_pair_.get_nnz());
 	fmt::print("Dimension: {}\n", this->mat_pair_.get_dim());
 	
-	this->rhs_cmplx_.resize(this->mat_pair_.get_nnz(), this->load_group_.size());
+	this->rhs_cmplx_.resize(this->mat_pair_.get_dim(), this->load_group_.size());
+	this->disp_cmplx_.resize(this->mat_pair_.get_dim(), this->load_group_.size());
 };
 
 /**
@@ -148,7 +149,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 	if(this->has_pressure_){
 		for(auto p: this->load_group_){
 			auto y = p.get_load_by_type(LoadType::PRES);
-			pres.push_back(y);
+			if(!y.empty())pres.push_back(y[0]);
 		}
 	}
 	for(auto &it: this->elem_group_){
@@ -173,12 +174,13 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 		auto p_tran = p_elem.get_tran();
 		auto p_rhs = p_elem.get_rhs();
 		auto p_rhs_cmplx = p_elem.get_rhs_cmplx();
-		if(p_elem.get_element_type_id()==16)std::cout << p_rhs_cmplx << "\n";
-		if(p_elem.get_element_type_id()==18)std::cout << p_rhs_cmplx << "\n";
+		// if(p_elem.get_element_type_id()==16)std::cout << p_rhs_cmplx << "\n";
+		// if(p_elem.get_element_type_id()==18)std::cout << p_rhs_cmplx << "\n";
 		p_stif = p_tran.transpose()*p_stif*p_tran;
 		p_mass = p_tran.transpose()*p_mass*p_tran;
 		p_rhs = p_tran.transpose()*p_rhs;
 		p_rhs_cmplx = p_tran.transpose()*p_rhs_cmplx;
+		
 		auto nn = p_elem.get_active_num_of_node();
 		auto ndof = p_elem.get_dofs_per_node();
 		for(auto ia=0; ia<nn; ia++){
@@ -188,6 +190,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 				if(va[ja]<0)continue;
 				auto row_ = ia*ndof+ja;
 				this->mat_pair_.add_rhs_data(va[ja], p_rhs(row_));
+				this->rhs_cmplx_.row(va[ja]) += p_rhs_cmplx.row(row_);
 				for(auto ib=0; ib<nn; ib++){
 					auto vb = pt[ib].dof_list();
 					for(auto jb=0; jb<ndof; jb++){
@@ -206,12 +209,88 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 /**
  *  \brief Solve.
  */
-template <class FileReader, class Scalar, class ResultScalar>
-void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::solve()
+template <class FileReader, class T, class U>
+void SolutionHarmonicFull<FileReader, T, U>::solve()
 {
-	Eigen::SparseLU<Eigen::SparseMatrix<COMPLEX<ResultScalar>>, Eigen::COLAMDOrdering<int>> solver;
-	Eigen::SparseMatrix<COMPLEX<ResultScalar>> mat_K;
-	vecX_<COMPLEX<ResultScalar>> rhs;
+	Eigen::SparseLU<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
+	
+	auto dim = this->mat_pair_.get_dim();
+	auto nnz = this->mat_pair_.get_nnz();
+	
+	Eigen::SparseMatrix<COMPLEX<U>> mat_K(dim, dim), mat_M(dim, dim);
+	mat_K.reserve(nnz);
+	mat_M.reserve(nnz);
+	
+	std::vector<Eigen::Triplet<COMPLEX<U>>> triList(nnz);
+	fmt::print("Form Global stiffness matrix.\n");
+	for(int i=0; i<nnz; i++){
+		Eigen::Triplet<COMPLEX<U>> tmp(this->mat_pair_.get_coord_ptr()[i].row,
+			this->mat_pair_.get_coord_ptr()[i].col,
+			this->mat_pair_.get_stif_ptr()[i]*(1.+this->damping_[0]*1.0i));
+		triList.push_back(std::move(tmp));
+	}
+	mat_K.setFromTriplets(triList.begin(), triList.end());
+	triList.clear();
+	fmt::print("Form Global mass matrix.\n");
+	for(int i=0; i<nnz; i++){
+		Eigen::Triplet<COMPLEX<U>> tmp(this->mat_pair_.get_coord_ptr()[i].row,
+			this->mat_pair_.get_coord_ptr()[i].col,
+			this->mat_pair_.get_mass_ptr()[i]*(1.+0.0i));
+		triList.push_back(std::move(tmp));
+	}
+	mat_M.setFromTriplets(triList.begin(), triList.end());
+	triList.clear();
+	fmt::print("Begin iteration.\n");
+	for(int i=0; i<this->freq_range_.size(); i++){
+		fmt::print("Iter No. {}\tFrequency: {}\n", i+1, this->freq_range_(i));
+		auto omega = 2.*PI<U>()*this->freq_range_(i);
+		auto omega2 = omega*omega;
+		Eigen::SparseMatrix<COMPLEX<U>> mat_a = mat_K - (omega2+0.0i)*mat_M;
+		solver.analyzePattern(mat_a);
+		solver.factorize(mat_a);
+		vecX_<COMPLEX<U>> rhs = this->rhs_cmplx_.col(i);
+		auto force = this->load_group_[i].get_load_by_type(LoadType::FORCE);
+		if(!force.empty()){
+			for(auto const &x: force){
+				auto got = this->node_group_.find(x.get_id());
+				auto dof_label = static_cast<int>(x.get_dof_label());
+				COMPLEX<U> force_val = x.val_cmplx_;
+				if(got!=this->node_group_.end()){
+					auto &pt = got->second;
+					auto va = pt.dof_list();
+					if(dof_label<va.size()){
+						if(0<va[dof_label])rhs(va[dof_label]) += force_val;
+					}
+				}	
+			}
+		}
+		auto disp = this->load_group_[i].get_load_by_type(LoadType::DISP);
+		if(!disp.empty()){
+			for(auto const &x: disp){
+				auto got = this->node_group_.find(x.get_id());
+				int dof_label = static_cast<int>(x.get_dof_label());
+				COMPLEX<U> force_val = x.val_cmplx_;
+				if(got!=this->node_group_.end()){
+					auto &pt = got->second;
+					auto va = pt.dof_list();
+					if(dof_label<va.size()){
+						auto index = va[dof_label];
+						if(0<index){
+							mat_a.coeff(index, index) *= std::numeric_limits<U>::max();
+							rhs(index) += force_val*mat_a.coeff(index, index);
+						}
+					}
+				}
+			}
+		}
+		this->disp_cmplx_.col(i) = solver.solve(rhs);
+		if(solver.info()!=Eigen::ComputationInfo::Success){
+			fmt::print("Solve Failed!\n");
+		}
+		else{
+			fmt::print("Solve Success!\n");
+		}
+	}
 	fmt::print("Harmonic full solve.\n");
 };
 

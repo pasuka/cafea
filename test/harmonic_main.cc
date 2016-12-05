@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 		example->load(argv[1]);
 		example->analyze();
 		example->assembly();
+		example->solve();
 	}
 	return 0;
 }
