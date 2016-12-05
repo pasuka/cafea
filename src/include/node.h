@@ -320,7 +320,10 @@ class Node: public NodeBase<Scalar> {
 		//! Initialize result container.
 		void init_result(SolutionType, int);
 		void set_result(SolutionType, LoadType, int, matrix_<ResultScalar>);
+		void set_result(SolutionType, LoadType, int, matrix_<COMPLEX<ResultScalar>>);
+		
 		matrix_<ResultScalar> get_result(SolutionType, LoadType, int) const;
+		matrix_<COMPLEX<ResultScalar>> get_result(SolutionType, LoadType, int) const;
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
@@ -330,10 +333,10 @@ class Node: public NodeBase<Scalar> {
 		matrix_<ResultScalar> vel_;//!< Storage of velocity.
 		matrix_<ResultScalar> accel_;//!< Storage of acceleration.
 		matrix_<ResultScalar> stress_;//!< Storage of stress.
-		matrix_<std::complex<ResultScalar>> disp_cmplx_;//!< Storage of displacement in complex.
-		matrix_<std::complex<ResultScalar>> vel_cmplx_;//!< Storage of velocity in complex.
-		matrix_<std::complex<ResultScalar>> accel_cmplx_;//!< Storage of acceleration in complex.
-		matrix_<std::complex<ResultScalar>> stress_cmplx_;//!< Storage of stress in complex.
+		matrix_<COMPLEX<ResultScalar>> disp_cmplx_;//!< Storage of displacement in complex.
+		matrix_<COMPLEX<ResultScalar>> vel_cmplx_;//!< Storage of velocity in complex.
+		matrix_<COMPLEX<ResultScalar>> accel_cmplx_;//!< Storage of acceleration in complex.
+		matrix_<COMPLEX<ResultScalar>> stress_cmplx_;//!< Storage of stress in complex.
 };
 
 //! Specialization.

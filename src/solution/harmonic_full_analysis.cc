@@ -291,6 +291,16 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 			fmt::print("Solve Success!\n");
 		}
 	}
+	for(auto &it: this->node_group_){
+		auto &p_node = it.second;
+		p_node.init_result(SolutionType::HARMONIC_FULL, this->freq_range_.size());
+			if(p_node.is_activated()){
+				auto tmp = p_node.dof_list();
+				matrix_<COMPLEX<U>> x = matrix_<COMPLEX<U>>::Zero(tmp.size(), this->freq_range_.size()) ;
+				
+				// p_node.set_result(SolutionType::STATIC, LoadType::DISP, 0, x);
+			}
+	}
 	fmt::print("Harmonic full solve.\n");
 };
 

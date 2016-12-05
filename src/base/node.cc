@@ -60,6 +60,8 @@ void Node<T, U>::init_result(SolutionType sol, int n)
 		this->disp_ = matrix_<U>::Zero(m, n); 
 		break;
 	case SolutionType::HARMONIC_FULL:
+		this->disp_cmplx_ = matrix_<COMPLEX<U>>::Zero(m, n);
+		break;
 	case SolutionType::HARMONIC_MODAL_SUPERPOSITION:
 	default:
 		fmt::print("Unsupported solution type definition\n");
