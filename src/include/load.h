@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include <boost/variant.hpp>
+// #include <boost/variant.hpp>
 // #include <variant>
 
 #include "fmt/format.h"
@@ -67,15 +67,7 @@ struct LoadCell
 	};
 	int get_id() const {return id_;};
 	DofLabel get_dof_label() const {return df_;};
-	boost::variant<T, COMPLEX<T>> get_value() const
-	{
-		if(ld_!=LoadDomain::FREQ){
-			return val_;
-		}
-		else{
-			return val_cmplx_;
-		}
-	};
+	
 	static bool sort_by_load_type(const LoadCell<T> &a, const LoadCell<T> &b)
 	{
 		return a.lt_ == b.lt_;

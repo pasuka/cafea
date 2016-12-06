@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 		example->analyze();
 		example->assembly();
 		example->solve();
+		example->write2mat("./tset_harmonic.mat");
 	}
 	return 0;
 }

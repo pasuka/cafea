@@ -3,6 +3,8 @@
 
 #include <tuple>
 #include <ostream>
+#include <typeinfo>
+#include <typeindex>
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -319,11 +321,17 @@ class Node: public NodeBase<Scalar> {
 		};
 		//! Initialize result container.
 		void init_result(SolutionType, int);
+		
 		void set_result(SolutionType, LoadType, int, matrix_<ResultScalar>);
-		void set_result(SolutionType, LoadType, int, matrix_<COMPLEX<ResultScalar>>);
+		
+		template <class T=COMPLEX<ResultScalar>>
+		void set_result(SolutionType, LoadType, int, matrix_<T>);
 		
 		matrix_<ResultScalar> get_result(SolutionType, LoadType, int) const;
-		matrix_<COMPLEX<ResultScalar>> get_result(SolutionType, LoadType, int) const;
+		
+		template <class T=COMPLEX<ResultScalar>>
+		matrix_<T> get_result(SolutionType, LoadType, int) const;
+		
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
@@ -338,6 +346,8 @@ class Node: public NodeBase<Scalar> {
 		matrix_<COMPLEX<ResultScalar>> accel_cmplx_;//!< Storage of acceleration in complex.
 		matrix_<COMPLEX<ResultScalar>> stress_cmplx_;//!< Storage of stress in complex.
 };
+
+#include "node_ext.hpp"
 
 //! Specialization.
 template class Node<REAL4, REAL4>;

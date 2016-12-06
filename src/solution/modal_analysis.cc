@@ -208,6 +208,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 				for(int i=0; i<x.rows(); i++){
 					if(0<=tmp[i])x.row(i) = shp.row(tmp[i]);
 				}
+				
 				p_node.set_result(SolutionType::MODAL, LoadType::DISP, -1, x);
 			}
 		}

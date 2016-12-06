@@ -269,7 +269,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 			for(auto const &x: disp){
 				auto got = this->node_group_.find(x.get_id());
 				int dof_label = static_cast<int>(x.get_dof_label());
-				COMPLEX<U> force_val = x.val_cmplx_;
+				COMPLEX<U> disp_val = x.val_cmplx_;
 				if(got!=this->node_group_.end()){
 					auto &pt = got->second;
 					auto va = pt.dof_list();
@@ -277,7 +277,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 						auto index = va[dof_label];
 						if(0<index){
 							mat_a.coeff(index, index) *= std::numeric_limits<U>::max();
-							rhs(index) += force_val*mat_a.coeff(index, index);
+							rhs(index) += disp_val*mat_a.coeff(index, index);
 						}
 					}
 				}
@@ -293,13 +293,17 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 	}
 	for(auto &it: this->node_group_){
 		auto &p_node = it.second;
-		p_node.init_result(SolutionType::HARMONIC_FULL, this->freq_range_.size());
-			if(p_node.is_activated()){
-				auto tmp = p_node.dof_list();
-				matrix_<COMPLEX<U>> x = matrix_<COMPLEX<U>>::Zero(tmp.size(), this->freq_range_.size()) ;
-				
-				// p_node.set_result(SolutionType::STATIC, LoadType::DISP, 0, x);
-			}
+		auto num_step = this->freq_range_.size();
+		if(p_node.is_activated()){
+			p_node.init_result(SolutionType::HARMONIC_FULL, num_step);
+			auto tmp = p_node.dof_list();
+			matrix_<COMPLEX<U>> x = matrix_<COMPLEX<U>>::Zero(tmp.size(), num_step) ;
+			for(int i=0; i<tmp.size(); i++){
+				if(tmp[i]>=0)x.row(i) = this->disp_cmplx_.row(tmp[i]);
+			}	
+			p_node.template set_result<COMPLEX<U>>(SolutionType::HARMONIC_FULL, LoadType::DISP, 0, x);
+		}
+		fmt::print("Set displace result finish.\n");
 	}
 	fmt::print("Harmonic full solve.\n");
 };
@@ -443,7 +447,7 @@ template <class FileReader, class Scalar, class ResultScalar>
 void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const char* fname, bool is_ver73)
 {
 	fmt::print("write to MAT files.\n");
-	/* mat_t *matfp;
+	mat_t *matfp;
 	if(is_ver73){
 		matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT73);
 	}
@@ -514,11 +518,17 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		xyz[2] = double(p_node.get_z());
 		matvar[2] = Mat_VarCreate(fieldnames2[2], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim3x1, xyz, 0);
 		if(p_node.is_activated()){
-			auto rst = p_node.get_result(SolutionType::MODAL, LoadType::DISP, -1);
+			matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1);
 			size_t sz[2] = {1, 1};
 			if(1<rst.rows())sz[0] = rst.rows();
 			if(1<rst.cols())sz[1] = rst.cols();
-			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, sz, rst.data(), 0);
+			/*
+			matrix_<ResultScalar> rst_re = rst.real();
+			matrix_<ResultScalar> rst_im = rst.imag();
+			mat_complex_split_t cs{rst_re.data(), rst_im.data()};
+			*/
+			mat_complex_split_t cs{rst.real().data(), rst.imag().data()};
+			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, sz, &cs, MAT_F_COMPLEX);
 		}
 		else{
 			val[1] = double(-1);
@@ -531,7 +541,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	}
 	Mat_VarWrite(matfp, node_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(node_list);
-	
+	/*
 	{
 		matvar_t *freq;
 		size_t dims[2] = {1, 1};
@@ -547,6 +557,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		Mat_VarWrite(matfp, freq, MAT_COMPRESSION_ZLIB);
 		Mat_VarFree(freq);
 	}
+	*/
 	auto coord = this->mat_pair_.get_coord_ptr();
 	auto pk = this->mat_pair_.get_stif_ptr();
 	auto pm = this->mat_pair_.get_mass_ptr();
@@ -577,7 +588,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	Mat_VarFree(gm);
 	global_mass.reset(nullptr);
 	Mat_Close(matfp);
-	return; */
+	return;
 };
 /**
  *
