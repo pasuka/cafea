@@ -507,7 +507,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		size_t dim_rhs[2]={1, 1};
 		if(1<rhs.rows())dim_rhs[0] = rhs.rows();
 		if(1<rhs.cols())dim_rhs[1] = rhs.cols();
-		mat_complex_split_t c_rhs{rhs.real().data(), rhs.imag().data()};
+		matrix_<ResultScalar> rhs_re = rhs.real();
+		matrix_<ResultScalar> rhs_im = rhs.imag();
+		mat_complex_split_t c_rhs{rhs_re.data(), rhs_im.data()};
 		matvar[8] = Mat_VarCreate(fieldnames[8], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
 			dim_rhs, &c_rhs, MAT_F_COMPLEX);
 		
@@ -520,7 +522,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		else{
 			if(1<stress.rows())dim_stress[0] = stress.rows();
 			if(1<stress.cols())dim_stress[1] = stress.cols();
-			mat_complex_split_t c_stress{stress.real().data(), stress.imag().data()};
+			matrix_<ResultScalar> stress_re = stress.real();
+			matrix_<ResultScalar> stress_im = stress.imag();
+			mat_complex_split_t c_stress{stress_re.data(), stress_im.data()};
 			matvar[9] = Mat_VarCreate(fieldnames[9], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
 				dim_stress, &c_stress, MAT_F_COMPLEX);
 		}
@@ -556,7 +560,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 			size_t sz[2] = {1, 1};
 			if(1<rst.rows())sz[0] = rst.rows();
 			if(1<rst.cols())sz[1] = rst.cols();
-			mat_complex_split_t cs{rst.real().data(), rst.imag().data()};
+			matrix_<ResultScalar> rst_re = rst.real();
+			matrix_<ResultScalar> rst_im = rst.imag();
+			mat_complex_split_t cs{rst_re.data(), rst_im.data()};
 			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, sz, &cs, MAT_F_COMPLEX);
 		}
 		else{

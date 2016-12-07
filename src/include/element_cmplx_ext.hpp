@@ -23,10 +23,10 @@ void Element<T>::form_matrix(const Node<U, T> p[], const Material<U> *matl, cons
 			this->rhs_cmplx_.col(i).real() = this->rhs_*std::real(load[i].val_cmplx_);
 			this->rhs_cmplx_.col(i).imag() = this->rhs_*std::imag(load[i].val_cmplx_);
 			this->load_cmplx_(0, i) = load[i].val_cmplx_;
-			for(int j=0; j<12; j++){
+			/*for(int j=0; j<12; j++){
 				fmt::print("Row:{} Col:{} RHS:{} Re:{} Im:{}\n", j, i, this->rhs_(j), this->rhs_cmplx_(j, i).real(),
 					this->rhs_cmplx_(j, i).imag());
-			}
+			}*/
 		}
 		break;
 	case ElementType::MASS21:
@@ -78,10 +78,10 @@ void Element<T>::form_matrix(const vector<Node<U, T>> pt, const Material<U> *mp,
 			this->rhs_cmplx_.col(i).real() = this->rhs_*std::real(load[i].val_cmplx_);
 			this->rhs_cmplx_.col(i).imag() = this->rhs_*std::imag(load[i].val_cmplx_);
 			this->load_cmplx_(0, i) = load[i].val_cmplx_;
-			for(int j=0; j<12; j++){
+			/*for(int j=0; j<12; j++){
 				fmt::print("Row:{} Col:{} RHS:{} Re:{} Im:{}\n", j, i, this->rhs_(j), this->rhs_cmplx_(j, i).real(),
 					this->rhs_cmplx_(j, i).imag());
-			}
+			}*/
 		}
 		break;
 	case ElementType::MASS21:
