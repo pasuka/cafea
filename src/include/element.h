@@ -41,6 +41,9 @@ class Element: public ObjectBase {
 			stif_.resize(0, 0);
 			tran_.resize(0, 0);
 			rhs_.resize(0);
+			
+			load_cmplx_.resize(0, 0);
+			rhs_cmplx_.resize(0, 0);
 			result_.resize(0, 0);
 			result_cmplx_.resize(0, 0);
 		};
@@ -91,8 +94,14 @@ class Element: public ObjectBase {
 		matrix_<T> get_tran() const {return tran_;};
 		//! Get right-hand side matrix.
 		vecX_<T> get_rhs() const {return rhs_;};
+		//!
+		template <class ResType=T>
+		matrix_<ResType> get_rhs() const;
 		//! Get result matrix.
 		matrix_<T> get_result() const {return result_;};
+		//!
+		template <class ResType=T>
+		matrix_<ResType> get_result() const;
 		//!
 		matrix_<COMPLEX<T>> get_rhs_cmplx() const {return rhs_cmplx_;};
 		
@@ -109,7 +118,9 @@ class Element: public ObjectBase {
 		
 		//! Post process.
 		void post_stress(const vecX_<T>);
-		void post_stress(const vecX_<std::complex<T>>);
+		
+		template <class ResType=T>
+		void post_stress(const matrix_<ResType>);
 		// void post_stress(const matrix_<T>);
 		// void post_stress(const matrix_<std::complex<T>>);
 		
@@ -231,7 +242,7 @@ class Element: public ObjectBase {
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		vecX_<T> rhs_;//!< Right-hand side of element.
 		matrix_<COMPLEX<T>> rhs_cmplx_;//!< Right-hand matrix of element in complex.
-		
+		matrix_<COMPLEX<T>> load_cmplx_;//!< Load matrix of element in complex. 
 		matrix_<T> result_;//!< Result of element.
 		matrix_<COMPLEX<T>> result_cmplx_;//!< Result of element in complex.
 		

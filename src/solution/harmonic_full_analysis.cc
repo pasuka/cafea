@@ -189,7 +189,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 				p_elem.set_element_dofs(va[ja]);
 				if(va[ja]<0)continue;
 				auto row_ = ia*ndof+ja;
-				this->mat_pair_.add_rhs_data(va[ja], p_rhs(row_));
+				// this->mat_pair_.add_rhs_data(va[ja], p_rhs(row_));
 				this->rhs_cmplx_.row(va[ja]) += p_rhs_cmplx.row(row_);
 				for(auto ib=0; ib<nn; ib++){
 					auto vb = pt[ib].dof_list();
@@ -433,10 +433,21 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 /**
  *  \brief Post-process.
  */
-template <class FileReader, class Scalar, class ResultScalar>
-void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::post_process()
+template <class FileReader, class T, class U>
+void SolutionHarmonicFull<FileReader, T, U>::post_process()
 {
 	fmt::print("Empty\n");
+	auto num_step = this->freq_range_.size();
+	for(auto &it: this->elem_group_){
+		auto &p_elem = it.second;
+		auto va = p_elem.get_element_dofs();
+		matrix_<COMPLEX<U>> x = matrix_<COMPLEX<U>>::Zero(va.size(), num_step);
+		for(int i=0; i<va.size(); i++){
+			if(va[i]>=0)x.row(i) = this->disp_cmplx_.row(va[i]);
+		}
+		// std::cout << "Element displacement: " << x.col(0) << "\n";
+		p_elem.template post_stress<COMPLEX<U>>(x);
+	}
 };
 
 /**
@@ -459,9 +470,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		fmt::print("Error creating MAT file\n");
 		return;
 	}
-	const size_t nfields{8};
+	const size_t nfields{10};
 	const char *fieldnames[nfields] = {"id", "etype", "mtype", "stype", "nodes",
-		"stif", "mass", "tran"};
+		"stif", "mass", "tran", "rhs", "result"};
 	size_t elem_dims[2] = {this->elem_group_.size(), 1};
 	matvar_t *elem_list = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames, nfields);
 	
@@ -490,6 +501,29 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 			sz.data(), const_cast<ResultScalar*>(it.second.get_mass_ptr()), MAT_F_DONT_COPY_DATA);
 		matvar[7] = Mat_VarCreate(fieldnames[7], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
 			sz.data(), const_cast<ResultScalar*>(it.second.get_tran_ptr()), MAT_F_DONT_COPY_DATA);
+		
+		matrix_<COMPLEX<ResultScalar>> rhs = it.second.template get_rhs<COMPLEX<ResultScalar>>();
+		// matrix_<COMPLEX<ResultScalar>> rhs = it.second.get_rhs_cmplx();
+		size_t dim_rhs[2]={1, 1};
+		if(1<rhs.rows())dim_rhs[0] = rhs.rows();
+		if(1<rhs.cols())dim_rhs[1] = rhs.cols();
+		mat_complex_split_t c_rhs{rhs.real().data(), rhs.imag().data()};
+		matvar[8] = Mat_VarCreate(fieldnames[8], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+			dim_rhs, &c_rhs, MAT_F_COMPLEX);
+		
+		matrix_<COMPLEX<ResultScalar>> stress = it.second.template get_result<COMPLEX<ResultScalar>>();
+		size_t dim_stress[2]={1, 1};
+		if(1>stress.rows()&&1>stress.cols()){
+			double tmp_val = double(-1);
+			matvar[9] = Mat_VarCreate(fieldnames[9], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &tmp_val, 0);
+		}
+		else{
+			if(1<stress.rows())dim_stress[0] = stress.rows();
+			if(1<stress.cols())dim_stress[1] = stress.cols();
+			mat_complex_split_t c_stress{stress.real().data(), stress.imag().data()};
+			matvar[9] = Mat_VarCreate(fieldnames[9], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
+				dim_stress, &c_stress, MAT_F_COMPLEX);
+		}
 		for(size_t i=0; i<nfields; i++){
 			Mat_VarSetStructFieldByName(elem_list, fieldnames[i], num, matvar[i]);
 		}
@@ -522,11 +556,6 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 			size_t sz[2] = {1, 1};
 			if(1<rst.rows())sz[0] = rst.rows();
 			if(1<rst.cols())sz[1] = rst.cols();
-			/*
-			matrix_<ResultScalar> rst_re = rst.real();
-			matrix_<ResultScalar> rst_im = rst.imag();
-			mat_complex_split_t cs{rst_re.data(), rst_im.data()};
-			*/
 			mat_complex_split_t cs{rst.real().data(), rst.imag().data()};
 			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, sz, &cs, MAT_F_COMPLEX);
 		}
@@ -557,7 +586,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		Mat_VarWrite(matfp, freq, MAT_COMPRESSION_ZLIB);
 		Mat_VarFree(freq);
 	}
-	*/
+	
 	auto coord = this->mat_pair_.get_coord_ptr();
 	auto pk = this->mat_pair_.get_stif_ptr();
 	auto pm = this->mat_pair_.get_mass_ptr();
@@ -573,6 +602,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	matvar_t *ind = Mat_VarCreate("KM", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, xy, MAT_F_DONT_COPY_DATA);
 	Mat_VarWrite(matfp, ind, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(ind);
+	*/
 	auto global_stif = this->mat_pair_.get_stif_mat();
 	dim_vec[0] = dim_vec[1] = this->mat_pair_.get_dim();
 	// fmt::print("Global matrix dimension:{}x{}\n", dim_vec[0], dim_vec[1]);

@@ -335,6 +335,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 		Mat_VarWrite(matfp, freq, MAT_COMPRESSION_ZLIB);
 		Mat_VarFree(freq);
 	}
+	/*
 	auto coord = this->mat_pair_.get_coord_ptr();
 	auto pk = this->mat_pair_.get_stif_ptr();
 	auto pm = this->mat_pair_.get_mass_ptr();
@@ -350,6 +351,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 	matvar_t *ind = Mat_VarCreate("KM", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, xy, MAT_F_DONT_COPY_DATA);
 	Mat_VarWrite(matfp, ind, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(ind);
+	*/
 	auto global_stif = this->mat_pair_.get_stif_mat();
 	dim_vec[0] = dim_vec[1] = this->mat_pair_.get_dim();
 	// fmt::print("Global matrix dimension:{}x{}\n", dim_vec[0], dim_vec[1]);

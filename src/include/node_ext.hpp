@@ -6,7 +6,11 @@ template <class ResType>
 void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResType> rst)
 {
 	if(!this->is_activated())return;
-	// fmt::print("Template Function Set result Input Type:{}\n", typeid(ResType).name());
+	if(std::type_index(typeid(ResType))==std::type_index(typeid(U))){
+		return this->set_result(sol, lt, n, rst);
+	}
+	// fmt::print("Template Function Set result Input Type: {}", typeid(ResType).name());
+	// fmt::print(" {}\n", typeid(U).name());
 	switch(sol){
 	case SolutionType::HARMONIC_FULL:
 		switch(lt){
@@ -40,6 +44,9 @@ matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) co
 	matrix_<ResType> tmp;
 	
 	if(!this->is_activated())return tmp;
+	if(std::type_index(typeid(ResType))==std::type_index(typeid(U))){
+		return this->get_result(sol, lt, n);
+	}
 	// fmt::print("Template Function Get result Input Type:{}\n", typeid(ResType).name());
 	switch(sol){
 	case SolutionType::HARMONIC_FULL:

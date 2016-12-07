@@ -351,7 +351,7 @@ varargout<U> StructuralElement<T, U>::pipe18(
  */
 template <class T>
 matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T> tran,
-	const matrix_<T> x, const matrix_<T> rhs, const map<string, T> attr)
+	const matrix_<T> x, const matrix_<T> rhs, const map<string, T> attr, bool is_pres, T pres_in, T pres_out)
 {
 	fmt::print("This is for pipe post process in real domain.\n");
 	matrix_<T> esol = matrix_<T>::Zero(99, 2);
@@ -389,8 +389,14 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	auto Ri = Din/T(2);
 	auto t = Ro - Ri;
 	auto PresOut = T(0);
-	auto Fe = PI<T>()*(Pres*Ri*Ri-PresOut*Ro*Ro);
 	auto Jx = T(2)*Ir;
+	
+	if(is_pres){
+		Pres = pres_in;
+		PresOut = pres_out;
+	}
+	auto Fe = PI<T>()*(Pres*Ri*Ri-PresOut*Ro*Ro);
+	
 	/*
 	ANSYS stress result.
 	|	    |:   pipe #16 :|:   pipe #18 :|
@@ -454,6 +460,25 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	
 	return esol;
 }
-
-
+/**
+ * \brief Post-Process of element pipe. 
+ */
+template <class T>
+matrix_<COMPLEX<T>> StructuralElementPost<T>::pipe_cmplx(const matrix_<T> stif, const matrix_<T> tran,
+	const matrix_<COMPLEX<T>> x, const matrix_<COMPLEX<T>> rhs, const matrix_<COMPLEX<T>> load, const map<string, T> attr)
+{
+	assert(x.cols()==rhs.cols());
+	assert(x.cols()==load.cols());
+	
+	int n_cols{1};
+	if(n_cols<x.cols())n_cols = x.cols();
+	
+	matrix_<COMPLEX<T>> esol = matrix_<COMPLEX<T>>::Zero(99, 2*n_cols);
+	
+	for(int i=0; i<n_cols; i++){
+		esol.block(0, i*2, 99, 2).real() = StructuralElementPost<T>::pipe(stif, tran, x.col(i).real(), rhs.col(i).real(), attr, true, load(0, i).real());
+		esol.block(0, i*2, 99, 2).imag() = StructuralElementPost<T>::pipe(stif, tran, x.col(i).imag(), rhs.col(i).imag(), attr, true, load(0, i).imag());
+	}
+	return esol;
+}
 }
