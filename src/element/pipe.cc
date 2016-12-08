@@ -353,7 +353,7 @@ template <class T>
 matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T> tran,
 	const matrix_<T> x, const matrix_<T> rhs, const map<string, T> attr, bool is_pres, T pres_in, T pres_out)
 {
-	fmt::print("This is for pipe post process in real domain.\n");
+	// fmt::print("This is for pipe post process in real domain.\n");
 	matrix_<T> esol = matrix_<T>::Zero(99, 2);
 	matrix_<T> tmp = stif*tran*x;
 	// Element force in local.

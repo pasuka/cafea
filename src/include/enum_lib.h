@@ -63,6 +63,7 @@ enum struct LoadType {
 	VEL,
 	ACCEL,
 	PRES,
+	STRESS,
 };
 /**
  *  Load domain.

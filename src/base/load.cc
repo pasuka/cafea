@@ -12,8 +12,8 @@ using namespace std::complex_literals;
 template <class T>
 std::vector<LoadCell<T>> LoadSet<T>::get_load_by_type(LoadType lt)
 {
-	auto func = std::bind(LoadCell<T>::sort_by_load_type, std::placeholders::_1, std::placeholders::_2);
-	std::sort(this->list_.begin(), this->list_.end(), func);
+	// auto func = std::bind(LoadCell<T>::sort_by_load_type, std::placeholders::_1, std::placeholders::_2);
+	// std::sort(this->list_.begin(), this->list_.end(), func);
 	std::vector<LoadCell<T>> tmp;
 	for(auto &x: this->list_){
 		if(x.lt_==lt)tmp.push_back(x);

@@ -240,6 +240,7 @@ int FEModelReader<T>::parse_load_blk()
 				
 			}
 		}
+		assert(!tmp.empty());
 		if(!tmp.empty())this->load_list_.push_back(tmp);
 	}
 	else{

@@ -99,7 +99,7 @@ class LoadSet: public ObjectBase {
 		T get_value() const {return val_;};
 		void clear() {list_.clear();};
 		std::vector<LoadCell<T>> get_load_by_type(LoadType lt=LoadType::PRES);
-		~LoadSet() override {clear();};
+		~LoadSet() override {list_.clear();};
 	private:
 		LoadDomain ld_;
 		T val_;

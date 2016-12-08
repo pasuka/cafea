@@ -301,7 +301,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 			for(int i=0; i<tmp.size(); i++){
 				if(tmp[i]>=0)x.row(i) = this->disp_cmplx_.row(tmp[i]);
 			}	
-			p_node.template set_result<COMPLEX<U>>(SolutionType::HARMONIC_FULL, LoadType::DISP, 0, x);
+			p_node.template set_result<COMPLEX<U>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1, x);
 		}
 		fmt::print("Set displace result finish.\n");
 	}
@@ -447,6 +447,23 @@ void SolutionHarmonicFull<FileReader, T, U>::post_process()
 		}
 		// std::cout << "Element displacement: " << x.col(0) << "\n";
 		p_elem.template post_stress<COMPLEX<U>>(x);
+		matrix_<COMPLEX<U>> stress = p_elem.template get_result<COMPLEX<U>>();
+		if(1>stress.rows())continue;
+		// fmt::print("Stress Row:{} Col:{}\n", stress.rows(), stress.cols());
+		auto node_list = p_elem.get_node_list();
+		auto nn = p_elem.get_active_num_of_node();
+		auto iter{0};
+		for(auto &i: node_list){
+			auto &p_node = this->node_group_[i];
+			if(p_node.is_activated()){
+				for(int j=0; j<num_step; j++){
+					// fmt::print("Col index:{}\n", j*int(nn)+iter);
+					matrix_<COMPLEX<U>> yy = stress.block(43, j*int(nn)+iter, 8, 1);
+					p_node.template set_result<COMPLEX<U>>(SolutionType::HARMONIC_FULL, LoadType::STRESS, j, yy);
+				}
+				iter++;
+			}
+		}
 	}
 };
 
@@ -556,7 +573,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		xyz[2] = double(p_node.get_z());
 		matvar[2] = Mat_VarCreate(fieldnames2[2], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim3x1, xyz, 0);
 		if(p_node.is_activated()){
-			matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1);
+			// matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1);
+			matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::STRESS, -1);
 			size_t sz[2] = {1, 1};
 			if(1<rst.rows())sz[0] = rst.rows();
 			if(1<rst.cols())sz[1] = rst.cols();
@@ -576,39 +594,24 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	}
 	Mat_VarWrite(matfp, node_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(node_list);
-	/*
+	
 	{
 		matvar_t *freq;
 		size_t dims[2] = {1, 1};
-		if(1>this->natural_freq_.rows()){
+		if(1>this->freq_range_.size()){
 			double val{-1.0};
 			freq = Mat_VarCreate("freq", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, &val, 0);
 		}
 		else{
-			dims[0] = this->natural_freq_.rows();
-			dims[1] = this->natural_freq_.cols();
-			freq = Mat_VarCreate("freq", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, this->natural_freq_.data(), 0);
+			dims[0] = this->freq_range_.size();
+			freq = Mat_VarCreate("freq", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, this->freq_range_.data(), 0);
 		}
 		Mat_VarWrite(matfp, freq, MAT_COMPRESSION_ZLIB);
 		Mat_VarFree(freq);
 	}
 	
-	auto coord = this->mat_pair_.get_coord_ptr();
-	auto pk = this->mat_pair_.get_stif_ptr();
-	auto pm = this->mat_pair_.get_mass_ptr();
-	size_t nn = this->mat_pair_.get_nnz();
-	size_t dims[2] = {nn, 4};
-	double xy[nn*4];
-	for(size_t i=0; i<nn; i++){
-		xy[i] = 1.0 + coord[i].row;
-		xy[nn+i] = 1.0 + coord[i].col;
-		xy[nn*2+i] = pk[i];
-		xy[nn*3+i] = pm[i];
-	}
-	matvar_t *ind = Mat_VarCreate("KM", MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, xy, MAT_F_DONT_COPY_DATA);
-	Mat_VarWrite(matfp, ind, MAT_COMPRESSION_ZLIB);
-	Mat_VarFree(ind);
-	*/
+	
+	
 	auto global_stif = this->mat_pair_.get_stif_mat();
 	dim_vec[0] = dim_vec[1] = this->mat_pair_.get_dim();
 	// fmt::print("Global matrix dimension:{}x{}\n", dim_vec[0], dim_vec[1]);

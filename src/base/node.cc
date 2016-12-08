@@ -61,6 +61,7 @@ void Node<T, U>::init_result(SolutionType sol, int n)
 		break;
 	case SolutionType::HARMONIC_FULL:
 		this->disp_cmplx_ = matrix_<COMPLEX<U>>::Zero(m, n);
+		this->stress_cmplx_ = matrix_<COMPLEX<U>>::Zero(8, n);
 		break;
 	case SolutionType::HARMONIC_MODAL_SUPERPOSITION:
 	default:
