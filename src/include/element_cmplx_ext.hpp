@@ -127,7 +127,7 @@ void Element<T>::post_stress(const matrix_<U> x)
 		break;
 	case ElementType::MASS21:
 	case ElementType::COMBIN14:
-		fmt::print("No stress equation for spring and mass element.\n");
+		// fmt::print("No stress equation for spring and mass element.\n");
 		break;
 	case ElementType::BEAM188:
 	case ElementType::B31:

@@ -132,6 +132,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::analyze()
 	
 	this->rhs_cmplx_.resize(this->mat_pair_.get_dim(), this->load_group_.size());
 	this->disp_cmplx_.resize(this->mat_pair_.get_dim(), this->load_group_.size());
+	this->rhs_cmplx_.fill(COMPLEX<ResultScalar>(0.0, 0.0));
+	this->disp_cmplx_.fill(COMPLEX<ResultScalar>(0.0, 0.0));
 };
 
 /**
@@ -212,8 +214,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 template <class FileReader, class T, class U>
 void SolutionHarmonicFull<FileReader, T, U>::solve()
 {
-	Eigen::SparseLU<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
-	
+	// Eigen::SparseLU<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
+	// Eigen::SparseQR<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
+	Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 	auto dim = this->mat_pair_.get_dim();
 	auto nnz = this->mat_pair_.get_nnz();
 	
@@ -259,7 +262,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 					auto &pt = got->second;
 					auto va = pt.dof_list();
 					if(dof_label<va.size()){
-						if(0<va[dof_label])rhs(va[dof_label]) += force_val;
+						if(0<=va[dof_label])rhs(va[dof_label]) += force_val;
 					}
 				}	
 			}
@@ -275,9 +278,15 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 					auto va = pt.dof_list();
 					if(dof_label<va.size()){
 						auto index = va[dof_label];
-						if(0<index){
-							mat_a.coeff(index, index) *= std::numeric_limits<U>::max();
-							rhs(index) += disp_val*mat_a.coeff(index, index);
+						if(0<=index){
+							fmt::print("Index:{} ", index+1);
+							fmt::print("Kii before: Re{} Im{} ", mat_a.coeff(index, index).real(), mat_a.coeff(index, index).imag());
+							mat_a.coeffRef(index, index) *= 1.e35;//0.1*std::numeric_limits<U>::max();
+							fmt::print("after: Re{} Im{}\n", mat_a.coeff(index, index).real(), mat_a.coeff(index, index).imag());
+							fmt::print("RHS before: Re{} Im{} ", rhs(index).real(), rhs(index).imag());
+							rhs(index) = disp_val*mat_a.coeff(index, index);
+							fmt::print("after: Re{} Im{}\n", rhs(index).real(), rhs(index).imag());
+							
 						}
 					}
 				}
@@ -303,7 +312,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 			}	
 			p_node.template set_result<COMPLEX<U>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1, x);
 		}
-		fmt::print("Set displace result finish.\n");
+		// fmt::print("Set displace result finish.\n");
 	}
 	fmt::print("Harmonic full solve.\n");
 };
@@ -553,8 +562,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	Mat_VarWrite(matfp, elem_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(elem_list);
 	
-	const size_t nfields2{4};
-	const char *fieldnames2[nfields2] = {"id", "csys", "xyz", "result"};
+	const size_t nfields2{5};
+	const char *fieldnames2[nfields2] = {"id", "csys", "xyz", "result", "disp"};
 	size_t node_dims[2] = {this->node_group_.size(), 1};
 	matvar_t *node_list = Mat_VarCreateStruct("node", 2, node_dims, fieldnames2, nfields2);
 	size_t dim3x1[2] = {3, 1};
@@ -573,7 +582,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		xyz[2] = double(p_node.get_z());
 		matvar[2] = Mat_VarCreate(fieldnames2[2], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim3x1, xyz, 0);
 		if(p_node.is_activated()){
-			// matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1);
+			// 
 			matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::STRESS, -1);
 			size_t sz[2] = {1, 1};
 			if(1<rst.rows())sz[0] = rst.rows();
@@ -586,6 +595,20 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		else{
 			val[1] = double(-1);
 			matvar[3] = Mat_VarCreate(fieldnames2[3], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &val[1], 0);
+		}
+		if(p_node.is_activated()){
+			matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1);
+			size_t sz[2] = {1, 1};
+			if(1<rst.rows())sz[0] = rst.rows();
+			if(1<rst.cols())sz[1] = rst.cols();
+			matrix_<ResultScalar> rst_re = rst.real();
+			matrix_<ResultScalar> rst_im = rst.imag();
+			mat_complex_split_t cs{rst_re.data(), rst_im.data()};
+			matvar[4] = Mat_VarCreate(fieldnames2[4], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, sz, &cs, MAT_F_COMPLEX);
+		}
+		else{
+			val[1] = double(-1);
+			matvar[4] = Mat_VarCreate(fieldnames2[4], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim1x1, &val[1], 0);
 		}
 		for(auto i=0; i<nfields2; i++){
 			Mat_VarSetStructFieldByName(node_list, fieldnames2[i], num, matvar[i]);
