@@ -93,3 +93,17 @@ esol,20,1,,nmisc,65
 esol,21,1,,nmisc,70
 esol,22,1,,nmisc,75
 esol,23,1,,nmisc,80
+/post1
+set, 1, last
+/output, one-beam-x
+prnsol, u, comp
+prnsol, rot, comp
+/outptu, one-beam-stress
+presol, nmisc, 5
+presol, nmisc,10
+presol, nmisc,15
+presol, nmisc,20
+presol, nmisc,25
+presol, nmisc,30
+presol, nmisc,35
+presol, nmisc,40
