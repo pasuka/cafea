@@ -257,7 +257,6 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 		solver.compute(mat_a);
 		if(solver.info()!=Eigen::ComputationInfo::Success){
 			fmt::print("Decomposition Failed!\n");
-			
 		}
 		else{
 			fmt::print("Decomposition Success!\n");
@@ -290,42 +289,20 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 					if(dof_label<va.size()){
 						auto index = va[dof_label];
 						if(0<=index){
-							// fmt::print("Index: {} ", index+1);
-							// fmt::print("Kii before: Re {} Im {} ", mat_a.coeff(index, index).real(), mat_a.coeff(index, index).imag());
-							mat_a.coeffRef(index, index) *= 1.e30;//0.1*std::numeric_limits<U>::max();
-							// fmt::print("after: Re {} Im {}\n", mat_a.coeff(index, index).real(), mat_a.coeff(index, index).imag());
-							// fmt::print("RHS before: Re {} Im {}\n", rhs(index).real(), rhs(index).imag());
-							// fmt::print("Imposed value: Re {} Im {}\n", disp_val.real(), disp_val.imag());
+							mat_a.coeffRef(index, index) *= 1.e30;
 							rhs(index) = disp_val*mat_a.coeff(index, index);
-							// fmt::print("after: Re {} Im {}\n", rhs(index).real(), rhs(index).imag());
-							
 						}
 					}
 				}
 			}
 		}
-		// std::cout << "Matirx:\n" << mat_a << "\n";
-		// std::cout << "RHS before:\n" << rhs << "\n";
 		this->disp_cmplx_.col(i) = solver.solve(rhs);
-		// Eigen::BiCGSTAB<Eigen::SparseMatrix<U>> solver;
-		// Eigen::SparseLU<Eigen::SparseMatrix<U>, Eigen::COLAMDOrdering<int>> solver;
-		// solver.analyzePattern(mat_a.real());
-		// solver.factorize(mat_a.real());
-		// this->disp_cmplx_.col(i).real() = solver.solve(rhs.real());
-		// solver.analyzePattern(mat_a.imag());
-		// solver.factorize(mat_a.imag());
-		// this->disp_cmplx_.col(i).imag() = solver.solve(rhs.imag());
+		
 		if(solver.info()!=Eigen::ComputationInfo::Success){
 			fmt::print("Solve Failed!\n");
-			
 		}
 		else{
 			fmt::print("Solve Success!\n");
-			
-			std::cout << "X solve: \n";
-			std::cout << this->disp_cmplx_.col(i) << "\n";
-			std::cout << "RHS:\n";
-			std::cout << mat_a*this->disp_cmplx_.col(i) << "\n";
 		}
 	}
 	for(auto &it: this->node_group_){
