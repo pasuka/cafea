@@ -10,6 +10,8 @@
 #include <typeindex>
 
 #include <Eigen/Eigen>
+// #include <Eigen/SPQRSupport>
+// #include <Eigen/UmfPackSupport>
 #include "fmt/format.h"
 
 #include "node.h"

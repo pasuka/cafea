@@ -215,8 +215,11 @@ template <class FileReader, class T, class U>
 void SolutionHarmonicFull<FileReader, T, U>::solve()
 {
 	// Eigen::SparseLU<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
-	Eigen::SparseQR<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
-	// Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>> solver;
+	// Eigen::SparseQR<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
+	// Eigen::SPQR<Eigen::SparseMatrix<COMPLEX<U>>> solver;
+	// Eigen::UmfPackLU<Eigen::SparseMatrix<COMPLEX<U>>> solver;
+	Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::IncompleteLUT<COMPLEX<U>, int>> solver;
+	// Eigen::LeastSquaresConjugateGradient<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 	auto dim = this->mat_pair_.get_dim();
 	auto nnz = this->mat_pair_.get_nnz();
 	
@@ -249,8 +252,16 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 		auto omega = 2.*PI<U>()*this->freq_range_(i);
 		auto omega2 = omega*omega;
 		Eigen::SparseMatrix<COMPLEX<U>> mat_a = mat_K - (omega2+0.0i)*mat_M;
-		solver.analyzePattern(mat_a);
-		solver.factorize(mat_a);
+		// solver.analyzePattern(mat_a);
+		// solver.factorize(mat_a);
+		solver.compute(mat_a);
+		if(solver.info()!=Eigen::ComputationInfo::Success){
+			fmt::print("Decomposition Failed!\n");
+			
+		}
+		else{
+			fmt::print("Decomposition Success!\n");
+		}
 		vecX_<COMPLEX<U>> rhs = this->rhs_cmplx_.col(i);
 		auto force = this->load_group_[i].get_load_by_type(LoadType::FORCE);
 		if(!force.empty()){
@@ -281,7 +292,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 						if(0<=index){
 							// fmt::print("Index: {} ", index+1);
 							// fmt::print("Kii before: Re {} Im {} ", mat_a.coeff(index, index).real(), mat_a.coeff(index, index).imag());
-							mat_a.coeffRef(index, index) *= 1.e20;//0.1*std::numeric_limits<U>::max();
+							mat_a.coeffRef(index, index) *= 1.e30;//0.1*std::numeric_limits<U>::max();
 							// fmt::print("after: Re {} Im {}\n", mat_a.coeff(index, index).real(), mat_a.coeff(index, index).imag());
 							// fmt::print("RHS before: Re {} Im {}\n", rhs(index).real(), rhs(index).imag());
 							// fmt::print("Imposed value: Re {} Im {}\n", disp_val.real(), disp_val.imag());
@@ -293,6 +304,8 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 				}
 			}
 		}
+		// std::cout << "Matirx:\n" << mat_a << "\n";
+		// std::cout << "RHS before:\n" << rhs << "\n";
 		this->disp_cmplx_.col(i) = solver.solve(rhs);
 		// Eigen::BiCGSTAB<Eigen::SparseMatrix<U>> solver;
 		// Eigen::SparseLU<Eigen::SparseMatrix<U>, Eigen::COLAMDOrdering<int>> solver;
@@ -311,6 +324,8 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 			
 			std::cout << "X solve: \n";
 			std::cout << this->disp_cmplx_.col(i) << "\n";
+			std::cout << "RHS:\n";
+			std::cout << mat_a*this->disp_cmplx_.col(i) << "\n";
 		}
 	}
 	for(auto &it: this->node_group_){

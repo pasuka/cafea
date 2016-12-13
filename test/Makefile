@@ -2,6 +2,8 @@ CC := gcc
 CXX := g++
 FC := gfortran
 CXXFLAGS := -lgfortran -lboost_system-mt -lboost_filesystem-mt -L./ -lmatio -O3
+# Temporary
+# CXXFLAGS += -L/mingw64/lib -lsuitesparseconfig -lamd -lcolamd -lcamd -lccolamd -lcholmod -lspqr -lumfpack -lopenblas -llapack
 FFLAGS := -cpp
 
 # Check version of gcc
