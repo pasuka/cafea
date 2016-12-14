@@ -17,9 +17,14 @@ keyopt, 34, 3, 1 !URX
 !et, 36, combin14
 !keyopt, 36, 2, 6 !URZ
 
-mp, dens, 1, 8.8e-09
-mp, ex, 1, 117000
-mp, nuxy, 1, 0.35
+!mp, dens, 1, 8.8e-09
+!mp, ex, 1, 117000
+!mp, nuxy, 1, 0.35
+
+mp, dens, 1, 7.85e-9
+mp, ex, 1, 206000
+mp, nuxy, 1 ,0.3
+
 r, 1, 12, 1
 n, 1, 0, 0, 0
 n, 2, 1000, 0, 0
@@ -65,6 +70,9 @@ kbc,1
 d, 2, ux, 0
 d, 2, uy, 1
 d, 2, uz, 0
+d, 2, rotx, 0
+d, 2, roty, 0
+d, 2, rotz, 0
 solve
 save
 finish
