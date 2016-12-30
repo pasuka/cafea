@@ -52,7 +52,7 @@ enum struct DofLabel {
 	URX, URY, URZ,
 	WARP,
 	U_ALL, UR_ALL, ALL,
-	UNKNOWN,
+	UNKNOWN=-1,
 };
 /**
  *  Load type enum.

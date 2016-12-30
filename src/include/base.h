@@ -6,6 +6,7 @@
 #include <vector>
 #include <ostream>
 #include <algorithm>
+#include <type_traits>
 
 #include <cstdlib>
 
@@ -37,10 +38,14 @@ class ObjectBase {
 		virtual ~ObjectBase(){};
 		//! Set numeric number for object's name.
 		template <class T>
-		void set_name(T val){name_ = std::to_string(val);};
+		void set_name(T val)
+		{
+			static_assert(std::is_integral<T>::value || std::is_floating_point<T>::value);
+			name_ = std::to_string(val);
+		};
 		//! Set object's name.
-		void set_name(std::string s){name_ = s;};
-		void set_name(const char *cs){name_ = cs;};
+		void set_name(std::string s) { name_ = s;};
+		void set_name(const char *cs) { name_ = cs;};
 		//! Set object's id.
 		void set_id(int x)
 		{
