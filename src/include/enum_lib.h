@@ -4,16 +4,17 @@
 namespace cafea
 {
 /**
- *  Coordinate system enum.
+ *  \enum Coordinate system.
  */
 enum struct CoordinateSystem {
 	CARTESIAN=0,
 	CYLINDRICAL,
 	SPHERICAL,
-	UNKNOWN=-1,
+	UNKNOWN=-99,
 };
+
 /**
- *  Enum of element types.
+ *  \enum Element types.
  */
 enum struct ElementType {
 	PIPE16, PIPE18,
@@ -21,19 +22,20 @@ enum struct ElementType {
 	SOLID185, SOLID186, C3D4, C3D8, C3D20,
 	SHELL181, SHELL281, S3R, S4R, S8R, S9R,
 	MASS21, COMBIN14,
-	UNKNOWN=-1,
+	UNKNOWN=-99,
 };
 
 /**
- *  Boundary type enum.
+ *  \enum Boundary type.
  */
 enum struct BoundaryType {
 	FIXED,
 	INIT_VAL,
-	UNKNOWN=-1,
+	UNKNOWN=-99,
 };
+
 /**
- *  DOF type enum.
+ *  \enum DOF type in global matrix.
  */
 enum struct DofType {
 	ELIMINATE=-11,
@@ -44,18 +46,20 @@ enum struct DofType {
 	SLAVE=-3,
 	UNKNOWN=-99,
 };
+
 /**
- *  DOF label enum.
+ *  \enum DOF label.
  */
 enum struct DofLabel {
 	UX=0, UY, UZ,
 	URX, URY, URZ,
 	WARP,
 	U_ALL, UR_ALL, ALL,
-	UNKNOWN=-1,
+	UNKNOWN=-99,
 };
+
 /**
- *  Load type enum.
+ *  \enum Load type.
  */
 enum struct LoadType {
 	FORCE,
@@ -64,26 +68,29 @@ enum struct LoadType {
 	ACCEL,
 	PRES,
 	STRESS,
+	UNKNOWN=-99,
 };
+
 /**
- *  Load domain.
+ *  \enum Load domain.
  */
 enum struct LoadDomain {
 	TIME,
 	FREQ,
 };
+
 /**
- *  Enum of material type.
+ *  \enum Material type.
  */
 enum struct MaterialType {
 	LINEAR_ELASTIC,
 	SPRING_STIFFNESS,
 	MASS_VALUES,
-	UNKNOWN,
+	UNKNOWN=-99,
 };
 
 /**
- *  Enum of material property.
+ *  \enum Material property.
  */
 enum struct MaterialProp {
 	DENS,//!< Mass density.
@@ -94,9 +101,11 @@ enum struct MaterialProp {
 	DMPR,//!< Constant structural damping coefficient in full harmonic analysis or damping ratio in mode-superposition analysis.
 	ALPD,//!< Mass matrix multiplier for damping.
 	BETD,//!< Stiffness matrix multiplier for damping.
+	UNKNOWN=-99,
 };
+
 /**
- *  Enum of section type.
+ *  \enum Section type.
  */
 enum struct SectionType {
 	PIPE, 
@@ -114,11 +123,11 @@ enum struct SectionType {
 	HATS_BEAM,//!< Hat-shaped beam section.
 	HREC_BEAM,//!< Hollow rectangle or box beam section.
 	CTUBE_BEAM,//!< Circular tube section.
-	UNKNOWN,
+	UNKNOWN=-99,
 };
 
 /**
- *  Enum of section property.
+ *  \enum Section property.
  */
 enum struct SectionProp {
 	OD,//!< Pipe outer diameter.
@@ -128,27 +137,30 @@ enum struct SectionProp {
 	PRESIN,//!< Internal pressure.
 	ADDONMASS,//!< Add-on mass.
 	ADDONSPRING,//!< Add-on spring.
+	UNKNOWN=-99,
 };
 
 /**
- *  Enum of solution types.
+ *  \enum Solution types.
  */
 enum struct SolutionType {
 	STATIC,
 	MODAL,
 	HARMONIC_FULL,
 	HARMONIC_MODAL_SUPERPOSITION,
+	UNKNOWN=-99,
 };
 
 /**
- *  Enum of element mass matrix form.
+ *  \enum Element of mass matrix form.
  */
 enum struct MassType {
 	LUMPED,
 	CONSISTENT,
 };
+
 /**
- *
+ *  \enum Solution options.
  */
 enum struct SolutionOption {
 	LUMPED_MASS,

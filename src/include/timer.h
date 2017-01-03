@@ -4,6 +4,8 @@
 #include <chrono>
 #include <ostream>
 
+#include "fmt/format.h"
+
 namespace cafea
 {
 /**
@@ -12,9 +14,9 @@ namespace cafea
 class Timer{
 	public:
 		//! A constructor.
-		Timer(): beg_(clock_::now()){};
+		Timer(): beg_(clock_::now()) {};
 		//! Rest timer.
-		void reset(){beg_ = clock_::now();};
+		void reset() { beg_ = clock_::now();};
 		/**
 		 *  \brief Get time consuming.
 		 *  \param [out] time elapsed.
@@ -26,7 +28,7 @@ class Timer{
 		//! Print time cost.
 		friend std::ostream& operator<<(std::ostream& cout, const Timer &a)
 		{
-			return cout << "Time cost:\t" << a.elapsed() << "seconds.\n";
+			return cout << fmt::format("Time cost: %7.2f seconds.\n", a.elapsed());
 		}
 	private:
 		using clock_ = std::chrono::high_resolution_clock;

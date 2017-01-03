@@ -48,10 +48,10 @@ using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
 //! Matlab style varargout with 2 return.
 //! Template aliases trick in C++11.
 template <class T=REAL8>
-using varargout_2_ = std::tuple<T, matrix_<T> >; 
+using varargout_2_ = std::tuple<T, matrix_<T>>; 
 //! Matlab style varargout with 3 return.
 template <class T=REAL8>
-using varargout_3_ = std::tuple<T, matrix_<T>, matrix_<T> >;
+using varargout_3_ = std::tuple<T, matrix_<T>, matrix_<T>>;
 //! Initializer list.
 template <class T>
 using init_list_ = std::initializer_list<T>;
