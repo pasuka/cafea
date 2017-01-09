@@ -1,34 +1,51 @@
+##############################################
+# Build MATIO dynamic library.               #
+##############################################
+# Note: Only for MSYS2 now.                  #
+##############################################
+# Requirement: hdf5 zlib                     #
+##############################################
+
+# Compiler.
 CC := gcc
 CFLAGS := -D_GNU_SOURCE=1
-
+# Source path.
 SRC_DIR := ../matio/src
-##############################################
-#      Note: Only for MSYS2 now.             #
-##############################################
 # Add header files.
-CFLAGS += -I/mingw64/include -I../src/include/matio -I$(SRC_DIR)
+CFLAGS += -I../src/include/matio -I$(SRC_DIR)
 # Add library path.
 CFLAGS += -lhdf5 -lz -lm -fPIC -shared
-
-SRC := $(SRC_DIR)/inflate.o $(SRC_DIR)/endian.o $(SRC_DIR)/snprintf.o
-SRC += $(SRC_DIR)/mat.o $(SRC_DIR)/mat4.o $(SRC_DIR)/mat5.o 
-SRC += $(SRC_DIR)/mat73.o $(SRC_DIR)/matvar_struct.o $(SRC_DIR)/io.o
-SRC += $(SRC_DIR)/matvar_cell.o $(SRC_DIR)/read_data.o
+# Source files.
+SRC := inflate.o endian.o snprintf.o mat.o mat4.o mat5.o mat73.o
+SRC += matvar_struct.o io.o matvar_cell.o read_data.o
+# Check OS version.
+ifeq ($(OS), Windows_NT)
+	uname_s := Windows
+else
+	uname_s := $(shell uname -s)
+endif
+# Dynamic library name.
+ifeq ($(uname_s), Windows)
+	target = libmatio.dll
+endif
+ifeq ($(uname_s), Linux)
+	target = libmatio.so
+endif
 
 %.o: %.c
+	@echo "MATIO: Complie c files."
 	$(CC) -c $(CFLAGS) $<
-	
-libs: $(SRC)
-	$(CC) $(notdir $^) $(CFLAGS) -o libmatio.dll
+
+libs: $(addprefix $(SRC_DIR)/, $(SRC))
+	@echo "MATIO: Build dynamic library."
+	$(CC) $(notdir $^) $(CFLAGS) -o $(target)
 
 clean:
 	@echo "MATIO: Clean files"
 	- $(RM) $(CLEAN) *.o *.exe *.mat
-	
+
 all:
 	$(MAKE) libs
 	$(MAKE) clean
-	
+
 .PHONY: clean libs all
-
-
