@@ -22,6 +22,8 @@ namespace cafea
 using REAL4 = float;
 //! REAL(kind=8) in Fortran iso_c_binding.
 using REAL8 = double;
+
+//! Complex template.
 template <class T=REAL8>
 using COMPLEX = std::complex<T>;
 //! COMPLEX(kind=4) in Fortran iso_c_binding.
