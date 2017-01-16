@@ -22,7 +22,6 @@ namespace cafea
 using REAL4 = float;
 //! REAL(kind=8) in Fortran iso_c_binding.
 using REAL8 = double;
-
 //! Complex template.
 template <class T=REAL8>
 using COMPLEX = std::complex<T>;
@@ -31,7 +30,7 @@ using COMPLEX4 = COMPLEX<REAL4>;
 //! COMPLEX(kind=8) in Fortran iso_c_binding.
 using COMPLEX8 = COMPLEX<REAL8>;
 
-//! Precision of machine via different types.	
+//! Precision of machine via different types.
 template<class T=REAL8>
 constexpr T EPS() {return std::numeric_limits<T>::epsilon();};
 //! M_PI.
@@ -50,10 +49,19 @@ using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
 //! Matlab style varargout with 2 return.
 //! Template aliases trick in C++11.
 template <class T=REAL8>
-using varargout_2_ = std::tuple<T, matrix_<T>>; 
+using varargout_2_ = std::tuple<T, matrix_<T>>;
 //! Matlab style varargout with 3 return.
 template <class T=REAL8>
 using varargout_3_ = std::tuple<T, matrix_<T>, matrix_<T>>;
+//! Matlab style varargout with 4 return.
+template <class T=REAL8>
+using varargout_4_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>>;
+//! Matlab style varargout with 5 return.
+template <class T=REAL8>
+using varargout_5_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>>;
+//! Matlab style varargout with 6 return.
+template <class T=REAL8>
+using varargout_6_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>>;
 //! Initializer list.
 template <class T>
 using init_list_ = std::initializer_list<T>;

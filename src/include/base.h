@@ -10,8 +10,7 @@
 
 #include <cstdlib>
 
-#include "utils.h"
-#include "enum_lib.h"
+#include "fmt/format.h"
 
 namespace cafea
 {
@@ -36,6 +35,10 @@ class ObjectBase {
 		};
 		//! A destructor.
 		virtual ~ObjectBase(){};
+		//! Set object's name.
+		template <class T>
+		void set_name(T val) { name_ = fmt::format("{}", val);}
+		/*
 		//! Set numeric number for object's name.
 		template <class T>
 		void set_name(T val)
@@ -46,13 +49,14 @@ class ObjectBase {
 		//! Set object's name.
 		void set_name(std::string s) { name_ = s;};
 		void set_name(const char *cs) { name_ = cs;};
+		*/
 		//! Set object's id.
 		void set_id(int x)
 		{
 			assert(x>0);
 			id_ = x;
 		};
-		//! Set object's group via C++11. 
+		//! Set object's group via C++11.
 		/**
 		 *  \code{.cpp}
 		 *  ObjectBase a;
@@ -71,18 +75,16 @@ class ObjectBase {
 			for(int i=0; i<n; i++)group_[i] = y[i];
 		};
 		//! Get object's name.
-		std::string get_name() const {return name_;};
+		std::string get_name() const { return name_;};
 		//! Get object's id.
-		int get_id() const {return id_;};
+		int get_id() const { return id_;};
 		//! Get object's group.
-		std::array<int, 10> get_group() const {return group_;};
+		std::array<int, 10> get_group() const { return group_;};
 		//! Print object's id and name.
 		friend std::ostream& operator<<(std::ostream& cout, const ObjectBase &a)
 		{
-			cout << "Object id:\t" << a.id_ << "\tname:\t" << a.name_ << "\n";
-			return cout;
-		}
-		
+			return cout << fmt::format("Object id:{} name:{}\n", a.id_, a.name_);
+		};
 	protected:
 		int id_{-1};//!< Object's id.
 		std::array<int, 10> group_;//!< Object's group array.
