@@ -29,13 +29,13 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		NodeBase(int id):ObjectBase{id, fmt::format("Node#{0}", id)}, 
+		NodeBase(int id):ObjectBase{id, fmt::format("Node#{0}", id)},
 			csys_(CoordinateSystem::CARTESIAN) {};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
 		 *  \param [in] id an integer must bigger than zero.
 		 *  \param [in] csys coordinate system types.
-		 *  
+		 *
 		 *  coordinate system types list.
 		 *  | Types     | Values |
 		 *  |:=========:|:======:|
@@ -51,7 +51,7 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] x value of x-axis.
 		 *  \param [in] y value of y-axis.
 		 *  \param [in] z value of z-axis.
-		 *  
+		 *
 		 *  \details Default coordinate system Cartesian.
 		 */
 		NodeBase(int id, Scalar x, Scalar y, Scalar z):
@@ -77,7 +77,7 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] rotx value of rotate x-axis.
 		 *  \param [in] roty value of rotate y-axis.
 		 *  \param [in] rotz value of rotate z-axis.
-		 *  
+		 *
 		 *  \details Euler angle must in degrees.
 		 */
 		NodeBase(int id, Scalar x, Scalar y, Scalar z,
@@ -140,7 +140,7 @@ class NodeBase: public ObjectBase {
 			for(auto &it: val2)angle_(j++) = it;
 		};
 		/**
-		 *  \brief Initialize with node's id and coordinate and Euler angles.		
+		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
 		NodeBase(int id, init_list_<Scalar> val, init_list_<Scalar> val2):
 			csys_(CoordinateSystem::CARTESIAN),
@@ -157,7 +157,7 @@ class NodeBase: public ObjectBase {
 		CoordinateSystem get_csys() const {return csys_;};
 		//! Set coordinate system.
 		void set_csys(CoordinateSystem ct) {csys_ = ct;};
-		
+
 		//! Get xyz values.
 		vec3_<Scalar> get_xyz() const {return xyz_;};
 		//! Get x value.
@@ -166,7 +166,7 @@ class NodeBase: public ObjectBase {
 		Scalar get_y() const {return xyz_(1);};
 		//! Get z value.
 		Scalar get_z() const {return xyz_(2);};
-		
+
 		//! Set xyz values.
 		void set_xyz(Scalar x, Scalar y, Scalar z) {xyz_ << x, y, z;};
 		//! Set xyz values with 1d array.
@@ -183,7 +183,7 @@ class NodeBase: public ObjectBase {
 		void set_y(Scalar y) {xyz_(1) = y;};
 		//! Set z value.
 		void set_z(Scalar z) {xyz_(2) = z;};
-	
+
 		//! Set Euler angle values.
 		void set_angle(Scalar r1, Scalar r2, Scalar r3) {angle_ << r1, r2, r3;};
 		//! Set Euler angle values with 1d array.
@@ -211,9 +211,10 @@ class NodeBase: public ObjectBase {
 		Eigen::Matrix<Scalar, 3, 3> get_euler_tran() const
 		{
 			using AA = Eigen::AngleAxis<Scalar>;
-			Eigen::Matrix<Scalar, 3, 3> tran = Eigen::Matrix<Scalar, 3, 3>::Identity();
+			using mat33 = Eigen::Matrix<Scalar, 3, 3>;
+			mat33 tran = mat33::Identity();
 			vec3_<Scalar> IY = vec3_<Scalar>::Zero(3), IX=IY, IZ=IY;
-		
+
 			if(angle_(0)<1.8e2){
 				IX(0) = IY(1) = IZ(2) = Scalar(1);
 				Scalar a0 = get_rot_rad(0);
@@ -266,7 +267,7 @@ class NodeBase: public ObjectBase {
 	protected:
 		CoordinateSystem csys_{CoordinateSystem::CARTESIAN};//!< Coordinate system.
 		vec3_<Scalar> xyz_ = vec3_<Scalar>::Zero();//!< Values of coordinate.
-		vec3_<Scalar> angle_ = vec3_<Scalar>::Constant(181);//!< Euler's angle in degree.		
+		vec3_<Scalar> angle_ = vec3_<Scalar>::Constant(181);//!< Euler's angle in degree.
 };
 
 /**
@@ -321,30 +322,31 @@ class Node: public NodeBase<Scalar> {
 		};
 		//! Initialize result container.
 		void init_result(SolutionType, int);
-		
+
 		void set_result(SolutionType, LoadType, int, matrix_<ResultScalar>);
-		
+
 		template <class T=COMPLEX<ResultScalar>>
 		void set_result(SolutionType, LoadType, int, matrix_<T>);
-		
+
 		matrix_<ResultScalar> get_result(SolutionType, LoadType, int) const;
-		
+
 		template <class T=COMPLEX<ResultScalar>>
 		matrix_<T> get_result(SolutionType, LoadType, int) const;
-		
+
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
-		
+
 		vecX_<ResultScalar> range_;//!< Range of result.
 		matrix_<ResultScalar> disp_;//!< Storage of displacement.
 		matrix_<ResultScalar> vel_;//!< Storage of velocity.
 		matrix_<ResultScalar> accel_;//!< Storage of acceleration.
 		matrix_<ResultScalar> stress_;//!< Storage of stress.
-		matrix_<COMPLEX<ResultScalar>> disp_cmplx_;//!< Storage of displacement in complex.
-		matrix_<COMPLEX<ResultScalar>> vel_cmplx_;//!< Storage of velocity in complex.
-		matrix_<COMPLEX<ResultScalar>> accel_cmplx_;//!< Storage of acceleration in complex.
-		matrix_<COMPLEX<ResultScalar>> stress_cmplx_;//!< Storage of stress in complex.
+		using cmatrix = matrix_<COMPLEX<ResultScalar>>;
+		cmatrix disp_cmplx_;//!< Storage of displacement in complex.
+		cmatrix vel_cmplx_;//!< Storage of velocity in complex.
+		cmatrix accel_cmplx_;//!< Storage of acceleration in complex.
+		cmatrix stress_cmplx_;//!< Storage of stress in complex.
 };
 
 #include "node_ext.hpp"
@@ -384,7 +386,7 @@ template struct NodeFunc<REAL8, REAL8>;
  */
 template <class T=REAL8>
 struct QACM{
-	//! 
+	//!
 	static std::tuple<T, vecX_<T>, vecX_<T>, vecX_<T>> shape_2d(T, T, const matrix_<T>, int);
 };
 

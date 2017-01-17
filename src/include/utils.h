@@ -10,8 +10,6 @@
 #include <limits>
 #include <string>
 #include <complex>
-#include <unordered_map>
-#include <initializer_list>
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -62,12 +60,6 @@ using varargout_5_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T
 //! Matlab style varargout with 6 return.
 template <class T=REAL8>
 using varargout_6_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>>;
-//! Initializer list.
-template <class T>
-using init_list_ = std::initializer_list<T>;
-//! Dictionary.
-template <class T>
-using dict_ = std::unordered_map<int, T>;
 
 //! Gauss integrate point and weight.
 std::tuple<vecX_<>, vecX_<>> gauss_quad(size_t);

@@ -32,6 +32,10 @@ ifeq ($(uname_s), Linux)
 	target = libmatio.so
 endif
 
+all:
+	$(MAKE) libs
+	$(MAKE) clean
+
 %.o: %.c
 	@echo "MATIO: Complie c files."
 	$(CC) -c $(CFLAGS) $<
@@ -44,8 +48,4 @@ clean:
 	@echo "MATIO: Clean files"
 	- $(RM) $(CLEAN) *.o *.exe *.mat
 
-all:
-	$(MAKE) libs
-	$(MAKE) clean
-
-.PHONY: clean libs all
+.PHONY: clean all

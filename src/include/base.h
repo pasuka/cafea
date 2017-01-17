@@ -2,25 +2,31 @@
 #define BASE_H
 
 #include <array>
-#include <string>
-#include <vector>
+#include <string> // <array> and <string> includes <initializer_list>
 #include <ostream>
 #include <algorithm>
-#include <type_traits>
-
-#include <cstdlib>
+// #include <type_traits>
+#include <unordered_map>
+// #include <initializer_list>
 
 #include "fmt/format.h"
 
 namespace cafea
 {
+//! Initializer list.
+template <class T>
+using init_list_ = std::initializer_list<T>;
+//! Dictionary.
+template <class T>
+using dict_ = std::unordered_map<int, T>;
+
 /**
  *  Basic parent object.
  */
 class ObjectBase {
 	public:
 		//! Constructor.
-		ObjectBase(){};
+		ObjectBase() { group_.fill(0);};
 		//! Another constructor.
 		ObjectBase(int id, std::string s):id_(id), name_(s)
 		{
@@ -88,7 +94,7 @@ class ObjectBase {
 	protected:
 		int id_{-1};//!< Object's id.
 		std::array<int, 10> group_;//!< Object's group array.
-		std::string name_{"This is a base object!"};//!< Object's name.
+		std::string name_{"Empty"};//!< Object's name.
 };
 }
 #endif

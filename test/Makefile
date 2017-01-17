@@ -38,6 +38,10 @@ SRC += ../src/io/simple_convert.o ../src/io/bcy_reader.o
 SRC += ../src/fortran/common_reader.o
 SRC += ../src/fortran/cdb_reader.o ../src/fortran/bcy_reader_2.o
 
+all:
+	@echo "This is nothing yet!"
+	$(MAKE) clean
+
 %.o: %.cc
 	$(COMMENT)
 	@echo -ne "\033[41;33mCompile C++ file\033[0m\t\033[35m"$<"\033[0m\n"
@@ -108,6 +112,10 @@ matio_lib:
 	$(MAKE) -f matio.mk libs
 	$(MAKE) -f matio.mk clean
 
+test_basic:
+	@echo "Basic Test"
+	$(MAKE) -f basic.mk a01
+
 compile_modal: $(SRC) ./modal_main.o
 	$(COMMENT)
 	@echo -ne "\033[33m"Modal Analysis Exectue"\033[0m\n"
@@ -126,9 +134,4 @@ clean:
 	@echo "Clean files"
 	- $(RM) $(CLEAN) *.o *.mod *.mat test_*
 
-all:
-	$(MAKE) test_node
-	./test_node
-	$(MAKE) clean
-
-.PHONY: clean test_node test_cdb test_cdb_cpp test_solution test_modal matio_lib compile_modal compile_harmonic all
+.PHONY: clean all
