@@ -62,18 +62,16 @@ class Material: public ObjectBase {
 		//! Destructor.
 		~Material() override {};
 		//! Get type of material.
-		MaterialType get_material_type() const {return mtype_;};
+		MaterialType get_material_type() const { return mtype_;};
 		//! Set type of material.
-		void set_material_type(MaterialType mt) {mtype_ = mt;};
-		
+		void set_material_type(MaterialType mt) { mtype_ = mt;};
+
 		//! Set property of material.
 		void set_material_prop(MaterialProp mp, Scalar val);
 		//! Get property of material.
 		Scalar get_material_prop(MaterialProp mp) const;
-		
 		//! Get property vector of material.
 		std::vector<Scalar> get_material_prop_vec() const;
-		
 		//! Print material info.
 		friend std::ostream& operator<<(std::ostream& cout, const Material &a)
 		{
@@ -87,13 +85,12 @@ class Material: public ObjectBase {
 			}
 			return cout << "\n";
 		};
-		
+
 	private:
 		MaterialType mtype_{MaterialType::UNKNOWN};//!< Material type.
 		std::array<Scalar, 10> param_;//!< 1st parameter array.
-		std::array<Scalar, 10> param2_;//!< 2nd parameter array.	
+		std::array<Scalar, 10> param2_;//!< 2nd parameter array.
 };
-
 //! Specialization with float and double types.
 template class Material<REAL4>;
 template class Material<REAL8>;

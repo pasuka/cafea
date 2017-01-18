@@ -74,9 +74,9 @@ class Section: public ObjectBase {
 		//! Destructor.
 		~Section() override {};
 		//! Get type of section.
-		SectionType get_sect_type() const {return sect_;};
+		SectionType get_sect_type() const { return sect_;};
 		//! Set type of section.
-		void set_sect_type(SectionType st) {sect_ = st;};
+		void set_sect_type(SectionType st) { sect_ = st;};
 		//! Get property of section.
 		Scalar get_sect_prop(SectionProp sp) const;
 		//! Set property of section.
@@ -101,13 +101,12 @@ class Section: public ObjectBase {
 			}
 			return cout << "\n";
 		};
-		
+
 	private:
 		SectionType sect_{SectionType::UNKNOWN};//!< Section type.
 		std::array<Scalar, 10> param_;//!< 1st parameter array.
-		std::array<Scalar, 10> param2_;//!< 2nd parameter array.	
+		std::array<Scalar, 10> param2_;//!< 2nd parameter array.
 };
-
 //! Specialization with float and double types.
 template class Section<REAL4>;
 template class Section<REAL8>;

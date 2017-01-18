@@ -29,9 +29,9 @@ class Timer{
 		friend std::ostream& operator<<(std::ostream& cout, const Timer &a)
 		{
 			return cout << fmt::format("Time cost: %7.2f seconds.\n", a.elapsed());
-		}
+		};
 	private:
-		using clock_ = std::chrono::high_resolution_clock;
+		using clock_  = std::chrono::high_resolution_clock;
 		using second_ = std::chrono::duration<double, std::ratio<1>>;
 		std::chrono::time_point<clock_> beg_;//!< Begin clock.
 };

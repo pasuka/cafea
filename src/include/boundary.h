@@ -1,8 +1,7 @@
 #ifndef BOUNDARY_H
 #define BOUNDARY_H
 
-#include "fmt/format.h"
-
+#include "enum_lib.h"
 #include "base.h"
 
 namespace cafea
@@ -34,46 +33,29 @@ class Boundary: public ObjectBase {
 		//! A destructor.
 		~Boundary(){};
 		//! Set boundary type.
-		void set_boundary_type(BoundaryType bc) {bc_ = bc;};
+		void set_boundary_type(BoundaryType bc) { bc_ = bc;};
 		//! Get boundary type.
-		BoundaryType get_boundary_type() const {return bc_;};
+		BoundaryType get_boundary_type() const { return bc_;};
 		//! Set dof label.
-		void set_dof_label(DofLabel t) {dl_ = t;};
+		void set_dof_label(DofLabel t) { dl_ = t;};
 		//! Get dof label.
-		DofLabel get_dof_label() const {return dl_;};
+		DofLabel get_dof_label() const { return dl_;};
 		//! Set boundary value.
-		void set_boundary_val(T bv) {val_ = bv;};
+		void set_boundary_val(T bv) { val_ = bv;};
 		//! Get boundary value.
-		T get_boundary_val() const {return val_;};
+		T get_boundary_val() const { return val_;};
 		//! Print boundary.
 		friend std::ostream& operator<<(std::ostream& cout, const Boundary &a)
 		{
-			cout << a.get_name() << "\t";
-			
-			switch(a.dl_){
-			case DofLabel::UX: cout << "UX"; break;
-			case DofLabel::UY: cout << "UY"; break;
-			case DofLabel::UZ: cout << "UZ"; break;
-			case DofLabel::URX: cout << "URX"; break;
-			case DofLabel::URY: cout << "URY"; break;
-			case DofLabel::URZ: cout << "URZ"; break;
-			case DofLabel::U_ALL: cout << "UX UY UZ"; break;
-			case DofLabel::UR_ALL: cout << "URX URY URZ"; break;
-			case DofLabel::ALL: cout << "ALL dofs"; break;
-			default: cout << "Unknown.";
-			}
-			
-			switch(a.get_boundary_type()){
-			case BoundaryType::FIXED: cout << "Fixed "; break;
-			case BoundaryType::INIT_VAL: cout << "Initial value " << a.val_; break;
-			default: cout << "Unknown.";
-			}
-			return cout << "\n";
+			return cout << fmt::format("{}\n", a.name_);
 		};
 	private:
 		BoundaryType bc_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
 		DofLabel dl_ = DofLabel::UNKNOWN;//!< Enumerate of dof label.
 		T val_ = T(0.0);//!< Value of boundary.
 };
+//! Specialization.
+template class Boundary<float>;
+template class Boundary<double>;
 }
 #endif

@@ -21,8 +21,8 @@ namespace cafea
 template <class T=float>
 class Load: public ObjectBase {
 	public:
-		using ObjectBase::ObjectBase;// Inherit Base's constructors.
-		Load()=delete;
+		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
+		Load()=delete;//!< Forbidden default constructor.
 		/**
 		 *  \brief Constructor with id load type.
 		 *  \param [in] id load's id.
@@ -67,7 +67,7 @@ struct LoadCell
 	};
 	int get_id() const {return id_;};
 	DofLabel get_dof_label() const {return df_;};
-	
+
 	static bool sort_by_load_type(const LoadCell<T> &a, const LoadCell<T> &b)
 	{
 		return a.lt_ == b.lt_;
@@ -94,7 +94,7 @@ class LoadSet: public ObjectBase {
 		LoadSet(int id, LoadDomain ld, const T val):ld_(ld), val_(val), ObjectBase{id, fmt::format("LoadSet#{}", id)}{};
 		int add_load(int, LoadType, DofLabel, const T);
 		int add_load(int, LoadType, DofLabel, const T, const T);
-		
+
 		void set_value(const T a) { val_ = a;};
 		T get_value() const {return val_;};
 		void clear() {list_.clear();};

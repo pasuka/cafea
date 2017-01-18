@@ -21,6 +21,7 @@ template <class T>
 using dict_ = std::unordered_map<int, T>;
 
 /**
+ * \class ObjectBase
  *  Basic parent object.
  */
 class ObjectBase {
