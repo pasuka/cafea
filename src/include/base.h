@@ -1,25 +1,21 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include <cassert> //! C-style header.
+
 #include <array>
-#include <string> // <array> and <string> includes <initializer_list>
+#include <string> //! <array> and <string> includes <initializer_list>
 #include <ostream>
 #include <algorithm>
 // #include <type_traits>
-#include <unordered_map>
 // #include <initializer_list>
 
-#include "fmt/format.h"
+#include "fmt/format.h" //! 3-rd library.
+
+#include "utils.h"
 
 namespace cafea
 {
-//! Initializer list.
-template <class T>
-using init_list_ = std::initializer_list<T>;
-//! Dictionary.
-template <class T>
-using dict_ = std::unordered_map<int, T>;
-
 /**
  * \class ObjectBase
  *  Basic parent object.

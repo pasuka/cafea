@@ -5,13 +5,13 @@ using std::make_tuple;
 using Eigen::VectorXd;
 
 namespace cafea
-{	
+{
 /**
  *  \brief Gauss-Legendre integrate point and weight.
  *  \param [in] n number of points.
  *  \return integrate point and weight values.
  */
-tuple<VectorXd, VectorXd> gauss_quad(size_t n)
+tuple<VectorXd, VectorXd> gauss_quad(int n)
 {
 	assert(0<n&&n<11);
 	VectorXd pt = VectorXd::Zero(n);//!< quadrature point
@@ -96,5 +96,5 @@ tuple<VectorXd, VectorXd> gauss_quad(size_t n)
 		fmt::print("Input: {} exceede!\n", n);
 	}
 	return make_tuple(pt, wt);
-}	
+}
 }
