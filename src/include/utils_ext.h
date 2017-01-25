@@ -33,5 +33,8 @@ using varargout_5_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T
 //! Matlab style varargout with 6 return.
 template <class T=REAL8>
 using varargout_6_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>>;
+
+//! Gauss integrate point and weight.
+std::tuple<vecX_<>, vecX_<>> gauss_quad(int n=2);
 }
 #endif

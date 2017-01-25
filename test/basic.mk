@@ -5,7 +5,7 @@ CXX := g++
 # Compile options.
 CXXFLAGS := -O3#-g
 # Include.
-CXXINC := -I../fmt -I../Catch/single_include -I../src/include
+CXXFLAGS += -I../fmt -I../Catch/single_include -I../src/include
 # Color definitions.
 # Regular colors.
 BLACK  = '\033[0;30m'
@@ -30,25 +30,27 @@ all:
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(ORANGE)"Compile c++ files."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	$(CXX) -c $(CXXFLAGS) $(CXXINC) $<
+	$(CXX) -c $(CXXFLAGS) $<
 
 a01: ../fmt/fmt/format.o ./basic/a01.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"ObjectBase test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) $(CXXINC) -o test_a01
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a01
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	./test_a01
 
-a02:
+a02: ../fmt/fmt/format.o ../src/base/load.o ./basic/a02.o
 	@echo -e $(COMMENT)
-	@echo -e $(BLANK)$(RED)"Node test."$(COLOR_OFF)
+	@echo -e $(BLANK)$(RED)"Load test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a02
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
+	./test_a02
 
 clean:
 	@echo "Clean files."

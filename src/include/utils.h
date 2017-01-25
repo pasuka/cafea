@@ -8,9 +8,12 @@
 #include <limits>
 #include <string>
 #include <complex>
+#include <unordered_map>
 
 namespace cafea
 {
+//! Using i stands for imag part of complex.
+using namespace std::complex_literals;
 //! REAL(kind=4) in Fortran iso_c_binding.
 using REAL4 = float;
 //! REAL(kind=8) in Fortran iso_c_binding.
@@ -37,8 +40,7 @@ using init_list_ = std::initializer_list<T>;
 template <class T>
 using dict_ = std::unordered_map<int, T>;
 
-//! Gauss integrate point and weight.
-std::tuple<vecX_<>, vecX_<>> gauss_quad(int n=2);
+
 
 //! Starts with special string.
 bool startswith(std::string s1, std::string header);

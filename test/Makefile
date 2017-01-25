@@ -115,6 +115,7 @@ matio_lib:
 test_basic:
 	@echo "Basic Test"
 	$(MAKE) -f basic.mk a01
+	$(MAKE) -f basic.mk a02
 
 compile_modal: $(SRC) ./modal_main.o
 	$(COMMENT)
