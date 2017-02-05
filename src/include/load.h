@@ -54,6 +54,7 @@ class LoadSet: public ObjectBase {
 		//! Constructor of load set.
 		LoadSet(int id, LoadDomain ld, T val):ld_(ld), val_(val),
 		 	ObjectBase{id, fmt::format("LoadSet#{}", id)} {};
+		void add_load(LoadCell<T> tmp) { list_.push_back(tmp);};
 		//! Add single valued load.
 		int add_load(int, LoadType, DofLabel, T);
 		//! Add doubly valued load.
