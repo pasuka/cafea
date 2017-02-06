@@ -10,11 +10,29 @@ namespace cafea
 template <class T>
 std::vector<LoadCell<T>> LoadSet<T>::get_load_by_type(LoadType lt)
 {
-	// auto func = std::bind(LoadCell<T>::sort_by_load_type, std::placeholders::_1, std::placeholders::_2);
-	// std::sort(this->list_.begin(), this->list_.end(), func);
 	std::vector<LoadCell<T>> tmp;
-	for(auto &x: this->list_){
-		if(x.lt_==lt)tmp.push_back(x);
+	if(this->list_.size()<512){
+		for(auto &x: this->list_){
+			if(x.lt_==lt)tmp.push_back(x);
+		}
+	}
+	else{
+		std::sort(this->list_.begin(), this->list_.end(),
+			[](auto a, auto b){return static_cast<int>(a.lt_) < static_cast<int>(b.lt_);});
+		// find searches for an element equal to value.
+		// find_if searches for an element for which predicate p returns true.
+		// for compare function or lambda expression please choose find_if.
+		auto p1 = std::find_if(this->list_.begin(), this->list_.end(),
+			[lt](const auto &a){return lt==a.lt_;});
+		if(p1!=this->list_.end()){
+			auto p2 = std::find_if(this->list_.rbegin(), this->list_.rend(),
+				[lt](const auto &a){return a.lt_==lt;});
+			std::copy(this->list_.begin()+std::distance(this->list_.begin(), p1),
+			 	this->list_.end()-std::distance(this->list_.rbegin(), p2), tmp.begin());
+		}
+		else{
+			fmt::print("Find nothing\n");
+		}
 	}
 	return std::move(tmp);
 };

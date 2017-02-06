@@ -1,6 +1,8 @@
 #ifndef LOAD_H
 #define LOAD_H
 
+#include <iterator>
+
 #include "base.h"
 #include "enum_lib.h"
 
@@ -22,6 +24,12 @@ struct LoadCell
 	{
 		T val_;
 		COMPLEX<T> val_cmplx_;
+	};
+	//! Print info.
+	friend std::ostream& operator<<(std::ostream& cout, const LoadCell &a)
+	{
+		return cout << fmt::format("LoadCell id:{} type:{} dof label:{} domain:{}\n",
+			a.id_, static_cast<int>(a.lt_), static_cast<int>(a.df_), static_cast<int>(a.ld_));
 	};
 	//! Sort by load type.
 	static bool sort_by_load_type(const LoadCell<T> &a, const LoadCell<T> &b)

@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
+#include <chrono>
 #include <random>
 #include <ostream>
 #include <algorithm>
@@ -13,23 +14,27 @@ using cafea::LoadType;
 using cafea::LoadDomain;
 using cafea::DofLabel;
 
+int random_value(int a, int b)
+{
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 gen(seed);
+    std::uniform_int_distribution<> dis(a, b);
+    return dis(gen);
+}
+
 template <class T=float>
 LoadCell<T> gen_random_cell()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    int id = random_value(1, 1e6);
+    int load_type = random_value(1, 7);
+    int dof_label = random_value(1, 11);
+    int load_domain = 1;
 
-    int id, load_type, dof_label, load_domain;
     LoadType lt;
     LoadDomain ld;
     DofLabel dl;
+
     {
-        std::uniform_int_distribution<> dis(1, 1e6);
-        id = dis(gen);
-    }
-    {
-        std::uniform_int_distribution<> dis(1, 7);
-        load_type = dis(gen);
         switch (load_type) {
         case 1: lt = LoadType::FORCE;  break;
         case 2: lt = LoadType::DISP;   break;
@@ -42,8 +47,6 @@ LoadCell<T> gen_random_cell()
         }
     }
     {
-        std::uniform_int_distribution<> dis(1, 11);
-        dof_label = dis(gen);
         switch (dof_label) {
         case 1: dl = DofLabel::UX;     break;
         case 2: dl = DofLabel::UY;     break;
@@ -60,8 +63,6 @@ LoadCell<T> gen_random_cell()
         }
     }
     {
-        std::uniform_int_distribution<> dis(1,2);
-        load_domain = dis(gen);
         switch (load_domain) {
         case 1: ld = LoadDomain::FREQ; break;
         case 2:
@@ -69,6 +70,7 @@ LoadCell<T> gen_random_cell()
         }
     }
     LoadCell<T> tmp{id, lt, dl, ld};
+    std::cout << tmp;
     return std::move(tmp);
 }
 
@@ -89,6 +91,9 @@ TEST_CASE("init load set", "[LoadSet]")
 {
     LoadSet<float> pa(31, LoadDomain::FREQ, 1.25);
     REQUIRE(pa.get_id()==31);
+
     for(int i=0; i<1e3; i++)pa.add_load(gen_random_cell<float>());
-    
+    auto rst = pa.get_load_by_type(LoadType::FORCE);
+    REQUIRE(rst.size()>0);
+
 }
