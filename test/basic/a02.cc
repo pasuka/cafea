@@ -14,10 +14,11 @@ using cafea::LoadType;
 using cafea::LoadDomain;
 using cafea::DofLabel;
 
+unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+std::mt19937 gen(seed);
+
 int random_value(int a, int b)
 {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 gen(seed);
     std::uniform_int_distribution<> dis(a, b);
     return dis(gen);
 }
@@ -70,6 +71,7 @@ LoadCell<T> gen_random_cell()
         }
     }
     LoadCell<T> tmp{id, lt, dl, ld};
+    tmp.val_cmplx_ = std::complex<T>(T(1), T(2));
     std::cout << tmp;
     return std::move(tmp);
 }
@@ -92,8 +94,9 @@ TEST_CASE("init load set", "[LoadSet]")
     LoadSet<float> pa(31, LoadDomain::FREQ, 1.25);
     REQUIRE(pa.get_id()==31);
 
-    for(int i=0; i<1e3; i++)pa.add_load(gen_random_cell<float>());
-    auto rst = pa.get_load_by_type(LoadType::FORCE);
+    for(int i=0; i<1000; i++)pa.add_load(gen_random_cell<float>());
+    auto rst = pa.get_load_by_type(LoadType::DISP);
+    for(auto const &x: rst)std::cout << x;
     REQUIRE(rst.size()>0);
-
+    pa.clear();
 }

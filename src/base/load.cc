@@ -27,8 +27,12 @@ std::vector<LoadCell<T>> LoadSet<T>::get_load_by_type(LoadType lt)
 		if(p1!=this->list_.end()){
 			auto p2 = std::find_if(this->list_.rbegin(), this->list_.rend(),
 				[lt](const auto &a){return a.lt_==lt;});
-			std::copy(this->list_.begin()+std::distance(this->list_.begin(), p1),
-			 	this->list_.end()-std::distance(this->list_.rbegin(), p2), tmp.begin());
+			int n_start = std::distance(this->list_.begin(), p1);
+			int n_stop = -std::distance(this->list_.rend(), p2);
+			fmt::print("Index from {} to {}.\n", n_start, n_stop);
+			tmp.reserve(1-n_start+n_stop);
+			std::copy(this->list_.begin()+n_start, this->list_.begin()+n_stop, tmp.begin());
+			fmt::print("Copy finish.\n");
 		}
 		else{
 			fmt::print("Find nothing\n");
