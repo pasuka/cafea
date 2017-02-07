@@ -31,21 +31,6 @@ struct LoadCell
 		return cout << fmt::format("LoadCell id:{} type:{} dof label:{} domain:{}\n",
 			a.id_, static_cast<int>(a.lt_), static_cast<int>(a.df_), static_cast<int>(a.ld_));
 	};
-	//! Sort by load type.
-	static bool sort_by_load_type(const LoadCell<T> &a, const LoadCell<T> &b)
-	{
-		return a.id_ < b.id_ && static_cast<int>(a.lt_) < static_cast<int>(b.lt_);
-	};
-	//! Sort by dof label.
-	static bool sort_by_dof_label(const LoadCell<T> &a, const LoadCell<T> &b)
-	{
-		return a.id_ < b.id_ && static_cast<int>(a.df_) < static_cast<int>(b.df_);
-	};
-	//! Sort by load domain.
-	static bool sort_by_load_domain(const LoadCell<T> &a, const LoadCell<T> &b)
-	{
-		return a.id_ < b.id_ && static_cast<int>(a.ld_) < static_cast<int>(b.ld_);
-	};
 };
 //! Specialization of load cell.
 template struct LoadCell<REAL4>;
@@ -73,12 +58,26 @@ class LoadSet: public ObjectBase {
 		void clear() {list_.clear();};
 		//! Get load subset by type.
 		std::vector<LoadCell<T>> get_load_by_type(LoadType lt=LoadType::PRES);
+		//! Get load subset by dof.
+		std::vector<LoadCell<T>> get_load_by_dof(DofLabel df=DofLabel::UX);
 		//! Get value of load set.
 		T get_value() const { return val_;};
 		//! Set value of load set.
 		void set_value(T val_new) { val_ = val_new;};
+		//! Get enum of load domain.
+		LoadDomain get_load_domain() const { return ld_;};
+		//! Set enum of load domain.
+		void set_load_domain(LoadDomain ld_new) { ld_ = ld_new;};
+		//! Get count of load cells.
+		size_t get_count() const { return list_.size();};
 		//! Destructor.
 		~LoadSet() override { list_.clear();};
+		//! Print info.
+		friend std::ostream& operator<<(std::ostream& cout, const LoadSet &a)
+		{
+			return cout << fmt::format("LoadSet id:{} domain:{} value:{} count:{}\n",
+				a.id_, a.ld_==LoadDomain::FREQ ? "Frequency":"Time", a.val_, a.get_count());
+		};
 	private:
 		LoadDomain ld_;//!< Load domain.
 		T val_;//!< Load set index value.

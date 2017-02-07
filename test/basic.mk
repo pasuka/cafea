@@ -23,8 +23,8 @@ ASTERISK36 = "************************************"
 COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)$(COLOR_OFF)
 BLANK = "      "
 
-all:
-	@echo "Nothing yet!"
+all: a01 a02 clean
+	@echo "Test all cases."
 
 %.o: %.cc
 	@echo -e $(COMMENT)

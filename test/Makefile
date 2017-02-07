@@ -109,13 +109,11 @@ test_static: $(SRC) ./solution_static_test.o
 
 matio_lib:
 	@echo "MATIO Library"
-	$(MAKE) -f matio.mk libs
-	$(MAKE) -f matio.mk clean
+	$(MAKE) -f matio.mk
 
 test_basic:
 	@echo "Basic Test"
-	$(MAKE) -f basic.mk a01
-	$(MAKE) -f basic.mk a02
+	$(MAKE) -f basic.mk $(varargin)
 
 compile_modal: $(SRC) ./modal_main.o
 	$(COMMENT)
