@@ -1,24 +1,14 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include <cassert>
-
-#include <array>
-#include <vector>
-#include <string>
-#include <iostream>
-#include <algorithm>
-
-#include "fmt/format.h"
-
 #include "base.h"
 
 namespace cafea
 {
 /**
- *  Material definition.
+ *  \class Material definition.
  */
-template <class Scalar=float>
+template <class T=REAL4>
 class Material: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;
@@ -37,7 +27,7 @@ class Material: public ObjectBase {
 		 *  \param [in] mtype material type.
 		 *  \param [in] val material's 1st parameter array.
 		 */
-		Material(int id, MaterialType mtype, init_list_<Scalar> val):mtype_(mtype),
+		Material(int id, MaterialType mtype, init_list_<T> val):mtype_(mtype),
 			ObjectBase{id, fmt::format("Material#{0}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
@@ -50,8 +40,7 @@ class Material: public ObjectBase {
 		 *  \param [in] val material's 1st parameter array.
 		 *  \param [in] val2 material's 2nd parameter array.
 		 */
-		Material(int id, MaterialType mtype, init_list_<Scalar> val,
-			init_list_<Scalar> val2):mtype_(mtype),
+		Material(int id, MaterialType mtype, init_list_<T> val, init_list_<T> val2):mtype_(mtype),
 			ObjectBase{id, fmt::format("Material#{0}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
@@ -67,29 +56,21 @@ class Material: public ObjectBase {
 		void set_material_type(MaterialType mt) { mtype_ = mt;};
 
 		//! Set property of material.
-		void set_material_prop(MaterialProp mp, Scalar val);
+		void set_material_prop(MaterialProp mp, T val);
 		//! Get property of material.
-		Scalar get_material_prop(MaterialProp mp) const;
+		T get_material_prop(MaterialProp mp) const;
 		//! Get property vector of material.
-		std::vector<Scalar> get_material_prop_vec() const;
+		std::vector<T> get_material_prop_vec() const;
 		//! Print material info.
 		friend std::ostream& operator<<(std::ostream& cout, const Material &a)
 		{
-			cout << a.name_ << "\t";
-			switch(a.mtype_){
-			case MaterialType::LINEAR_ELASTIC:
-				cout << "Linear elastic material";
-				break;
-			default:
-				cout << "Unkown material";
-			}
-			return cout << "\n";
+			return cout << fmt::format("{} type:{}\n", a.name_,
+				a.mtype_==MaterialType::LINEAR_ELASTIC ? "linear": "unknown");
 		};
-
 	private:
 		MaterialType mtype_{MaterialType::UNKNOWN};//!< Material type.
-		std::array<Scalar, 10> param_;//!< 1st parameter array.
-		std::array<Scalar, 10> param2_;//!< 2nd parameter array.
+		std::array<T, 10> param_;//!< 1st parameter array.
+		std::array<T, 10> param2_;//!< 2nd parameter array.
 };
 //! Specialization with float and double types.
 template class Material<REAL4>;

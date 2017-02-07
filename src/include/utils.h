@@ -40,8 +40,6 @@ using init_list_ = std::initializer_list<T>;
 template <class T>
 using dict_ = std::unordered_map<int, T>;
 
-
-
 //! Starts with special string.
 bool startswith(std::string s1, std::string header);
 //! Convert to integer.

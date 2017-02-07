@@ -6,6 +6,7 @@
 #include <array>
 #include <string> //! <array> and <string> includes <initializer_list>
 #include <ostream>
+#include <iterator>
 #include <algorithm>
 // #include <type_traits>
 // #include <initializer_list>

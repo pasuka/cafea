@@ -7,9 +7,9 @@
 namespace cafea
 {
 /**
- *  Boundary definition.
+ *  \class Boundary definition.
  */
-template <class T=float>
+template <class T=REAL4>
 class Boundary: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;// Inherit Base's constructors.
@@ -55,7 +55,7 @@ class Boundary: public ObjectBase {
 		T val_ = T(0.0);//!< Value of boundary.
 };
 //! Specialization.
-template class Boundary<float>;
-template class Boundary<double>;
+template class Boundary<REAL4>;
+template class Boundary<REAL8>;
 }
 #endif

@@ -1,24 +1,14 @@
 #ifndef SECTION_H
 #define SECTION_H
 
-#include <cassert>
-
-#include <array>
-#include <string>
-#include <iostream>
-#include <algorithm>
-
-#include "matio.h"
-#include "fmt/format.h"
-
 #include "base.h"
 
 namespace cafea
 {
 /**
- *  Section definition.
+ *  \class Section definition.
  */
-template <class Scalar=float>
+template <class Scalar=REAL4>
 class Section: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;
@@ -84,22 +74,7 @@ class Section: public ObjectBase {
 		//! Print section info.
 		friend std::ostream& operator<<(std::ostream& cout, const Section &a)
 		{
-			cout << a.name_ << "\t";
-			switch(a.sect_){
-			case SectionType::SHELL:
-				cout << "Shell section";
-				break;
-			case SectionType::SOLID:
-				cout << "Solid section";
-				break;
-			case SectionType::PIPE:
-			case SectionType::CTUBE_BEAM:
-				cout << "Tube section";
-				break;
-			default:
-				cout << "Other section";
-			}
-			return cout << "\n";
+			return cout << fmt::format("{} type:{}\n", a.name_, static_cast<int>(a.sect_));
 		};
 
 	private:

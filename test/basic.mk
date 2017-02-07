@@ -23,8 +23,9 @@ ASTERISK36 = "************************************"
 COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)$(COLOR_OFF)
 BLANK = "      "
 
-all: a01 a02 clean
+all: a01 a02
 	@echo "Test all cases."
+	$(MAKE) -f basic.mk clean
 
 %.o: %.cc
 	@echo -e $(COMMENT)

@@ -32,7 +32,9 @@ ifeq ($(uname_s), Linux)
 	target = libmatio.so
 endif
 
-all: libs clean
+all: libs
+	@echo "\n"
+	$(MAKE) -f matio.mk clean
 
 %.o: %.c
 	@echo "MATIO: Complie c files."
