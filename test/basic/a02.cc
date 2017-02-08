@@ -1,13 +1,23 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include <chrono>
-#include <random>
 #include <ostream>
 #include <algorithm>
 
 #include "load.h"
 #include "func_random.hpp"
+
+using cafea::LoadSet;
+using cafea::LoadCell;
+
+template <class T=float>
+LoadCell<T> gen_random_cell()
+{
+    int id = random_value(1, 10000000);
+    LoadCell<T> tmp{id, gen_load_type(), gen_dof_label(), gen_load_domain()};
+    // std::cout << tmp;
+    return std::move(tmp);
+}
 
 TEST_CASE("init load cell", "[LoadCell]")
 {

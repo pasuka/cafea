@@ -23,19 +23,19 @@ ASTERISK36 = "************************************"
 COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)$(COLOR_OFF)
 BLANK = "      "
 
-all: a01 a02
-	@echo "Test all cases."
+all: a01 a02 a03
+	@echo "[Basic] Test all cases."
 	$(MAKE) -f basic.mk clean
 
 %.o: %.cc
 	@echo -e $(COMMENT)
-	@echo -e $(BLANK)$(ORANGE)"Compile c++ files."$(COLOR_OFF)
+	@echo -e $(BLANK)$(ORANGE)"[Basic] Compile c++ files."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) -c $(CXXFLAGS) $<
 
 a01: ../fmt/fmt/format.o ./basic/a01.o
 	@echo -e $(COMMENT)
-	@echo -e $(BLANK)$(RED)"ObjectBase test."$(COLOR_OFF)
+	@echo -e $(BLANK)$(RED)"[Basic] ObjectBase test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a01
 	@echo -e $(COMMENT)
@@ -45,7 +45,7 @@ a01: ../fmt/fmt/format.o ./basic/a01.o
 
 a02: ../fmt/fmt/format.o ../src/base/load.o ./basic/a02.o
 	@echo -e $(COMMENT)
-	@echo -e $(BLANK)$(RED)"Load test."$(COLOR_OFF)
+	@echo -e $(BLANK)$(RED)"[Basic] Load test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a02
 	@echo -e $(COMMENT)
@@ -53,8 +53,18 @@ a02: ../fmt/fmt/format.o ../src/base/load.o ./basic/a02.o
 	@echo -e $(COMMENT)
 	./test_a02
 
+a03: ../fmt/fmt/format.o ./basic/a03.o
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(RED)"[Basic] Boundary test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a03
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	./test_a03
+
 clean:
-	@echo "Clean files."
+	@echo "[Basic] Clean files."
 	- $(RM) $(CLEAN) *.o test_*
 
 .PHONY: all clean
