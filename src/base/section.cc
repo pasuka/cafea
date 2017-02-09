@@ -1,18 +1,18 @@
-#include "cafea.h"
+#include "section.h"
 
 namespace cafea
 {
 /**
  *  \brief Set property value of section.
  *  \param[in] sp property enum.
- *  \param val property value. 
+ *  \param val property value.
  */
 template <class Scalar>
 void Section<Scalar>::set_sect_prop(SectionProp sp, Scalar val)
 {
 	switch(sp){
 	case(SectionProp::OD):
-	case(SectionProp::ADDONMASS): 
+	case(SectionProp::ADDONMASS):
 	case(SectionProp::ADDONSPRING): this->param_[0] = val; break;
 	case(SectionProp::TKWALL): this->param_[1] = val; break;
 	case(SectionProp::RADCUR): this->param_[2] = val; break;

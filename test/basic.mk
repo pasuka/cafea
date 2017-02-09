@@ -20,10 +20,10 @@ WHITE  = '\033[0;37m'
 COLOR_OFF    = '\033[0m'
 # Comment line.
 ASTERISK36 = "************************************"
-COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)$(COLOR_OFF)
+COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)"********"$(COLOR_OFF)
 BLANK = "      "
 
-all: a01 a02 a03
+all: a01 a02 a03 a04 a05
 	@echo "[Basic] Test all cases."
 	$(MAKE) -f basic.mk clean
 
@@ -37,31 +37,51 @@ a01: ../fmt/fmt/format.o ./basic/a01.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] ObjectBase test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a01
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	./test_a01
+	./test_$@
 
 a02: ../fmt/fmt/format.o ../src/base/load.o ./basic/a02.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] Load test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a02
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	./test_a02
+	./test_$@
 
 a03: ../fmt/fmt/format.o ./basic/a03.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] Boundary test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_a03
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	./test_a03
+	./test_$@
+
+a04: ../fmt/fmt/format.o ../src/base/material.o ./basic/a04.o
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(RED)"[Basic] Material test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	./test_$@
+
+a05: ../fmt/fmt/format.o ../src/base/section.o ./basic/a05.o
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(RED)"[Basic] Section test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	./test_$@
 
 clean:
 	@echo "[Basic] Clean files."

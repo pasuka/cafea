@@ -1,4 +1,4 @@
-#include "cafea.h"
+#include "material.h"
 
 namespace cafea
 {
@@ -7,7 +7,7 @@ namespace cafea
  *  \param[in] mp material property enum.
  *  \param[in] val value of material property.
  */
-template <class Scalar> 
+template <class Scalar>
 void Material<Scalar>::set_material_prop(MaterialProp mp, Scalar val)
 {
 	switch(mp){
@@ -82,6 +82,6 @@ std::vector<Scalar> Material<Scalar>::get_material_prop_vec() const
 	default:
 		fmt::print("Do not find matched property name.\n");
 	}
-	return tmp;
+	return std::move(tmp);
 };
 }

@@ -59,6 +59,7 @@ TEST_CASE("add load cell 01", "[LoadSet]")
             LoadType::ACCEL, LoadType::STRESS, LoadType::UNKNOWN,}){
             auto rst = pa.get_load_by_type(x);
             REQUIRE(rst.size()>=0);
+            if(rst.empty())fmt::print("Total num:{} load type:{} is empty!\n", num, static_cast<int>(x));
             total -= rst.size();
         }
         REQUIRE(total==0);
@@ -67,6 +68,7 @@ TEST_CASE("add load cell 01", "[LoadSet]")
             DofLabel::WARP, DofLabel::U_ALL, DofLabel::UR_ALL, DofLabel::ALL, DofLabel::UNKNOWN,}){
             auto rst = pa.get_load_by_dof(x);
             REQUIRE(rst.size()>=0);
+            if(rst.empty())fmt::print("Total num:{} dof label:{} is empty!\n", num, static_cast<int>(x));
             total -= rst.size();
         }
         REQUIRE(total==0);

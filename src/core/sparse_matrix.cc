@@ -49,16 +49,27 @@ bool compare_pair(const SparseCell &a, const SparseCell &b)
 template <class T>
 void SparseMat<T>::unique(SpFmt sf)
 {
-	auto func = std::bind(sort_by_col, std::placeholders::_1, std::placeholders::_2);
-	auto func_eq = [](const SparseCell &a, const SparseCell &b){return a.col==b.col;};
 	if(sf==SpFmt::CSR){
-		auto func = std::bind(sort_by_row, std::placeholders::_1, std::placeholders::_2);
-		auto func_eq = [](const SparseCell &a, const SparseCell &b){return a.row==b.row;};
+		std::sort(this->row_col_.begin(), this->row_col_.end(),
+			[](const auto &a, const auto &b){return a.col==b.col ? a.row<b.row: a.col<b.col;});
 	}
-	
-	std::sort(this->row_col_.begin(), this->row_col_.end(), func);
-	auto extr = std::unique(this->row_col_.begin(), this->row_col_.end(), compare_pair);
-	
+	else{
+		std::sort(this->row_col_.begin(), this->row_col_.end(),
+			[](const auto &a, const auto &b){return a.row==b.row ? a.col<b.col: a.row<b.row;});
+	}
+	auto extr = std::unique(this->row_col_.begin(), this->row_col_.end(),
+		[](const auto &a, const auto &b){return a.row==b.row && a.col==b.col;});
+	auto func_eq = [sf](const auto &a, const auto &b){return sf==SpFmt::CSR ? a.row==b.row: a.col==b.col;};
+	// auto func = std::bind(sort_by_col, std::placeholders::_1, std::placeholders::_2);
+	// auto func_eq = [](const SparseCell &a, const SparseCell &b){return a.col==b.col;};
+	// if(sf==SpFmt::CSR){
+	// 	auto func = std::bind(sort_by_row, std::placeholders::_1, std::placeholders::_2);
+	// 	auto func_eq = [](const SparseCell &a, const SparseCell &b){return a.row==b.row;};
+	// }
+	//
+	// std::sort(this->row_col_.begin(), this->row_col_.end(), func);
+	// auto extr = std::unique(this->row_col_.begin(), this->row_col_.end(), compare_pair);
+
 	this->row_col_.erase(extr, this->row_col_.end());
 	this->nnz_ = this->row_col_.size();
 	this->stif_.resize(this->nnz_, T(.0));
@@ -66,7 +77,7 @@ void SparseMat<T>::unique(SpFmt sf)
 
 	size_t iter{0};
 	this->aux_.push_back(iter++);
-	
+
 	for(size_t i=1; i<this->nnz_; i++){
 		if(func_eq(this->row_col_[i], this->row_col_[i-1])){
 			iter++;
@@ -80,7 +91,7 @@ void SparseMat<T>::unique(SpFmt sf)
 	for(size_t i=1; i<this->aux_.size(); i++)this->aux_[i] += this->aux_[i-1];
 	this->dim_ = this->aux_.size()-1;
 	this->rhs_.resize(this->dim_, T(.0));
-	
+
 };
 /**
  *  \brief Add stiffness and mass data.
@@ -182,7 +193,7 @@ void SparseMat<T>::add_rhs_data(SparseCell it, T val_rhs)
  */
 template <class T>
 void SparseMat<T>::add_rhs_data(size_t ir, T val_rhs)
-{	
+{
 	if(ir <= this->dim_)this->rhs_[ir] += val_rhs;
 };
 /**

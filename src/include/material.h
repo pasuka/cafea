@@ -2,6 +2,7 @@
 #define MATERIAL_H
 
 #include "base.h"
+#include "enum_lib.h"
 
 namespace cafea
 {
