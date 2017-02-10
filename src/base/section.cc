@@ -14,10 +14,10 @@ void Section<Scalar>::set_sect_prop(SectionProp sp, Scalar val)
 	case(SectionProp::OD):
 	case(SectionProp::ADDONMASS):
 	case(SectionProp::ADDONSPRING): this->param_[0] = val; break;
-	case(SectionProp::TKWALL): this->param_[1] = val; break;
-	case(SectionProp::RADCUR): this->param_[2] = val; break;
-	case(SectionProp::DENSFL): this->param_[3] = val; break;
-	case(SectionProp::PRESIN): this->param_[4] = val; break;
+	case(SectionProp::TKWALL): 		this->param_[1] = val; break;
+	case(SectionProp::RADCUR): 		this->param_[2] = val; break;
+	case(SectionProp::DENSFL): 		this->param_[3] = val; break;
+	case(SectionProp::PRESIN): 		this->param_[4] = val; break;
 	default: fmt::print("Do not find matched property.\n");
 	}
 }
@@ -35,10 +35,10 @@ Scalar Section<Scalar>::get_sect_prop(SectionProp sp) const
 	case(SectionProp::OD):
 	case(SectionProp::ADDONMASS):
 	case(SectionProp::ADDONSPRING): val = this->param_[0]; break;
-	case(SectionProp::TKWALL): val = this->param_[1]; break;
-	case(SectionProp::RADCUR): val = this->param_[2]; break;
-	case(SectionProp::DENSFL): val = this->param_[3]; break;
-	case(SectionProp::PRESIN): val = this->param_[4]; break;
+	case(SectionProp::TKWALL): 		val = this->param_[1]; break;
+	case(SectionProp::RADCUR): 		val = this->param_[2]; break;
+	case(SectionProp::DENSFL): 		val = this->param_[3]; break;
+	case(SectionProp::PRESIN): 		val = this->param_[4]; break;
 	default: fmt::print("Do not find matched property.\n");
 	}
 	return val;

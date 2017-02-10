@@ -21,7 +21,7 @@ class Material: public ObjectBase {
 		 *  \param [in] mtype material type.
 		 */
 		Material(int id, MaterialType mtype):mtype_(mtype),
-			ObjectBase{id, fmt::format("Material#{0}", id)}{};
+			ObjectBase{id, fmt::format("Material#{0}", id)} {};
 		/**
 		 *  \brief Initialize with material id type section and parameters.
 		 *  \param [in] id material's id.
@@ -52,9 +52,9 @@ class Material: public ObjectBase {
 		//! Destructor.
 		~Material() override {};
 		//! Get type of material.
-		MaterialType get_material_type() const { return mtype_;};
+		MaterialType get_material_type() const {return mtype_;};
 		//! Set type of material.
-		void set_material_type(MaterialType mt) { mtype_ = mt;};
+		void set_material_type(MaterialType mt) {mtype_ = mt;};
 
 		//! Set property of material.
 		void set_material_prop(MaterialProp mp, T val);

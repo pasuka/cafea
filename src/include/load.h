@@ -45,7 +45,7 @@ class LoadSet: public ObjectBase {
 		//! Constructor of load set.
 		LoadSet(int id, LoadDomain ld, T val):ld_(ld), val_(val),
 		 	ObjectBase{id, fmt::format("LoadSet#{}", id)} {};
-		void add_load(LoadCell<T> tmp) { list_.push_back(tmp);};
+		void add_load(LoadCell<T> tmp) {list_.push_back(tmp);};
 		//! Add single valued load.
 		int add_load(int, LoadType, DofLabel, T);
 		//! Add doubly valued load.
@@ -61,15 +61,15 @@ class LoadSet: public ObjectBase {
 		//! Get value of load set.
 		T get_value() const { return val_;};
 		//! Set value of load set.
-		void set_value(T val_new) { val_ = val_new;};
+		void set_value(T val_new) {val_ = val_new;};
 		//! Get enum of load domain.
-		LoadDomain get_load_domain() const { return ld_;};
+		LoadDomain get_load_domain() const {return ld_;};
 		//! Set enum of load domain.
-		void set_load_domain(LoadDomain ld_new) { ld_ = ld_new;};
+		void set_load_domain(LoadDomain ld_new) {ld_ = ld_new;};
 		//! Get count of load cells.
-		size_t get_count() const { return list_.size();};
+		size_t get_count() const {return list_.size();};
 		//! Destructor.
-		~LoadSet() override { list_.clear();};
+		~LoadSet() override {list_.clear();};
 		//! Print info.
 		friend std::ostream& operator<<(std::ostream& cout, const LoadSet &a)
 		{

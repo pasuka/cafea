@@ -12,7 +12,7 @@
 #include "utils.h"
 
 namespace cafea
-{	
+{
 /**
  *  Struct for cell in global matrix.
  */
@@ -107,11 +107,11 @@ class SparseMat{
 		//! Set symmetric.
 		void set_symmetric(bool val=true) {if(val)sym_ = SpSym::SYMMETRIC;};
 		//! Add index pair.
-		void append(SparseCell it){row_col_.push_back(it);};
-		void append(size_t ir, size_t jc){row_col_.push_back({ir, jc});};
+		void append(SparseCell it) {row_col_.push_back(it);};
+		void append(size_t ir, size_t jc) {row_col_.push_back({ir, jc});};
 		//! Remove duplicated index pair.
 		void unique(SpFmt t=SpFmt::CSC);
-		
+
 		//! Add stiffness and mass value.
 		void add_matrix_data(SparseCell, T, T);
 		void add_matrix_data(size_t, size_t, T, T);
@@ -124,7 +124,7 @@ class SparseMat{
 		//! Add rhs value.
 		void add_rhs_data(SparseCell, T);
 		void add_rhs_data(size_t, T);
-		
+
 		//! Get stiffness matrix pointer.
 		const T* get_stif_ptr() const {return stif_.data();};
 		//! Get mass matrix pointer.

@@ -65,9 +65,9 @@ class Section: public ObjectBase {
 		//! Destructor.
 		~Section() override {};
 		//! Get type of section.
-		SectionType get_sect_type() const { return sect_;};
+		SectionType get_sect_type() const {return sect_;};
 		//! Set type of section.
-		void set_sect_type(SectionType st) { sect_ = st;};
+		void set_sect_type(SectionType st) {sect_ = st;};
 		//! Get property of section.
 		Scalar get_sect_prop(SectionProp sp) const;
 		//! Set property of section.

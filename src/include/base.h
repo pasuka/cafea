@@ -24,7 +24,7 @@ namespace cafea
 class ObjectBase {
 	public:
 		//! Constructor.
-		ObjectBase() { group_.fill(0);};
+		ObjectBase() {group_.fill(0);};
 		//! Another constructor.
 		ObjectBase(int id, std::string s):id_(id), name_(s)
 		{
@@ -41,7 +41,7 @@ class ObjectBase {
 		virtual ~ObjectBase(){};
 		//! Set object's name.
 		template <class T>
-		void set_name(T val) { name_ = fmt::format("{}", val);}
+		void set_name(T val) {name_ = fmt::format("{}", val);}
 		/*
 		//! Set numeric number for object's name.
 		template <class T>
@@ -79,11 +79,11 @@ class ObjectBase {
 			for(int i=0; i<n; i++)group_[i] = y[i];
 		};
 		//! Get object's name.
-		std::string get_name() const { return name_;};
+		std::string get_name() const {return name_;};
 		//! Get object's id.
-		int get_id() const { return id_;};
+		int get_id() const {return id_;};
 		//! Get object's group.
-		std::array<int, 10> get_group() const { return group_;};
+		std::array<int, 10> get_group() const {return group_;};
 		//! Print object's id and name.
 		friend std::ostream& operator<<(std::ostream& cout, const ObjectBase &a)
 		{

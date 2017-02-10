@@ -24,12 +24,12 @@ class NodeBase: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//! Default constructor.
-		NodeBase(){};
+		NodeBase() {};
 		/**
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		NodeBase(int id):ObjectBase{id, fmt::format("Node#{0}", id)},
+		NodeBase(int id): ObjectBase{id, fmt::format("Node#{0}", id)},
 			csys_(CoordinateSystem::CARTESIAN) {};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
@@ -43,8 +43,8 @@ class NodeBase: public ObjectBase {
 		 *  |Cylindrical|1       |
 		 *  |Spherical  |2       |
 		 */
-		NodeBase(int id, CoordinateSystem csys):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {};
+		NodeBase(int id, CoordinateSystem csys):
+			ObjectBase{id, fmt::format("Node#{0}", id)}, csys_(csys) {};
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -54,9 +54,8 @@ class NodeBase: public ObjectBase {
 		 *
 		 *  \details Default coordinate system Cartesian.
 		 */
-		NodeBase(int id, Scalar x, Scalar y, Scalar z):
-			ObjectBase{id, fmt::format("Node#{0}", id)},
-			csys_(CoordinateSystem::CARTESIAN) { xyz_ << x, y, z;};
+		NodeBase(int id, Scalar x, Scalar y, Scalar z): csys_(CoordinateSystem::CARTESIAN),
+			ObjectBase{id, fmt::format("Node#{0}", id)} {xyz_ << x, y, z;};
 		/**
 		 *  \brief Initialize with node's id coordinate system and values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -65,9 +64,8 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] u2 value of axis-2.
 		 *  \param [in] u3 value of axis-3.
 		 */
-		NodeBase(int id, CoordinateSystem csys,
-			Scalar u1, Scalar u2, Scalar u3):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)} { xyz_ << u1, u2, u3;};
+		NodeBase(int id, CoordinateSystem csys, Scalar u1, Scalar u2, Scalar u3): csys_(csys),
+			ObjectBase{id, fmt::format("Node#{0}", id)} {xyz_ << u1, u2, u3;};
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
@@ -80,13 +78,11 @@ class NodeBase: public ObjectBase {
 		 *
 		 *  \details Euler angle must in degrees.
 		 */
-		NodeBase(int id, Scalar x, Scalar y, Scalar z,
-			Scalar rotx, Scalar roty, Scalar rotz):
-			csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase{id, fmt::format("Node#{0}", id)}
+		NodeBase(int id, Scalar x, Scalar y, Scalar z, Scalar rx, Scalar ry, Scalar rz):
+			csys_(CoordinateSystem::CARTESIAN), ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			xyz_ << x, y, z;
-			angle_ << rotx, roty, rotz;
+			angle_ << rx, ry, rz;
 		};
 		/**
 		 *  \brief Initialize with node's id coordinate and Euler angles.
@@ -100,8 +96,8 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] value of rotate 3-axis.
 		 */
 		NodeBase(int id, CoordinateSystem csys, Scalar u1, Scalar u2, Scalar u3,
-			Scalar ur1, Scalar ur2, Scalar ur3):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)}
+			Scalar ur1, Scalar ur2, Scalar ur3):
+			csys_(csys), ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			xyz_ << u1, u2, u3;
 			angle_ << ur1, ur2, ur3;
@@ -119,8 +115,7 @@ class NodeBase: public ObjectBase {
 		/**
 		 *  \brief Initialize with node's id and coordinate values.
 		 */
-		NodeBase(int id, init_list_<Scalar> val):
-			csys_(CoordinateSystem::CARTESIAN),
+		NodeBase(int id, init_list_<Scalar> val): csys_(CoordinateSystem::CARTESIAN),
 			ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3);
@@ -130,9 +125,8 @@ class NodeBase: public ObjectBase {
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
-		NodeBase(int id, CoordinateSystem csys, init_list_<Scalar> val,
-			init_list_<Scalar> val2):csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)}
+		NodeBase(int id, CoordinateSystem csys, init_list_<Scalar> val, init_list_<Scalar> val2):
+			csys_(csys), ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
 			int i{0}, j{0};
@@ -143,8 +137,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
 		NodeBase(int id, init_list_<Scalar> val, init_list_<Scalar> val2):
-			csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase{id, fmt::format("Node#{0}", id)}
+			csys_(CoordinateSystem::CARTESIAN), ObjectBase{id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
 			int i{0}, j{0};

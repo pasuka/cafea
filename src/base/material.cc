@@ -15,10 +15,10 @@ void Material<Scalar>::set_material_prop(MaterialProp mp, Scalar val)
 	case(MaterialProp::YOUNG):
 	case(MaterialProp::EX):
 	case(MaterialProp::EY):
-	case(MaterialProp::EZ): this->param_[1] = val; break;
+	case(MaterialProp::EZ):   this->param_[1] = val; break;
 	case(MaterialProp::GXY):
 	case(MaterialProp::GYZ):
-	case(MaterialProp::GXZ): this->param_[2] = val; break;
+	case(MaterialProp::GXZ):  this->param_[2] = val; break;
 	case(MaterialProp::NU):
 	case(MaterialProp::NUXY):
 	case(MaterialProp::NUYZ):
@@ -47,10 +47,10 @@ Scalar Material<Scalar>::get_material_prop(MaterialProp mp) const
 	case(MaterialProp::YOUNG):
 	case(MaterialProp::EX):
 	case(MaterialProp::EY):
-	case(MaterialProp::EZ): val = this->param_[1]; break;
+	case(MaterialProp::EZ):   val = this->param_[1]; break;
 	case(MaterialProp::GXY):
 	case(MaterialProp::GYZ):
-	case(MaterialProp::GXZ): val = this->param_[2]; break;
+	case(MaterialProp::GXZ):  val = this->param_[2]; break;
 	case(MaterialProp::NU):
 	case(MaterialProp::NUXY):
 	case(MaterialProp::NUYZ):

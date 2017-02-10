@@ -9,14 +9,14 @@
 namespace cafea
 {
 /**
- *  Timer object.
+ *  \class Timer object.
  */
 class Timer{
 	public:
 		//! A constructor.
 		Timer(): beg_(clock_::now()) {};
 		//! Rest timer.
-		void reset() { beg_ = clock_::now();};
+		void reset() {beg_ = clock_::now();};
 		/**
 		 *  \brief Get time consuming.
 		 *  \param [out] time elapsed.
