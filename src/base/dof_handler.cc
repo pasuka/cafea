@@ -1,4 +1,4 @@
-#include "cafea.h"
+#include "dof_handler.h"
 
 namespace cafea
 {
@@ -17,14 +17,14 @@ void DofHandler::set_num_dofs(size_t val)
 }
 /**
  *  \brief Set constraint.
- *  \param[in]
- *  \param[in]
+ *  \param[in] ml dof label.
+ *  \param[in] mt dof type.
  */
 void DofHandler::set_constraint(DofLabel ml, DofType mt)
 {
 	switch(ml){
-	case DofLabel::UX: 
-	case DofLabel::UY: 
+	case DofLabel::UX:
+	case DofLabel::UY:
 	case DofLabel::UZ:
 	case DofLabel::URX:
 	case DofLabel::URY:
@@ -48,15 +48,15 @@ void DofHandler::set_constraint(DofLabel ml, DofType mt)
 }
 /**
  *  \brief Get constraint.
- *  \param[in]
- *  \return
+ *  \param[in] ml dof label.
+ *  \return dof type.
  */
 DofType DofHandler::get_constraint(DofLabel ml) const
 {
 	int val;
 	switch(ml){
-	case DofLabel::UX: 
-	case DofLabel::UY: 
+	case DofLabel::UX:
+	case DofLabel::UY:
 	case DofLabel::UZ:
 	case DofLabel::URX:
 	case DofLabel::URY:
@@ -73,19 +73,20 @@ DofType DofHandler::get_constraint(DofLabel ml) const
 	case static_cast<int>(DofType::CONSTRAINT): return DofType::CONSTRAINT;
 	case static_cast<int>(DofType::MASTER): return DofType::MASTER;
 	case static_cast<int>(DofType::SLAVE): return DofType::SLAVE;
+	case static_cast<int>(DofType::PENALTY_FUN): return DofType::PENALTY_FUN;
 	case 999:
 	default: return DofType::UNKNOWN;
 	}
 }
 /**
- *  \brief
- *  \param[in]
- *  \param[in]
+ *  \brief Accumalte dof number by dof type.
+ *  \param[in] jj dof statrt number.
+ *  \param[in] mt dof type.
  */
 void DofHandler::accum(int *jj, DofType mt)
 {
 	for(int &it: (*this).dofs_){
 		if(static_cast<int>(mt)==it)it = (*jj)++;
-	}	
+	}
 }
 }

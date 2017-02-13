@@ -6,6 +6,7 @@
 
 using cafea::LoadType;
 using cafea::LoadDomain;
+using cafea::DofType;
 using cafea::DofLabel;
 using cafea::BoundaryType;
 using cafea::MaterialType;
@@ -152,5 +153,19 @@ SectionProp gen_section_prop(int ith=random_value(0, 7))
     case 6: return SectionProp::ADDONSPRING;//!< Add-on spring.
     case 7:
     default: return SectionProp::UNKNOWN;
+    }
+}
+
+DofType gen_dof_type(int ith=random_value(0, 6))
+{
+    switch (ith) {
+    case 0: return DofType::ELIMINATE;
+    case 1: return DofType::CONSTRAINT;
+	case 2: return DofType::PENALTY_FUN;
+	case 3: return DofType::NORMAL;
+	case 4: return DofType::MASTER;
+	case 5: return DofType::SLAVE;
+	case 6:
+    default: return DofType::UNKNOWN;
     }
 }

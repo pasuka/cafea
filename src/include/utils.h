@@ -39,12 +39,5 @@ using init_list_ = std::initializer_list<T>;
 //! Dictionary.
 template <class T>
 using dict_ = std::unordered_map<int, T>;
-
-//! Starts with special string.
-bool startswith(std::string s1, std::string header);
-//! Convert to integer.
-int str2int(std::string a);
-//! Convert to float.
-float str2float(std::string a);
 }
 #endif

@@ -1,18 +1,15 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include <tuple>
-#include <ostream>
 #include <typeinfo>
 #include <typeindex>
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include "fmt/format.h"
-#include "fmt/printf.h"
 
 #include "base.h"
 #include "dof_handler.h"
+#include "utils_ext.h"
 
 namespace cafea
 {

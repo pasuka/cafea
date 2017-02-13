@@ -23,7 +23,7 @@ ASTERISK36 = "************************************"
 COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)"********"$(COLOR_OFF)
 BLANK = "      "
 
-all: a01 a02 a03 a04 a05
+all: a01 a02 a03 a04 a05 a06
 	@echo "[Basic] Test all cases."
 	$(MAKE) -f basic.mk clean
 
@@ -76,6 +76,16 @@ a04: ../fmt/fmt/format.o ../src/base/material.o ./basic/a04.o
 a05: ../fmt/fmt/format.o ../src/base/section.o ./basic/a05.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] Section test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	./test_$@
+
+a06: ../fmt/fmt/format.o ../src/base/dof_handler.o ./basic/a06.o
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(RED)"[Basic] Dof handler test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
 	@echo -e $(COMMENT)

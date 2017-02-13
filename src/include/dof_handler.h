@@ -13,13 +13,13 @@ namespace cafea
 class DofHandler{
 	public:
 		//! Get number of DOF.
-		size_t get_num_dofs() const { return dofs_.size();};
+		size_t get_num_dofs() const {return dofs_.size();};
 		//! Set number of DOF.
 		void set_num_dofs(size_t val);
 		//! Clear.
-		void clear() { dofs_.clear();};
+		void clear() {dofs_.clear();};
 		//! Get DOF vector.
-		const std::vector<int> get_dofs() const { return dofs_;};
+		const std::vector<int> get_dofs() const {return dofs_;};
 		//! Apply constraint.
 		void set_constraint(DofLabel, DofType);
 		//! Accumalte.
