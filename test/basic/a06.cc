@@ -53,19 +53,19 @@ TEST_CASE("accum dof number", "[dof handler]")
     for(int i=0; i<7; i++)REQUIRE(i==v[i]);
     REQUIRE(7==num);
     DofHandler p2;
-    p2.set_num_dofs(6);
+    p2.set_num_dofs(7);
     auto df = gen_dof_label(random_value(0, 6));
     auto dt = gen_dof_type(random_value(0, 2));
     p2.set_constraint(df, dt);
     p2.accum(&num, dt);
     auto v2 = p2.get_dofs();
-    REQUIRE(6==v2.size());
+    REQUIRE(7==v2.size());
     REQUIRE(num>v2[static_cast<int>(df)]);
-    for(int i=0; i<6; i++)if(i!=static_cast<int>(df))REQUIRE(static_cast<int>(gen_dof_type(3))==v2[i]);
+    for(int i=0; i<7; i++)if(i!=static_cast<int>(df))REQUIRE(static_cast<int>(gen_dof_type(3))==v2[i]);
     p2.accum(&num);
     auto v3 = p2.get_dofs();
-    int j=5;
-    for(int i=0; i<6; i++){
+    int j=6;
+    for(int i=0; i<7; i++){
         if(i!=static_cast<int>(df))REQUIRE((num-j--)==v3[i]);
     }
 }
