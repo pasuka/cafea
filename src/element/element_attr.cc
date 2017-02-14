@@ -1,9 +1,9 @@
-#include "cafea.h"
+#include "element_attr.h"
 
 namespace cafea
 {
 /**
- *  \brief Get dofs on each node. 
+ *  \brief Get dofs on each node.
  *  \return number of dofs on a node.
  */
 size_t ElementAttr::get_dofs_per_node(ElementType et)
@@ -100,7 +100,7 @@ size_t ElementAttr::get_element_type_id(ElementType et)
 {
 	switch(et){
 	case ElementType::PIPE16: return 16;
-	case ElementType::BEAM188: 
+	case ElementType::BEAM188:
 	case ElementType::B31: return 188;
 	case ElementType::PIPE18: return 18;
 	case ElementType::C3D8:
@@ -120,6 +120,6 @@ size_t ElementAttr::get_element_type_id(ElementType et)
 	case ElementType::C3D4:
 	case ElementType::UNKNOWN:
 	default: return 0;
-	}	
+	}
 }
 }

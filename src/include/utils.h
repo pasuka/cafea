@@ -25,7 +25,14 @@ using COMPLEX = std::complex<T>;
 using COMPLEX4 = COMPLEX<REAL4>;
 //! COMPLEX(kind=8) in Fortran iso_c_binding.
 using COMPLEX8 = COMPLEX<REAL8>;
-
+//! REAL(kind=16) in Fortran iso_c_binding.
+#ifndef REAL_16_ON
+#define REAL_16_ON 0
+#endif
+#if REAL_16_ON
+    using REAL16 = long double;
+    using COMPLEX16 = COMPLEX<REAL16>;
+#endif
 //! Precision of machine via different types.
 template<class T=REAL8>
 constexpr T EPS() {return std::numeric_limits<T>::epsilon();};

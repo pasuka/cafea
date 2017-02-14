@@ -17,6 +17,9 @@ using vecX_ = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 //! C++11's trick for template aliase.
 template <class U=REAL8>
 using matrix_ = Eigen::Matrix<U, Eigen::Dynamic, Eigen::Dynamic>;
+//! Complex matrix.
+template <class U=REAL8>
+using cmatrix_ = matrix_<COMPLEX<U>>;
 //! Matlab style varargout with 2 return.
 //! Template aliases trick in C++11.
 template <class T=REAL8>

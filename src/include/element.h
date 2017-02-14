@@ -24,7 +24,7 @@
 namespace cafea
 {
 /**
- * Element object definition. 
+ * Element object definition.
  */
 template <class T=double>
 class Element: public ObjectBase {
@@ -41,7 +41,7 @@ class Element: public ObjectBase {
 			stif_.resize(0, 0);
 			tran_.resize(0, 0);
 			rhs_.resize(0);
-			
+
 			load_cmplx_.resize(0, 0);
 			rhs_cmplx_.resize(0, 0);
 			result_.resize(0, 0);
@@ -72,20 +72,20 @@ class Element: public ObjectBase {
 		 */
 		Element(int id, int mp, int st):ObjectBase{id, fmt::format("Elem#{0}",
 			id)}, matl_(mp), sect_(st) {assert(sect_>0&&matl_>0);};
-			
+
 		//! Generate stifness mass matrix of element.
 		template <class U=REAL4>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*);
-		
+
 		template <class U=REAL4>
 		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*);
-		
+
 		template <class U=REAL4>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
-		
+
 		template <class U=REAL4>
 		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
-		
+
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};
 		//! Get mass matrix.
@@ -104,7 +104,7 @@ class Element: public ObjectBase {
 		matrix_<ResType> get_result() const;
 		//!
 		matrix_<COMPLEX<T>> get_rhs_cmplx() const {return rhs_cmplx_;};
-		
+
 		//! Get raw pointer of stiffness matrix.
 		const T *get_stif_ptr() const {return stif_.data();};
 		//! Get raw pointer of mass matrix.
@@ -115,15 +115,15 @@ class Element: public ObjectBase {
 		const T *get_rhs_ptr() const {return rhs_.data();};
 		//! Get raw pointer of result matrix.
 		const T *get_result_ptr() const {return result_.data();};
-		
+
 		//! Post process.
 		void post_stress(const vecX_<T>);
-		
+
 		template <class ResType=T>
 		void post_stress(const matrix_<ResType>);
 		// void post_stress(const matrix_<T>);
 		// void post_stress(const matrix_<std::complex<T>>);
-		
+
 		//! Set node list.
 		void set_node_list(const int a[], int m)
 		{
@@ -136,7 +136,7 @@ class Element: public ObjectBase {
 			if(!nodes_.empty())nodes_.clear();
 			for(const auto& it: a)nodes_.push_back(it);
 		};
-		//! Set element option. 
+		//! Set element option.
 		void set_option(init_list_<int> a)
 		{
 			assert(0<a.size()&&a.size()<=10);
@@ -162,7 +162,7 @@ class Element: public ObjectBase {
 		void set_element_dofs(int x) {global_dofs_.push_back(x);};
 		//! Set mass matrix format.
 		void set_lumped_mass(bool val=false){if(val)keyopt_[0]=1;};
-		
+
 		//! Get material id.
 		int get_material_id() const {return matl_;};
 		//! Get section id.
@@ -236,16 +236,16 @@ class Element: public ObjectBase {
 		std::vector<int> nodes_;//!< Array of node list.
 		std::vector<int> global_dofs_;//!< Array of global dofs.
 		std::map<std::string, T> attr_;//!< Attibute of element parameters.
-		
+
 		matrix_<T> stif_;//!< Stiffness matrix of element.
 		matrix_<T> mass_;//!< Mass matrix of element.
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		vecX_<T> rhs_;//!< Right-hand side of element.
 		matrix_<COMPLEX<T>> rhs_cmplx_;//!< Right-hand matrix of element in complex.
-		matrix_<COMPLEX<T>> load_cmplx_;//!< Load matrix of element in complex. 
+		matrix_<COMPLEX<T>> load_cmplx_;//!< Load matrix of element in complex.
 		matrix_<T> result_;//!< Result of element.
 		matrix_<COMPLEX<T>> result_cmplx_;//!< Result of element in complex.
-		
+
 };
 
 #include "element_ext.hpp"
@@ -255,19 +255,6 @@ class Element: public ObjectBase {
 template class Element<REAL8>;
 template class Element<REAL4>;
 
-/**
- *  \brief Attribution of element.
- */
-struct ElementAttr
-{
-	//! Get dofs per node.
-	static size_t get_dofs_per_node(ElementType);
-	//! Get activated number of nodes.
-	static size_t get_active_num_of_node(ElementType);
-	//! Get shape function order.
-	static size_t get_element_order(ElementType);
-	//! Get element type in Ansys rules.
-	static size_t get_element_type_id(ElementType);
-};
+
 }
 #endif

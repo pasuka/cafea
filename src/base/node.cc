@@ -1,9 +1,28 @@
-#include "cafea.h"
-
-using Eigen::AngleAxis;
+#include "node.h"
 
 namespace cafea
 {
+/**
+ *  \brief Get Euler angle transform matrix.
+ *  \return 3X3 matrix.
+ */
+template <class T>
+Eigen::Matrix<T, 3, 3> NodeBase<T>::get_euler_tran() const
+{
+	using AA = Eigen::AngleAxis<T>;
+	using mat33 = Eigen::Matrix<T, 3, 3>;
+	mat33 tran = mat33::Identity();
+	vec3_<T> IY = vec3_<T>::Zero(3), IX=IY, IZ=IY;
+
+	if(angle_(0)<1.8e2){
+		IX(0) = IY(1) = IZ(2) = T(1);
+		T a0 = get_rot_rad(0);
+		T a1 = get_rot_rad(1);
+		T a2 = get_rot_rad(2);
+		tran = AA(a2, IY)*AA(a1, IX)*AA(a0, IZ);
+	}
+	return tran;
+};
 /**
  *  \brief Init dof container.
  *  \param[in] et element type enum.
@@ -33,16 +52,6 @@ void Node<Scalar, ResultScalar>::dof_apply(Boundary<Scalar> bc)
 		fmt::print("Unsupported boundary type\n");
 	}
 }
-/**
- *  \brief 
- *  \param[in]
- *  \param[in]
- */
-template <class Scalar, class ResultScalar>
-void Node<Scalar, ResultScalar>::dof_accum(int *it, DofType mt)
-{
-	this->dof_mgr_.accum(it, mt);
-}
 
 /**
  *  \brief Initialize result variables.
@@ -54,10 +63,10 @@ void Node<T, U>::init_result(SolutionType sol, int n)
 	auto m = this->dof_mgr_.get_num_dofs();
 	switch(sol){
 	case SolutionType::STATIC:
-		this->disp_ = matrix_<U>::Zero(m, 1); 
+		this->disp_ = matrix_<U>::Zero(m, 1);
 		break;
-	case SolutionType::MODAL: 
-		this->disp_ = matrix_<U>::Zero(m, n); 
+	case SolutionType::MODAL:
+		this->disp_ = matrix_<U>::Zero(m, n);
 		break;
 	case SolutionType::HARMONIC_FULL:
 		this->disp_cmplx_ = matrix_<COMPLEX<U>>::Zero(m, n);
@@ -75,7 +84,7 @@ template <class T, class U>
 void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<U> rst)
 {
 	if(!this->is_activated())return;
-	
+
 	switch(sol){
 	case SolutionType::STATIC:
 		switch(lt){
@@ -108,9 +117,9 @@ template <class T, class U>
 matrix_<U> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const
 {
 	matrix_<U> tmp;
-	
+
 	if(!this->is_activated())return tmp;
-	
+
 	switch(sol){
 	case SolutionType::STATIC:
 		tmp = this->disp_;

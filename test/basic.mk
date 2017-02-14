@@ -5,7 +5,7 @@ CXX := g++
 # Compile options.
 CXXFLAGS := -O3#-g
 # Include.
-CXXFLAGS += -I../fmt -I../Catch/single_include -I../src/include
+CXXFLAGS += -I../fmt -I../Catch/single_include -I../eigen -I../src/include
 # Color definitions.
 # Regular colors.
 BLACK  = '\033[0;30m'
@@ -23,7 +23,7 @@ ASTERISK36 = "************************************"
 COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)"********"$(COLOR_OFF)
 BLANK = "      "
 
-all: a01 a02 a03 a04 a05 a06
+all: a01 a02 a03 a04 a05 a06 b01
 	@echo "[Basic] Test all cases."
 	$(MAKE) -f basic.mk clean
 
@@ -86,6 +86,17 @@ a05: ../fmt/fmt/format.o ../src/base/section.o ./basic/a05.o
 a06: ../fmt/fmt/format.o ../src/base/dof_handler.o ./basic/a06.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] Dof handler test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	./test_$@
+
+b01: ../fmt/fmt/format.o ../src/base/dof_handler.o ../src/element/element_attr.o \
+../src/base/node.o ./basic/b01.o
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(RED)"[Basic] Node test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
 	@echo -e $(COMMENT)

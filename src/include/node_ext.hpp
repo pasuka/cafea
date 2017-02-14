@@ -1,5 +1,9 @@
 /**
- *  \brief 
+ *  \brief Set result data.
+ *  \param [in] sol type of solution.
+ *  \param [in] lt type of load.
+ *  \param [in] n i-th of result column.
+ *  \param [in] rst result matrix of vector.
  */
 template <class T, class U>
 template <class ResType>
@@ -43,14 +47,18 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResTyp
 };
 
 /**
- *  \brief
+ *  \brief Get result.
+ *  \param [in] sol type of solution.
+ *  \param [in] lt type of load.
+ *  \param [in] n reqired i-th result columns.
+ *  \return matrix or vector of result.
  */
 template <class T, class U>
 template <class ResType>
 matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const
 {
 	matrix_<ResType> tmp;
-	
+
 	if(!this->is_activated())return tmp;
 	if(std::type_index(typeid(ResType))==std::type_index(typeid(U))){
 		return this->get_result(sol, lt, n);
