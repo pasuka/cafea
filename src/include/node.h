@@ -206,17 +206,10 @@ class NodeBase: public ObjectBase {
 		{
 			cout << a.name_ << "\t";
 			switch(a.csys_){
-			case CoordinateSystem::CARTESIAN:
-				cout << "Cartesian\n";
-				break;
-			case CoordinateSystem::SPHERICAL:
-				cout << "Spherical\n";
-				break;
-			case CoordinateSystem::CYLINDRICAL:
-				cout << "Cylindrical\n";
-				break;
-			default:
-				cout << "Unknown\n";
+			case CoordinateSystem::CARTESIAN:   cout << "Cartesian\n";   break;
+			case CoordinateSystem::SPHERICAL:   cout << "Spherical\n";   break;
+			case CoordinateSystem::CYLINDRICAL: cout << "Cylindrical\n"; break;
+			default: cout << "Unknown\n";
 			}
 			cout << fmt::format("X:{0}\tY:{1}\tZ:{2}\n", a.get_x(), a.get_y(), a.get_z());
 			if(!(a.angle_.array()>T(180)).any())
@@ -237,12 +230,13 @@ class NodeBase: public ObjectBase {
 };
 
 /**
+ *  \class Node definition.
  *  Node object definition.
  */
 template <class T, class U>
 class Node: public NodeBase<T> {
 	public:
-		using NodeBase<T>::NodeBase;// Inherit Base's constructors.
+		using NodeBase<T>::NodeBase;//!< Inherit Base's constructors.
 		//! Default constructor.
 		Node()=delete;
 		//! Destructor.
@@ -291,14 +285,14 @@ class Node: public NodeBase<T> {
 		};
 		//! Initialize result container.
 		void init_result(SolutionType, int);
-
+		//! Set result vector or matrix.
 		void set_result(SolutionType, LoadType, int, matrix_<U>);
-
+		//! Set result in complex domain.
 		template <class T2=COMPLEX<U>>
 		void set_result(SolutionType, LoadType, int, matrix_<T2>);
-
+		//! Get result vector or matrix.
 		matrix_<U> get_result(SolutionType, LoadType, int) const;
-
+		//! Get result in complex domain.
 		template <class T2=COMPLEX<U>>
 		matrix_<T2> get_result(SolutionType, LoadType, int) const;
 
@@ -326,29 +320,29 @@ template class Node<REAL4, REAL8>;
 template class Node<REAL8, REAL8>;
 template class Node<REAL8, REAL4>;
 
-// /**
-//  *  \brief Coordinate transform uitiliy.
-//  */
-// template <class T=REAL4, class U=REAL8>
-// struct NodeFunc{
-// 	//! Coordinate transform for 2-node element.
-// 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*);
-// 	//! Coordinate transform for 2-node and up direction.
-// 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
-// 		const T[]);
-// 	//! Coordinate transform for triangle.
-// 	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
-// 		const NodeBase<T>*);
-// 	//! Coordinate transform for quadrangle.
-// 	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
-// 		const NodeBase<T>*, const NodeBase<T>*);
-// };
-//
-// //! Specialization.
-// template struct NodeFunc<REAL4, REAL4>;
-// template struct NodeFunc<REAL4, REAL8>;
-// template struct NodeFunc<REAL8, REAL4>;
-// template struct NodeFunc<REAL8, REAL8>;
+/**
+ *  \brief Coordinate transform uitiliy.
+ */
+template <class T=REAL4, class U=REAL8>
+struct NodeFunc{
+	//! Coordinate transform for 2-node element.
+	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*);
+	//! Coordinate transform for 2-node and up direction.
+	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
+		const T[]);
+	//! Coordinate transform for triangle.
+	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
+		const NodeBase<T>*);
+	//! Coordinate transform for quadrangle.
+	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
+		const NodeBase<T>*, const NodeBase<T>*);
+};
+
+//! Specialization.
+template struct NodeFunc<REAL4, REAL4>;
+template struct NodeFunc<REAL4, REAL8>;
+template struct NodeFunc<REAL8, REAL4>;
+template struct NodeFunc<REAL8, REAL8>;
 //
 // /**
 //  * \brief Quadrilateral Area Coordinate Method.

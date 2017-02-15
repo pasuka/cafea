@@ -33,7 +33,7 @@ ifeq ($(uname_s), Linux)
 endif
 
 all: libs
-	@echo "\n"
+	@echo "MATIO: Default."
 	$(MAKE) -f matio.mk clean
 
 %.o: %.c

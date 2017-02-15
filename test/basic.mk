@@ -94,7 +94,7 @@ a06: ../fmt/fmt/format.o ../src/base/dof_handler.o ./basic/a06.o
 	./test_$@
 
 b01: ../fmt/fmt/format.o ../src/base/dof_handler.o ../src/element/element_attr.o \
-../src/base/node.o ./basic/b01.o
+../src/base/node.o ../src/core/coord_tran.o ./basic/b01.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] Node test."$(COLOR_OFF)
 	@echo -e $(COMMENT)

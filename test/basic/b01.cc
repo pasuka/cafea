@@ -6,6 +6,8 @@
 
 using cafea::CoordinateSystem;
 using cafea::NodeBase;
+using cafea::Node;
+using cafea::NodeFunc;
 
 TEST_CASE("init", "[NodeBase]")
 {
@@ -99,5 +101,16 @@ TEST_CASE("init", "[NodeBase]")
         REQUIRE(rot[1]==Approx(2.3f).epsilon(0.0001f));
         REQUIRE(rot[2]==Approx(3.4f).epsilon(0.0001f));
         for(int x: {0, 1, 2,})REQUIRE(pt.get_rot(x)==Approx(float(x)*1.1f+1.2f).epsilon(.0001f));
+    }
+}
+TEST_CASE("init cases", "[Node]")
+{
+    SECTION("init 01")
+    {
+        NodeBase<float> pt[2]{{3, {1.f, 0.f, 10.f}}, {5, {2.f, 0.f, 10.f}}};
+        auto rst = NodeFunc<float, double>::coord_tran(&pt[0], &pt[1]);
+        REQUIRE(std::get<0>(rst)==Approx(1.f).epsilon(0.0001f));
+        fmt::print("Length:{}\n", std::get<0>(rst));
+        std::cout << std::get<1>(rst) << "\n";
     }
 }

@@ -22,7 +22,7 @@ Eigen::Matrix<T, 3, 3> NodeBase<T>::get_euler_tran() const
 		tran = AA(a2, IY)*AA(a1, IX)*AA(a0, IZ);
 	}
 	return tran;
-};
+}
 /**
  *  \brief Init dof container.
  *  \param[in] et element type enum.
@@ -52,9 +52,10 @@ void Node<Scalar, ResultScalar>::dof_apply(Boundary<Scalar> bc)
 		fmt::print("Unsupported boundary type\n");
 	}
 }
-
 /**
  *  \brief Initialize result variables.
+ *  \param [in] sol type of solution.
+ *  \param [in] n i-th column of result.
  */
 template <class T, class U>
 void Node<T, U>::init_result(SolutionType sol, int n)
@@ -78,7 +79,11 @@ void Node<T, U>::init_result(SolutionType sol, int n)
 	}
 }
 /**
- *
+ *  \brief Set result in complex domain.
+ *  \param [in] sol type of solution.
+ *  \param [in] lt type of load.
+ *  \param [in] n i-th column of result.
+ *  \param [in] rst result matrix.
  */
 template <class T, class U>
 void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<U> rst)
@@ -111,7 +116,11 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<U> rst
 	}
 }
 /**
- *
+ *  \brief Get result matrix or vectors.
+ *  \param [in] sol type of solution.
+ *  \param [in] lt type of load.
+ *  \param [in] n i-th column of result.
+ *  \return result matrix or vector.
  */
 template <class T, class U>
 matrix_<U> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const
@@ -139,5 +148,4 @@ matrix_<U> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const
 	}
 	return tmp;
 }
-
 }
