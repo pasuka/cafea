@@ -6,7 +6,7 @@
 	url = git://github.com/philsquared/Catch.git
 [submodule "matio"]
 	path = matio
-	url = git://github.com/tbeu/matio.git
+	url = https://github.com/tbeu/matio.git
 [submodule "fmt"]
 	path = fmt
 	url = git://github.com/fmtlib/fmt.git
