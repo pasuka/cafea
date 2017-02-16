@@ -3,7 +3,7 @@ CC := gcc
 FC := gfortran
 CXX := g++
 # Compile options.
-CXXFLAGS := -O3#-g
+CXXFLAGS := -O3 -g
 # Include.
 CXXFLAGS += -I../fmt -I../Catch/single_include -I../eigen -I../src/include
 # Color definitions.

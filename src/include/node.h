@@ -233,7 +233,7 @@ class NodeBase: public ObjectBase {
  *  \class Node definition.
  *  Node object definition.
  */
-template <class T, class U>
+template <class T=REAL4, class U=REAL8>
 class Node: public NodeBase<T> {
 	public:
 		using NodeBase<T>::NodeBase;//!< Inherit Base's constructors.
@@ -242,16 +242,17 @@ class Node: public NodeBase<T> {
 		//! Destructor.
 		~Node() override
 		{
-			disp_.resize(0, 0);
-			vel_.resize(0, 0);
-			accel_.resize(0, 0);
-			stress_.resize(0, 0);
-			disp_cmplx_.resize(0, 0);
-			vel_cmplx_.resize(0, 0);
-			accel_cmplx_.resize(0, 0);
-			stress_cmplx_.resize(0, 0);
-			range_.resize(0);
-			dof_mgr_.clear();
+			fmt::print("Delete Node.\n");
+			// if(0<disp_.rows())disp_.resize(0, 0);
+			// if(0<vel_.rows())vel_.resize(0, 0);
+			// if(0<accel_.rows())accel_.resize(0, 0);
+			// if(0<stress_.rows())stress_.resize(0, 0);
+			// if(0<disp_cmplx_.rows())disp_cmplx_.resize(0, 0);
+			// if(0<vel_cmplx_.rows())vel_cmplx_.resize(0, 0);
+			// if(0<accel_cmplx_.rows())accel_cmplx_.resize(0, 0);
+			// if(0<stress_cmplx_.rows())stress_cmplx_.resize(0, 0);
+			// if(0<range_.size())range_.resize(0);
+			// dof_mgr_.clear();
 		};
 		//! DOF manager init.
 		void dof_init(ElementType et);
@@ -330,6 +331,9 @@ struct NodeFunc{
 	//! Coordinate transform for 2-node and up direction.
 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
 		const T[]);
+	//! Coordinate transform for 2-node and up direction.
+	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
+		init_list_<T>);
 	//! Coordinate transform for triangle.
 	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
 		const NodeBase<T>*);

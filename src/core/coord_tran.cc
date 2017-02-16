@@ -78,6 +78,21 @@ varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase
 	return make_tuple(length, tran);
 }
 /**
+ *  \brief Coordinate transform for 2-node beam with up-axis.
+ *  \param [in] p1 start point.
+ *  \param [in] p2 stop point.
+ *  \param [in] up vector of up-axis.
+ *  \return length and transform matrix of element.
+ */
+template <class T, class U>
+varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, init_list_<T> up)
+{
+	assert(3==up.size());
+	T up_vec[3];
+	std::copy(up.begin(), up.end(), std::begin(up_vec));
+	return NodeFunc<T, U>::coord_tran(p1, p2, up_vec);
+}
+/**
  *  \brief Coordinate transform for 3-node triangle element.
  *  \param [in] p1, p2, p3 point of triangle in anticlockwise direction.
  *  \return area loacal coordinate and transform matrix of element.

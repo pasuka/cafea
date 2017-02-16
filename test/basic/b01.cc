@@ -113,4 +113,27 @@ TEST_CASE("init cases", "[Node]")
         fmt::print("Length:{}\n", std::get<0>(rst));
         std::cout << std::get<1>(rst) << "\n";
     }
+    SECTION("init 02")
+    {
+        NodeBase<float> pt[2]{{3, {1.f, 0.f, 10.f}}, {5, {2.f, 0.f, 10.f}}};
+        auto rst = NodeFunc<float, double>::coord_tran(pt, &pt[1], {0.f, 1.f, 1.f});
+        REQUIRE(std::get<0>(rst)==Approx(1.f).epsilon(0.0001f));
+        fmt::print("Length:{}\n", std::get<0>(rst));
+        std::cout << std::get<1>(rst) << "\n";
+    }
+    SECTION("init 03")
+    {
+        NodeBase<float> pt[3]{{3, {1.f, 0.f, 10.f}}, {5, {2.f, 0.f, 10.f}}, {7, {0.f, 2.5f, 10.f}}};
+        auto rst = NodeFunc<float, double>::coord_tran(pt, &pt[1], &pt[2]);
+        fmt::print("Area:{}\n", std::get<0>(rst));
+        std::cout << std::get<1>(rst) << "\n" << std::get<2>(rst) << "\n";
+    }
+    SECTION("init 04")
+    {
+        NodeBase<float> pt[3]{{3, {1.f, 0.f, 10.f}}, {5, {2.f, 0.f, 10.f}}, {7, {0.f, .5f, 10.f}}};
+        auto rst = NodeFunc<float, double>::coord_tran(pt, &pt[1], &pt[2]);
+        fmt::print("Area:{}\n", std::get<0>(rst));
+        std::cout << std::get<1>(rst) << "\n" << std::get<2>(rst) << "\n";
+
+    }
 }
