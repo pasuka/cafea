@@ -19,7 +19,7 @@ class DofHandler{
 		//! Clear.
 		void clear() {if(!dofs_.empty())dofs_.clear();};
 		//! Get DOF vector.
-		const std::vector<int> get_dofs() const {return dofs_;};
+		std::vector<int> get_dofs() const {return dofs_;};
 		//! Apply constraint.
 		void set_constraint(DofLabel, DofType);
 		//! Accumalte.

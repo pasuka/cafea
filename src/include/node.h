@@ -120,7 +120,7 @@ class NodeBase: public ObjectBase {
 		{
 			assert(val.size()==3);
 			int i{0};
-			for(auto &it: val)xyz_(i++) = it;
+			for(auto it: val)xyz_[i++] = it;
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
@@ -130,8 +130,8 @@ class NodeBase: public ObjectBase {
 		{
 			assert(val.size()==3&&val2.size()==3);
 			int i{0}, j{0};
-			for(auto &it: val)xyz_(i++) = it;
-			for(auto &it: val2)angle_(j++) = it;
+			for(auto it: val)xyz_(i++) = it;
+			for(auto it: val2)angle_(j++) = it;
 		};
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
@@ -242,29 +242,28 @@ class Node: public NodeBase<T> {
 		//! Destructor.
 		~Node() override
 		{
-			fmt::print("Delete Node.\n");
-			// if(0<disp_.rows())disp_.resize(0, 0);
-			// if(0<vel_.rows())vel_.resize(0, 0);
-			// if(0<accel_.rows())accel_.resize(0, 0);
-			// if(0<stress_.rows())stress_.resize(0, 0);
-			// if(0<disp_cmplx_.rows())disp_cmplx_.resize(0, 0);
-			// if(0<vel_cmplx_.rows())vel_cmplx_.resize(0, 0);
-			// if(0<accel_cmplx_.rows())accel_cmplx_.resize(0, 0);
-			// if(0<stress_cmplx_.rows())stress_cmplx_.resize(0, 0);
-			// if(0<range_.size())range_.resize(0);
-			// dof_mgr_.clear();
+			if(0<disp_.rows())disp_.resize(0, 0);
+			if(0<vel_.rows())vel_.resize(0, 0);
+			if(0<accel_.rows())accel_.resize(0, 0);
+			if(0<stress_.rows())stress_.resize(0, 0);
+			if(0<disp_cmplx_.rows())disp_cmplx_.resize(0, 0);
+			if(0<vel_cmplx_.rows())vel_cmplx_.resize(0, 0);
+			if(0<accel_cmplx_.rows())accel_cmplx_.resize(0, 0);
+			if(0<stress_cmplx_.rows())stress_cmplx_.resize(0, 0);
+			if(0<range_.size())range_.resize(0);
+			dof_mgr_.clear();
 		};
 		//! DOF manager init.
 		void dof_init(ElementType et);
 		//! DOF accumulate bind to dof manager.
-		std::function<void(int*, DofType)> dof_accum_2 = std::bind(&DofHandler::accum, dof_mgr_,
+		std::function<void(int*, DofType)> dof_accum_2 = std::bind(&DofHandler::accum, &dof_mgr_,
 			std::placeholders::_1, std::placeholders::_2);
 		//! DOF accumulate with default dof type.
 		void dof_accum(int *ij, DofType mt=DofType::NORMAL) {dof_accum_2(ij, mt);};
 		//! DOF apply boundary and load.
 		void dof_apply(Boundary<T> bc);
 		//! DOF vector.
-		std::function<std::vector<int>()> dof_list = std::bind(&DofHandler::get_dofs, dof_mgr_);
+		std::function<std::vector<int>()> dof_list = std::bind(&DofHandler::get_dofs, &dof_mgr_);
 		//! Activate node.
 		void activate(bool stat=true) {activate_ = stat;};
 		//! Check status of node.

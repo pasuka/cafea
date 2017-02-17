@@ -13,6 +13,7 @@ TEST_CASE("init", "[NodeBase]")
 {
     SECTION("init with id")
     {
+        Node<float, double> pf{11, {1.f, 1.1f, 1.2f}};
         NodeBase<float> pt(53);
         REQUIRE(53==pt.get_id());
         REQUIRE(CoordinateSystem::CARTESIAN==pt.get_csys());
@@ -130,10 +131,9 @@ TEST_CASE("init cases", "[Node]")
     }
     SECTION("init 04")
     {
-        NodeBase<float> pt[3]{{3, {1.f, 0.f, 10.f}}, {5, {2.f, 0.f, 10.f}}, {7, {0.f, .5f, 10.f}}};
+        Node<float, double> pt[3]{{3, {1.f, 0.f, 10.f}}, {5, {2.f, 0.f, 10.f}}, {7, {0.f, .5f, 10.f}}};
         auto rst = NodeFunc<float, double>::coord_tran(pt, &pt[1], &pt[2]);
         fmt::print("Area:{}\n", std::get<0>(rst));
         std::cout << std::get<1>(rst) << "\n" << std::get<2>(rst) << "\n";
-
     }
 }
