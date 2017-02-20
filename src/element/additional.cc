@@ -1,15 +1,12 @@
-#include <tuple>
-#include <vector>
-#include <cmath>
-
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-#include "cafea.h"
+#include "element_lib.h"
 
 using std::tie;
 using std::map;
 using std::tuple;
+using std::vector;
 using std::make_tuple;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -20,16 +17,11 @@ using Eigen::Matrix3f;
 
 namespace cafea
 {
-namespace
-{
-template <class T>
-using varargout = tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, map<string, T>>;
-}
 /**
  *  \brief Mass Element.
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::mass21(const vector<Node<T, U>> pt, const Material<T> *mp,
+elem_out_5<U> StructuralElement<T, U>::mass21(const vector<Node<T, U>> pt, const Material<T> *mp,
 	const Section<T> *sect, const int opt[])
 {
 	assert(1==pt.size());
@@ -39,7 +31,7 @@ varargout<U> StructuralElement<T, U>::mass21(const vector<Node<T, U>> pt, const 
  *  \brief Spring Element.
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::combin14(const vector<Node<T, U>> pt, const Material<T> *mp,
+elem_out_5<U> StructuralElement<T, U>::combin14(const vector<Node<T, U>> pt, const Material<T> *mp,
 	const Section<T> *sect, const int opt[])
 {
 	assert(2==pt.size());
@@ -49,16 +41,16 @@ varargout<U> StructuralElement<T, U>::combin14(const vector<Node<T, U>> pt, cons
  *  \brief Mass.
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p, const Material<T> *prop,
+elem_out_5<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p, const Material<T> *prop,
 	const Section<T> *sect, const int opt[])
 {
 	matrix_<U> stif = matrix_<U>::Zero(6, 6);
 	matrix_<U> mass = matrix_<U>::Zero(6, 6);
 	matrix_<U> tran = matrix_<U>::Identity(6, 6);
 	vecX_<U> rhs = vecX_<U>::Zero(6);
-	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)}, 
+	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},
 		{"Mass", sect->get_sect_prop(SectionProp::ADDONMASS)}};
-	
+
 	//! Mass on X Y Z direction.
 	//! Notice: mass element do not need transform in most cases.
 	auto val = sect->get_sect_prop(SectionProp::ADDONMASS);
@@ -81,20 +73,20 @@ varargout<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p, const Materia
  *  \brief Spring.
  */
 template <class T, class U>
-varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
+elem_out_5<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	const Material<T> *prop, const Section<T> *sect, const int opt[])
 {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
 	matrix_<U> loc2gbl = matrix_<U>::Identity(12, 12);
 	vecX_<U> rhs = vecX_<U>::Zero(12);
-	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},}; 
-	
+	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},};
+
 	Eigen::Matrix<T, 3, 3> euler_tran;
 	U l;
 	matrix_<U> tt = matrix_<U>::Zero(3, 3);
 	tie(l, tt) = NodeFunc<T, U>::coord_tran(p1, p2);
-	
+
 	if(opt[1]==0){
 		for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
 		if(prop->get_material_type()==MaterialType::SPRING_STIFFNESS){
@@ -128,7 +120,7 @@ varargout<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const Node
 		stif(m+6, m) = stif(m, m+6) = -stif(m, m);
 		// fmt::print("Dof:{}\tKe:{}\n", m+1, stif(m, m));
 	}
-	
+
 	return make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
 }

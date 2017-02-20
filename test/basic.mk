@@ -23,7 +23,7 @@ ASTERISK36 = "************************************"
 COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)"********"$(COLOR_OFF)
 BLANK = "      "
 
-all: a01 a02 a03 a04 a05 a06 b01
+all: a01 a02 a03 a04 a05 a06 b01 b02
 	@echo "[Basic] Test all cases."
 	$(MAKE) -f basic.mk clean
 
@@ -96,7 +96,18 @@ a06: ../fmt/fmt/format.o ../src/base/dof_handler.o ./basic/a06.o
 b01: ../fmt/fmt/format.o ../src/base/dof_handler.o ../src/element/element_attr.o \
 ../src/base/node.o ../src/core/coord_tran.o ./basic/b01.o
 	@echo -e $(COMMENT)
-	@echo -e $(BLANK)$(RED)"[Basic] Node test."$(COLOR_OFF)
+	@echo -e $(BLANK)$(RED)"[Basic] Node test 01."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	./test_$@
+
+b02: ../fmt/fmt/format.o ../src/base/dof_handler.o ../src/element/element_attr.o \
+../src/base/node.o ../src/core/coord_tran.o ./basic/b02.o
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(RED)"[Basic] Node test 02."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_$@
 	@echo -e $(COMMENT)

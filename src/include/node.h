@@ -242,22 +242,19 @@ class Node: public NodeBase<T> {
 		//! Destructor.
 		~Node() override
 		{
-			if(0<disp_.rows())disp_.resize(0, 0);
-			if(0<vel_.rows())vel_.resize(0, 0);
-			if(0<accel_.rows())accel_.resize(0, 0);
-			if(0<stress_.rows())stress_.resize(0, 0);
-			if(0<disp_cmplx_.rows())disp_cmplx_.resize(0, 0);
-			if(0<vel_cmplx_.rows())vel_cmplx_.resize(0, 0);
-			if(0<accel_cmplx_.rows())accel_cmplx_.resize(0, 0);
-			if(0<stress_cmplx_.rows())stress_cmplx_.resize(0, 0);
-			if(0<range_.size())range_.resize(0);
+			disp_.resize(0, 0);
+			vel_.resize(0, 0);
+			accel_.resize(0, 0);
+			stress_.resize(0, 0);
+			disp_cmplx_.resize(0, 0);
+			vel_cmplx_.resize(0, 0);
+			accel_cmplx_.resize(0, 0);
+			stress_cmplx_.resize(0, 0);
+			range_.resize(0);
 			dof_mgr_.clear();
 		};
 		//! DOF manager init.
 		void dof_init(ElementType et);
-		//! DOF accumulate bind to dof manager.
-		std::function<void(int*, DofType)> dof_accum_2 = std::bind(&DofHandler::accum, &dof_mgr_,
-			std::placeholders::_1, std::placeholders::_2);
 		//! DOF accumulate with default dof type.
 		void dof_accum(int *ij, DofType mt=DofType::NORMAL) {dof_accum_2(ij, mt);};
 		//! DOF apply boundary and load.
@@ -299,7 +296,9 @@ class Node: public NodeBase<T> {
 	private:
 		DofHandler dof_mgr_;//!< Dof manager.
 		bool activate_{false};//!< Status of node.
-
+		//! DOF accumulate bind to dof manager.
+		std::function<void(int*, DofType)> dof_accum_2 = std::bind(&DofHandler::accum,
+			&dof_mgr_, std::placeholders::_1, std::placeholders::_2);
 		vecX_<U> range_;//!< Range of result.
 		matrix_<U> disp_;//!< Storage of displacement.
 		matrix_<U> vel_;//!< Storage of velocity.
@@ -333,6 +332,9 @@ struct NodeFunc{
 	//! Coordinate transform for 2-node and up direction.
 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
 		init_list_<T>);
+	//! Coordinate transform for 2-node and up direction.
+	static varargout_2_<U> coord_tran(const NodeBase<T>* p1, const NodeBase<T>* p2,
+		T up_x, T up_y, T up_z) {return coord_tran(p1, p2, {up_x, up_y, up_z});};
 	//! Coordinate transform for triangle.
 	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
 		const NodeBase<T>*);

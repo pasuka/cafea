@@ -1,39 +1,26 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
-#include <cassert>
-#include <cstddef>
-
-#include <map>
-#include <array>
-#include <tuple>
-#include <vector>
-#include <ostream>
-#include <algorithm>
-#include <initializer_list>
-
-#include <Eigen/Dense>
-
-#include "base.h"
 #include "node.h"
-#include "material.h"
-#include "section.h"
-#include "element_lib.h"
 #include "load.h"
+#include "section.h"
+#include "material.h"
+#include "element_lib.h"
 
 namespace cafea
 {
 /**
- * Element object definition.
+ *  Element object definition.
  */
-template <class T=double>
+template <class T=REAL8>
 class Element: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//* Default constructor.
-		Element(){};
+		Element()=delete;
 		//* Destructor.
-		~Element(){
+		~Element() override
+		{
 			nodes_.clear();
 			global_dofs_.clear();
 			attr_.clear();
@@ -59,11 +46,13 @@ class Element: public ObjectBase {
 			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp), sect_(st)
 		{
 			assert(sect_>0&&matl_>0);
+			assert(nodes.size()>0);
+			// std::copy(nodes.begin(), nodes.end(), [nodes_](int x){if(x)nodes_.push_back(x);});
 			for(const auto& it: nodes){
 				assert(it>0);
 				nodes_.push_back(it);
 			}
-		}
+		};
 		/**
 		 *  \brief Initialize with element id material.
 		 *  \param [in] id an positive integer.
@@ -78,13 +67,13 @@ class Element: public ObjectBase {
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*);
 
 		template <class U=REAL4>
-		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*);
+		void form_matrix(const std::vector<Node<U, T>>, const Material<U>*, const Section<U>*);
 
 		template <class U=REAL4>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 
 		template <class U=REAL4>
-		void form_matrix(const vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
+		void form_matrix(const std::vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 
 		//! Get stiffness matrix.
 		matrix_<T> get_stif() const {return stif_;};
@@ -103,7 +92,7 @@ class Element: public ObjectBase {
 		template <class ResType=T>
 		matrix_<ResType> get_result() const;
 		//!
-		matrix_<COMPLEX<T>> get_rhs_cmplx() const {return rhs_cmplx_;};
+		cmatrix_<T> get_rhs_cmplx() const {return rhs_cmplx_;};
 
 		//! Get raw pointer of stiffness matrix.
 		const T *get_stif_ptr() const {return stif_.data();};
@@ -134,7 +123,8 @@ class Element: public ObjectBase {
 		void set_node_list(init_list_<int> a)
 		{
 			if(!nodes_.empty())nodes_.clear();
-			for(const auto& it: a)nodes_.push_back(it);
+			std::copy(a.begin(), a.end(), std::back_inserter(nodes_));
+			// for(const auto& it: a)nodes_.push_back(it);
 		};
 		//! Set element option.
 		void set_option(init_list_<int> a)
@@ -149,19 +139,19 @@ class Element: public ObjectBase {
 			for(int i=0; i<m; i++)keyopt_[i] = a[i];
 		};
 		//! Set id of element.
-		void set_element_id(int x){id_ = x;};
+		void set_element_id(int x) {id_ = x;};
 		//! Set type of element.
 		void set_element_type(int x);
 		//! Set material id.
-		void set_material_id(int x){matl_ = x;};
+		void set_material_id(int x) {matl_ = x;};
 		//! Set section id.
-		void set_section_id(int x){sect_ = x;};
+		void set_section_id(int x) {sect_ = x;};
 		//! set type of element.
-		void set_element_type(ElementType et){etype_ = et;};
+		void set_element_type(ElementType et) {etype_ = et;};
 		//! Set dof index of element.
 		void set_element_dofs(int x) {global_dofs_.push_back(x);};
 		//! Set mass matrix format.
-		void set_lumped_mass(bool val=false){if(val)keyopt_[0]=1;};
+		void set_lumped_mass(bool val=false) {if(val)keyopt_[0]=1;};
 
 		//! Get material id.
 		int get_material_id() const {return matl_;};
@@ -194,7 +184,7 @@ class Element: public ObjectBase {
 		//! Get global dofs array.
 		std::vector<int> get_element_dofs() const {return global_dofs_;};
 		//! Get mass format.
-		bool get_lumped_mass()const{return 0<keyopt_[0];};
+		bool get_lumped_mass() const {return 0<keyopt_[0];};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
 		{
@@ -241,11 +231,11 @@ class Element: public ObjectBase {
 		matrix_<T> mass_;//!< Mass matrix of element.
 		matrix_<T> tran_;//!< Transpose matrix of element.
 		vecX_<T> rhs_;//!< Right-hand side of element.
-		matrix_<COMPLEX<T>> rhs_cmplx_;//!< Right-hand matrix of element in complex.
-		matrix_<COMPLEX<T>> load_cmplx_;//!< Load matrix of element in complex.
 		matrix_<T> result_;//!< Result of element.
-		matrix_<COMPLEX<T>> result_cmplx_;//!< Result of element in complex.
 
+		cmatrix_<T> rhs_cmplx_;//!< Right-hand matrix of element in complex.
+		cmatrix_<T> load_cmplx_;//!< Load matrix of element in complex.
+		cmatrix_<T> result_cmplx_;//!< Result of element in complex.
 };
 
 #include "element_ext.hpp"
@@ -254,7 +244,5 @@ class Element: public ObjectBase {
 //! Specialization.
 template class Element<REAL8>;
 template class Element<REAL4>;
-
-
 }
 #endif
