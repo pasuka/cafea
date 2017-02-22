@@ -49,7 +49,7 @@ bool compare_pair(const SparseCell&, const SparseCell&);
 /**
  *  Enum of sparse matrix format.
  */
-enum struct SpFmt{
+enum struct SpFmt {
 	CSC,//!< Compressed Sparse Column matrix.
 	CSR,//!< Compressed Sparse Row matrix.
 	COO,//!< COOrdinate sparse matrix.
@@ -57,7 +57,7 @@ enum struct SpFmt{
 /**
  *  Enum of storge information.
  */
-enum struct SpStorage{
+enum struct SpStorage {
 	FULL,//!< Whole matrix.
 	UP_TRIANGLE,//!< Up triangle of matrix.
 	LOW_TRIANGLE,//!< Low triangle of matrix.
@@ -65,7 +65,7 @@ enum struct SpStorage{
 /**
  *  Enum of sparse matrix symmetric.
  */
-enum struct SpSym{
+enum struct SpSym {
 	SYMMETRIC,//!< Symmetry matrix.
 	UNSYMMETRIC,//!< unsymmetry matrix.
 };
@@ -73,12 +73,12 @@ enum struct SpSym{
  *  Struct for global matrix data storge.
  */
 template <class T=double>
-class SparseMat{
+class SparseMat {
 	public:
 		//! Default constructor.
-		SparseMat(){};
+		SparseMat() {};
 		//! Deconstructor.
-		~SparseMat(){clear();};
+		~SparseMat() {clear();};
 		//! Initialize.
 		void clear()
 		{
