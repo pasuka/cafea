@@ -198,7 +198,22 @@ class NodeBase: public ObjectBase {
 		//! Get Euler angle in rad.
 		T get_rot_rad(int x) const {return PI<T>()*get_rot(x)/T(180);};
 		//! Get Euler transform matrix.
-		Eigen::Matrix<T, 3, 3> get_euler_tran() const;
+		Eigen::Matrix<T, 3, 3> get_euler_tran() const
+		{
+			using AA = Eigen::AngleAxis<T>;
+			using mat33 = Eigen::Matrix<T, 3, 3>;
+			mat33 tran = mat33::Identity();
+			vec3_<T> IY = vec3_<T>::Zero(3), IX=IY, IZ=IY;
+
+			if(angle_(0)<1.8e2){
+				IX(0) = IY(1) = IZ(2) = T(1);
+				T a0 = get_rot_rad(0);
+				T a1 = get_rot_rad(1);
+				T a2 = get_rot_rad(2);
+				tran = AA(a2, IY)*AA(a1, IX)*AA(a0, IZ);
+			}
+			return tran;
+		};
 		//! Get Euler angle values.
 		vec3_<T> get_angle() const {return (angle_.array()>T(180)).any() ? vec3_<T>::Zero(): angle_;};
 		//! Print node information.

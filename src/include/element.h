@@ -150,6 +150,8 @@ class Element: public ObjectBase {
 		void set_element_type(ElementType et) {etype_ = et;};
 		//! Set dof index of element.
 		void set_element_dofs(int x) {global_dofs_.push_back(x);};
+		//! Clear dof index of element.
+		void clear_element_dofs() {if(!global_dofs_.empty())global_dofs_.clear();};
 		//! Set mass matrix format.
 		void set_lumped_mass(bool val=false) {if(val)keyopt_[0]=1;};
 
@@ -184,7 +186,7 @@ class Element: public ObjectBase {
 		//! Get global dofs array.
 		std::vector<int> get_element_dofs() const {return global_dofs_;};
 		//! Get mass format.
-		bool get_lumped_mass() const {return 0<keyopt_[0];};
+		bool is_lumped_mass() const {return 0<keyopt_[0];};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
 		{
@@ -193,29 +195,6 @@ class Element: public ObjectBase {
 			cout << fmt::format("Active node:{}\t", a.get_active_num_of_node());
 			cout << fmt::format("Order:{}\t", a.get_element_order());
 			cout << fmt::format("Dof per node:{}\t", a.get_dofs_per_node());
-			switch(a.etype_){
-			case ElementType::PIPE16: cout << "2-node straight pipe"; break;
-			case ElementType::PIPE18: cout << "2-node curved pipe"; break;
-			case ElementType::BEAM188:
-			case ElementType::B31: cout << "2-node straight beam"; break;
-			case ElementType::BEAM189:
-			case ElementType::B32: cout << "3-node straight beam"; break;
-			case ElementType::C3D4: cout << "4-node tet"; break;
-			case ElementType::C3D8:
-			case ElementType::SOLID185: cout << "8-node hex"; break;
-			case ElementType::C3D20:
-			case ElementType::SOLID186: cout << "20-node hex"; break;
-			case ElementType::S3R: cout << "3-node tri"; break;
-			case ElementType::S4R:
-			case ElementType::SHELL181: cout << "4-node quad"; break;
-			case ElementType::S8R:
-			case ElementType::SHELL281: cout << "8-node quad"; break;
-			case ElementType::S9R: cout << "9-node quad"; break;
-			case ElementType::MASS21: cout << "1-node mass"; break;
-			case ElementType::COMBIN14: cout << "2-node spring"; break;
-			case ElementType::UNKNOWN:
-			default: cout << fmt::format("Unknown element type");
-			}
 			return cout << "\n";
 		}
  	private:

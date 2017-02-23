@@ -59,7 +59,7 @@ void Element<T>::form_matrix(const Node<U, T> p[], const Material<U> *matl, cons
  */
 template <class T>
 template <class U>
-void Element<T>::form_matrix(const vector<Node<U, T>> pt, const Material<U> *mp,
+void Element<T>::form_matrix(const std::vector<Node<U, T>> pt, const Material<U> *mp,
 	const Section<U> *sect, const std::vector<LoadCell<U>> load)
 {
 	this->form_matrix<U>(pt, mp, sect);

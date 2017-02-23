@@ -1,38 +1,29 @@
 /**
  *  \brief Form element matrix.
+ *  \param [in] p array of nodes.
+ *  \param [in] matl material struct.
+ *  \param [in] sect section struct.
  */
-template <class U>
 template <class ResT>
+template <class U>
 void Element<ResT>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl, const Section<U> *sect)
 {
 	auto opt = this->get_option();
-	switch(this->etype_){
+	switch (this->etype_) {
 	case ElementType::PIPE16:
-		std::tie(this->stif_,
-			this->mass_,
-			this->tran_,
-			this->rhs_,
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 			this->attr_) = StructuralElement<U, ResT>::pipe16(&p[0], &p[1], matl, sect, opt.data());
 		break;
 	case ElementType::PIPE18:
-		std::tie(this->stif_,
-			this->mass_,
-			this->tran_,
-			this->rhs_,
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 			this->attr_) = StructuralElement<U, ResT>::pipe18(&p[0], &p[1], &p[2], matl, sect);
 		break;
 	case ElementType::MASS21:
-		std::tie(this->stif_,
-			this->mass_,
-			this->tran_,
-			this->rhs_,
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 			this->attr_) = StructuralElement<U, ResT>::mass21(&p[0], matl, sect, opt.data());
 		break;
 	case ElementType::COMBIN14:
-		std::tie(this->stif_,
-			this->mass_,
-			this->tran_,
-			this->rhs_,
+		std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 			this->attr_) = StructuralElement<U, ResT>::combin14(&p[0], &p[1], matl, sect, opt.data());
 		break;
 	case ElementType::BEAM188:
@@ -57,8 +48,8 @@ void Element<ResT>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl
 /**
  *  \brief Form element matrix.
  */
-template <class U>
 template <class ResT>
+template <class U>
 void Element<ResT>::form_matrix(const std::vector<Node<U, ResT>> pt, const Material<U> *mp, const Section<U> *sect)
 {
 	auto opt = this->get_option();

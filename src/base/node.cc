@@ -3,27 +3,6 @@
 namespace cafea
 {
 /**
- *  \brief Get Euler angle transform matrix.
- *  \return 3X3 matrix.
- */
-template <class T>
-Eigen::Matrix<T, 3, 3> NodeBase<T>::get_euler_tran() const
-{
-	using AA = Eigen::AngleAxis<T>;
-	using mat33 = Eigen::Matrix<T, 3, 3>;
-	mat33 tran = mat33::Identity();
-	vec3_<T> IY = vec3_<T>::Zero(3), IX=IY, IZ=IY;
-
-	if(angle_(0)<1.8e2){
-		IX(0) = IY(1) = IZ(2) = T(1);
-		T a0 = get_rot_rad(0);
-		T a1 = get_rot_rad(1);
-		T a2 = get_rot_rad(2);
-		tran = AA(a2, IY)*AA(a1, IX)*AA(a0, IZ);
-	}
-	return tran;
-}
-/**
  *  \brief Init dof container.
  *  \param[in] et element type enum.
  */

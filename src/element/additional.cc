@@ -3,11 +3,6 @@
 
 #include "element_lib.h"
 
-using std::tie;
-using std::map;
-using std::tuple;
-using std::vector;
-using std::make_tuple;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using Eigen::Vector3d;
@@ -21,7 +16,7 @@ namespace cafea
  *  \brief Mass Element.
  */
 template <class T, class U>
-elem_out_5<U> StructuralElement<T, U>::mass21(const vector<Node<T, U>> pt, const Material<T> *mp,
+elem_out_5<U> StructuralElement<T, U>::mass21(const std::vector<Node<T, U>> pt, const Material<T> *mp,
 	const Section<T> *sect, const int opt[])
 {
 	assert(1==pt.size());
@@ -31,7 +26,7 @@ elem_out_5<U> StructuralElement<T, U>::mass21(const vector<Node<T, U>> pt, const
  *  \brief Spring Element.
  */
 template <class T, class U>
-elem_out_5<U> StructuralElement<T, U>::combin14(const vector<Node<T, U>> pt, const Material<T> *mp,
+elem_out_5<U> StructuralElement<T, U>::combin14(const std::vector<Node<T, U>> pt, const Material<T> *mp,
 	const Section<T> *sect, const int opt[])
 {
 	assert(2==pt.size());
@@ -47,8 +42,8 @@ elem_out_5<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p, const Materi
 	matrix_<U> stif = matrix_<U>::Zero(6, 6);
 	matrix_<U> mass = matrix_<U>::Zero(6, 6);
 	matrix_<U> tran = matrix_<U>::Identity(6, 6);
-	vecX_<U> rhs = vecX_<U>::Zero(6);
-	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},
+	vecX_<U>   rhs  = vecX_<U>::Zero(6);
+	std::map<std::string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},
 		{"Mass", sect->get_sect_prop(SectionProp::ADDONMASS)}};
 
 	//! Mass on X Y Z direction.
@@ -66,7 +61,7 @@ elem_out_5<U> StructuralElement<T, U>::mass21(const NodeBase<T> *p, const Materi
 		}
 	}
 	// fmt::print("Mass add-on:{}\n", mass(0, 0));
-	return make_tuple(stif, mass, tran, rhs, attr);
+	return std::make_tuple(stif, mass, tran, rhs, attr);
 }
 
 /**
@@ -76,16 +71,16 @@ template <class T, class U>
 elem_out_5<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const NodeBase<T> *p2,
 	const Material<T> *prop, const Section<T> *sect, const int opt[])
 {
-	matrix_<U> stif = matrix_<U>::Zero(12, 12);
-	matrix_<U> mass = matrix_<U>::Zero(12, 12);
+	matrix_<U> stif    = matrix_<U>::Zero(12, 12);
+	matrix_<U> mass    = matrix_<U>::Zero(12, 12);
 	matrix_<U> loc2gbl = matrix_<U>::Identity(12, 12);
-	vecX_<U> rhs = vecX_<U>::Zero(12);
-	map<string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},};
+	vecX_<U>   rhs     = vecX_<U>::Zero(12);
+	std::map<std::string, U> attr{{"Length", U(0)}, {"Area", U(0)}, {"Volume", U(0)},};
 
 	Eigen::Matrix<T, 3, 3> euler_tran;
 	U l;
 	matrix_<U> tt = matrix_<U>::Zero(3, 3);
-	tie(l, tt) = NodeFunc<T, U>::coord_tran(p1, p2);
+	std::tie(l, tt) = NodeFunc<T, U>::coord_tran(p1, p2);
 
 	if(opt[1]==0){
 		for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
@@ -121,6 +116,6 @@ elem_out_5<U> StructuralElement<T, U>::combin14(const NodeBase<T> *p1, const Nod
 		// fmt::print("Dof:{}\tKe:{}\n", m+1, stif(m, m));
 	}
 
-	return make_tuple(stif, mass, loc2gbl, rhs, attr);
+	return std::make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
 }
