@@ -1,7 +1,5 @@
 #include "cafea.h"
 
-using std::tuple;
-using std::make_tuple;
 using Eigen::VectorXd;
 
 namespace cafea
@@ -11,7 +9,7 @@ namespace cafea
  *  \param [in] n number of points.
  *  \return integrate point and weight values.
  */
-tuple<VectorXd, VectorXd> gauss_quad(int n)
+std::tuple<VectorXd, VectorXd> gauss_quad(int n)
 {
 	assert(0<n&&n<11);
 	VectorXd pt = VectorXd::Zero(n);//!< quadrature point
@@ -95,6 +93,6 @@ tuple<VectorXd, VectorXd> gauss_quad(int n)
 	default:
 		fmt::print("Input: {} exceede!\n", n);
 	}
-	return make_tuple(pt, wt);
+	return std::make_tuple(pt, wt);
 }
 }

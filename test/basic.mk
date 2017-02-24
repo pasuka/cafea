@@ -116,9 +116,8 @@ b02: ../fmt/fmt/format.o ../src/base/dof_handler.o ../src/element/element_attr.o
 	@echo -e $(COMMENT)
 	./test_$@
 
-b03: ../fmt/fmt/format.o ../src/base/dof_handler.o ../src/element/element_attr.o \
-../src/base/node.o ../src/base/load.o ../src/base/material.o ../src/base/section.o \
-../src/core/coord_tran.o ../src/element/element.o ../src/element/pipe.o ../src/element/additional.o \
+b03: ../fmt/fmt/format.o $(addprefix ../src/base/, $(addsuffix .o, dof_handler node load material section))\
+../src/core/coord_tran.o $(addprefix ../src/element/, $(addsuffix .o, element_attr element pipe additional))\
 ./basic/b03.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] Element test 01."$(COLOR_OFF)
