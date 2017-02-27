@@ -78,7 +78,7 @@ std::array<size_t, 2> Element<T>::get_matrix_shape() const
 	std::array<size_t, 2> sz;
 	sz[0] = 0 < this->stif_.rows() ? this->stif_.rows() : 0;
 	sz[1] = 0 < this->stif_.cols() ? this->stif_.cols() : 0;
-	return sz;
+	return std::move(sz);
 };
 /**
  *  \brief Get shape of rhs matrix.
@@ -90,7 +90,7 @@ std::array<size_t, 2> Element<T>::get_rhs_shape() const
 	std::array<size_t, 2> sz;
 	sz[0] = 0 < this->rhs_.rows() ? this->rhs_.rows() : 0;
 	sz[1] = 0 < this->rhs_.cols() ? this->rhs_.cols() : 0;
-	return sz;
+	return std::move(sz);
 };
 /**
  *  \brief Get shape of result matrix.
@@ -102,7 +102,7 @@ std::array<size_t, 2> Element<T>::get_result_shape() const
 	std::array<size_t, 2> sz;
 	sz[0] = 0 < this->result_.rows() ? this->result_.rows() : 0;
 	sz[1] = 0 < this->result_.cols() ? this->result_.cols() : 0;
-	return sz;
+	return std::move(sz);
 }
 /**
  *  \brief Get id of element type.
