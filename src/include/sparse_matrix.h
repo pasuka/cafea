@@ -19,7 +19,7 @@ namespace cafea
 struct SparseCell {
 	size_t row, col;//!< Row and Column index.
 	//! Constructor with row and column index.
-	SparseCell(size_t ir, size_t jc):row(ir), col(jc){};
+	SparseCell(size_t ir, size_t jc):row(ir), col(jc) {};
 	//! Compare ().
 	bool operator() (const SparseCell *a, const SparseCell *b) const
 	{
@@ -78,7 +78,7 @@ class SparseMat {
 		//! Default constructor.
 		SparseMat() {};
 		//! Deconstructor.
-		~SparseMat() {clear();};
+		~SparseMat() { clear();};
 		//! Initialize.
 		void clear()
 		{
@@ -93,22 +93,22 @@ class SparseMat {
 			if(!mass_.empty())mass_.clear();
 		};
 		//! Get dimension.
-		size_t get_dim() const {return dim_;};
+		size_t get_dim() const { return dim_;};
 		//! Get Non-zeros.
-		size_t get_nnz() const {return nnz_;};
+		size_t get_nnz() const { return nnz_;};
 		//! Get matrix format.
-		SpFmt get_format() const {return format_;};
+		SpFmt get_format() const { return format_;};
 		//! Inquire symmetric of matrix.
-		bool is_symmetric() const {return SpSym::SYMMETRIC==sym_;};
+		bool is_symmetric() const { return SpSym::SYMMETRIC==sym_;};
 		//! Inquire full storage of matrix.
-		bool is_full() const {return SpStorage::FULL==storge_;};
+		bool is_full() const { return SpStorage::FULL==storge_;};
 		//! Set matrix format.
-		void set_format(SpFmt t) {format_ = t;};
+		void set_format(SpFmt t) { format_ = t;};
 		//! Set symmetric.
-		void set_symmetric(bool val=true) {if(val)sym_ = SpSym::SYMMETRIC;};
+		void set_symmetric(bool val=true) { if(val)sym_ = SpSym::SYMMETRIC;};
 		//! Add index pair.
-		void append(SparseCell it) {row_col_.push_back(it);};
-		void append(size_t ir, size_t jc) {row_col_.push_back({ir, jc});};
+		void append(SparseCell it) { row_col_.push_back(it);};
+		void append(size_t ir, size_t jc) { row_col_.push_back({ir, jc});};
 		//! Remove duplicated index pair.
 		void unique(SpFmt t=SpFmt::CSC);
 
@@ -126,15 +126,15 @@ class SparseMat {
 		void add_rhs_data(size_t, T);
 
 		//! Get stiffness matrix pointer.
-		const T* get_stif_ptr() const {return stif_.data();};
+		const T* get_stif_ptr() const { return stif_.data();};
 		//! Get mass matrix pointer.
-		const T* get_mass_ptr() const {return mass_.data();};
+		const T* get_mass_ptr() const { return mass_.data();};
 		//! Get rhs pointer.
-		const T* get_rhs_ptr() const {return rhs_.data();};
+		const T* get_rhs_ptr() const { return rhs_.data();};
 		//! Get coordinate (row, column) pointer.
-		const SparseCell* get_coord_ptr() const {return row_col_.data();};
+		const SparseCell* get_coord_ptr() const { return row_col_.data();};
 		//! Get auxility pointer.
-		const size_t* get_aux_ptr() const {return aux_.data();};
+		const size_t* get_aux_ptr() const { return aux_.data();};
 		//! Export MAT sparse.
 		std::unique_ptr<mat_sparse_t> get_stif_mat();
 		std::unique_ptr<mat_sparse_t> get_mass_mat();

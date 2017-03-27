@@ -21,7 +21,7 @@ class Section: public ObjectBase {
 		 *  \param [in] sect section's type.
 		 */
 		Section(int id, SectionType sect):sect_(sect),
-			ObjectBase{id, fmt::format("Section#{0}", id)} {};
+			ObjectBase{ id, fmt::format("Section#{0}", id)} {};
 		/**
 		 *  \brief Initialize with section id type and parameters.
 		 *  \param [in] id section's id.
@@ -29,7 +29,7 @@ class Section: public ObjectBase {
 		 *  \param [in] val section's 1st parameter array.
 		 */
 		Section(int id, SectionType sect, init_list_<Scalar> val):sect_(sect),
-			ObjectBase{id, fmt::format("Section#{0}", id)}
+			ObjectBase{ id, fmt::format("Section#{0}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
 			std::copy(val.begin(), val.end(), param_.begin());
@@ -43,7 +43,7 @@ class Section: public ObjectBase {
 		 */
 		Section(int id, SectionType sect, init_list_<Scalar> val,
 			init_list_<Scalar> val2):sect_(sect),
-			ObjectBase{id, fmt::format("Section#{}", id)}
+			ObjectBase{ id, fmt::format("Section#{}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
 			assert(val2.size()>0&&val2.size()<=10);
@@ -56,7 +56,7 @@ class Section: public ObjectBase {
 		 *  \param [in] val array of value.
 		 *  \param [in] n length of array.
 		 */
-		Section(int id, const Scalar val[], int n):ObjectBase{id, fmt::format("Section#{}", id)}
+		Section(int id, const Scalar val[], int n):ObjectBase{ id, fmt::format("Section#{}", id)}
 		{
 			assert(0<n&&n<=10);
 			param_.fill(Scalar(0));
@@ -65,9 +65,9 @@ class Section: public ObjectBase {
 		//! Destructor.
 		~Section() override {};
 		//! Get type of section.
-		SectionType get_sect_type() const {return sect_;};
+		SectionType get_sect_type() const { return sect_;};
 		//! Set type of section.
-		void set_sect_type(SectionType st) {sect_ = st;};
+		void set_sect_type(SectionType st) { sect_ = st;};
 		//! Get property of section.
 		Scalar get_sect_prop(SectionProp sp) const;
 		//! Set property of section.

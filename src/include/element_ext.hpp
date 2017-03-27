@@ -55,31 +55,19 @@ void Element<ResT>::form_matrix(const std::vector<Node<U, ResT>> pt, const Mater
 	auto opt = this->get_option();
 	switch(this->etype_){
 		case ElementType::PIPE16:
-			std::tie(this->stif_,
-				this->mass_,
-				this->tran_,
-				this->rhs_,
+			std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 				this->attr_) = StructuralElement<U, ResT>::pipe16(pt, mp, sect, opt.data());
 			break;
 		case ElementType::PIPE18:
-			std::tie(this->stif_,
-				this->mass_,
-				this->tran_,
-				this->rhs_,
+			std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 				this->attr_) = StructuralElement<U, ResT>::pipe18(pt, mp, sect);
 			break;
 		case ElementType::MASS21:
-			std::tie(this->stif_,
-				this->mass_,
-				this->tran_,
-				this->rhs_,
+			std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 				this->attr_) = StructuralElement<U, ResT>::mass21(pt, mp, sect, opt.data());
 			break;
 		case ElementType::COMBIN14:
-			std::tie(this->stif_,
-				this->mass_,
-				this->tran_,
-				this->rhs_,
+			std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 				this->attr_) = StructuralElement<U, ResT>::combin14(pt, mp, sect, opt.data());
 			break;
 		case ElementType::BEAM188:

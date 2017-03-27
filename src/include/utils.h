@@ -35,10 +35,10 @@ using COMPLEX8 = COMPLEX<REAL8>;
 #endif
 //! Precision of machine via different types.
 template<class T=REAL8>
-constexpr T EPS() {return std::numeric_limits<T>::epsilon();};
+constexpr T EPS() { return std::numeric_limits<T>::epsilon();};
 //! M_PI.
 template<class T=REAL8>
-constexpr T PI() {return T(std::atan(1.0)*4.0);};
+constexpr T PI() { return T(std::atan(1.0)*4.0);};
 
 //! Initializer list.
 template <class T>

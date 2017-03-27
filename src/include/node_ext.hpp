@@ -15,11 +15,11 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResTyp
 	}
 	// fmt::print("Template Function Set result Input Type: {}", typeid(ResType).name());
 	// fmt::print(" {}\n", typeid(U).name());
-	switch(sol){
+	switch(sol) {
 		case SolutionType::HARMONIC_FULL:
-			switch(lt){
+			switch(lt) {
 				case LoadType::DISP:
-					if(0>n){
+					if(0>n) {
 						this->disp_cmplx_ = rst;
 					}
 					else{
@@ -27,7 +27,7 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResTyp
 					}
 					break;
 				case LoadType::STRESS:
-					if(0>n){
+					if(0>n) {
 						this->stress_cmplx_ = rst;
 					}
 					else{
@@ -62,11 +62,11 @@ matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) co
 		return this->get_result(sol, lt, n);
 	}
 	// fmt::print("Template Function Get result Input Type:{}\n", typeid(ResType).name());
-	switch(sol){
+	switch(sol) {
 		case SolutionType::HARMONIC_FULL:
-			switch(lt){
+			switch(lt) {
 				case LoadType::DISP:
-					if(0>n){
+					if(0>n) {
 						tmp = this->disp_cmplx_;
 					}
 					else{
@@ -74,7 +74,7 @@ matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) co
 					}
 					break;
 				case LoadType::STRESS:
-					if(0>n){
+					if(0>n) {
 						tmp = this->stress_cmplx_;
 					}
 					else{

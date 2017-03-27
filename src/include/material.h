@@ -21,7 +21,7 @@ class Material: public ObjectBase {
 		 *  \param [in] mtype material type.
 		 */
 		Material(int id, MaterialType mtype):mtype_(mtype),
-			ObjectBase{id, fmt::format("Material#{0}", id)} {};
+			ObjectBase{ id, fmt::format("Material#{0}", id)} {};
 		/**
 		 *  \brief Initialize with material id type section and parameters.
 		 *  \param [in] id material's id.
@@ -29,7 +29,7 @@ class Material: public ObjectBase {
 		 *  \param [in] val material's 1st parameter array.
 		 */
 		Material(int id, MaterialType mtype, init_list_<T> val):mtype_(mtype),
-			ObjectBase{id, fmt::format("Material#{0}", id)}
+			ObjectBase{ id, fmt::format("Material#{0}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
 			std::copy(val.begin(), val.end(), param_.begin());
@@ -42,7 +42,7 @@ class Material: public ObjectBase {
 		 *  \param [in] val2 material's 2nd parameter array.
 		 */
 		Material(int id, MaterialType mtype, init_list_<T> val, init_list_<T> val2):mtype_(mtype),
-			ObjectBase{id, fmt::format("Material#{0}", id)}
+			ObjectBase{ id, fmt::format("Material#{0}", id)}
 		{
 			assert(val.size()>0&&val.size()<=10);
 			assert(val2.size()>0&&val2.size()<=10);
@@ -52,9 +52,9 @@ class Material: public ObjectBase {
 		//! Destructor.
 		~Material() override {};
 		//! Get type of material.
-		MaterialType get_material_type() const {return mtype_;};
+		MaterialType get_material_type() const { return mtype_;};
 		//! Set type of material.
-		void set_material_type(MaterialType mt) {mtype_ = mt;};
+		void set_material_type(MaterialType mt) { mtype_ = mt;};
 
 		//! Set property of material.
 		void set_material_prop(MaterialProp mp, T val);

@@ -43,7 +43,7 @@ class Element: public ObjectBase {
 		 *  \param [in] nodes list of nodes id.
 		 */
 		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes):
-			ObjectBase{id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp), sect_(st)
+			ObjectBase{ id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp), sect_(st)
 		{
 			assert(sect_>0&&matl_>0);
 			assert(nodes.size()>0);
@@ -59,8 +59,8 @@ class Element: public ObjectBase {
 		 *  \param [in] mp number of material type.
 		 *  \param [in] st number of section type.
 		 */
-		Element(int id, int mp, int st):ObjectBase{id, fmt::format("Elem#{0}",
-			id)}, matl_(mp), sect_(st) {assert(sect_>0&&matl_>0);};
+		Element(int id, int mp, int st):ObjectBase{ id, fmt::format("Elem#{0}",
+			id)}, matl_(mp), sect_(st) { assert(sect_>0&&matl_>0);};
 
 		//! Generate stifness mass matrix of element.
 		template <class U=REAL4>
@@ -76,34 +76,34 @@ class Element: public ObjectBase {
 		void form_matrix(const std::vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 
 		//! Get stiffness matrix.
-		matrix_<T> get_stif() const {return stif_;};
+		matrix_<T> get_stif() const { return stif_;};
 		//! Get mass matrix.
-		matrix_<T> get_mass() const {return mass_;};
+		matrix_<T> get_mass() const { return mass_;};
 		//! Get transpose matrix.
-		matrix_<T> get_tran() const {return tran_;};
+		matrix_<T> get_tran() const { return tran_;};
 		//! Get right-hand side matrix.
-		vecX_<T> get_rhs() const {return rhs_;};
+		vecX_<T> get_rhs() const { return rhs_;};
 		//!
 		template <class ResType=T>
 		matrix_<ResType> get_rhs() const;
 		//! Get result matrix.
-		matrix_<T> get_result() const {return result_;};
+		matrix_<T> get_result() const { return result_;};
 		//!
 		template <class ResType=T>
 		matrix_<ResType> get_result() const;
 		//!
-		cmatrix_<T> get_rhs_cmplx() const {return rhs_cmplx_;};
+		cmatrix_<T> get_rhs_cmplx() const { return rhs_cmplx_;};
 
 		//! Get raw pointer of stiffness matrix.
-		const T *get_stif_ptr() const {return stif_.data();};
+		const T *get_stif_ptr() const { return stif_.data();};
 		//! Get raw pointer of mass matrix.
-		const T *get_mass_ptr() const {return mass_.data();};
+		const T *get_mass_ptr() const { return mass_.data();};
 		//! Get raw pointer of transpose matrix.
-		const T *get_tran_ptr() const {return tran_.data();};
+		const T *get_tran_ptr() const { return tran_.data();};
 		//! Get raw pointer of right-hand side matrix.
-		const T *get_rhs_ptr() const {return rhs_.data();};
+		const T *get_rhs_ptr() const { return rhs_.data();};
 		//! Get raw pointer of result matrix.
-		const T *get_result_ptr() const {return result_.data();};
+		const T *get_result_ptr() const { return result_.data();};
 
 		//! Post process.
 		void post_stress(const vecX_<T>);
@@ -139,42 +139,42 @@ class Element: public ObjectBase {
 			for(int i=0; i<m; i++)keyopt_[i] = a[i];
 		};
 		//! Set id of element.
-		void set_element_id(int x) {id_ = x;};
+		void set_element_id(int x) { id_ = x;};
 		//! Set type of element.
 		void set_element_type(int x);
 		//! Set material id.
-		void set_material_id(int x) {matl_ = x;};
+		void set_material_id(int x) { matl_ = x;};
 		//! Set section id.
-		void set_section_id(int x) {sect_ = x;};
+		void set_section_id(int x) { sect_ = x;};
 		//! set type of element.
-		void set_element_type(ElementType et) {etype_ = et;};
+		void set_element_type(ElementType et) { etype_ = et;};
 		//! Set dof index of element.
-		void set_element_dofs(int x) {global_dofs_.push_back(x);};
+		void set_element_dofs(int x) { global_dofs_.push_back(x);};
 		//! Clear dof index of element.
-		void clear_element_dofs() {if(!global_dofs_.empty())global_dofs_.clear();};
+		void clear_element_dofs() { if(!global_dofs_.empty())global_dofs_.clear();};
 		//! Set mass matrix format.
-		void set_lumped_mass(bool val=false) {if(val)keyopt_[0]=1;};
+		void set_lumped_mass(bool val=false) { if(val)keyopt_[0]=1;};
 
 		//! Get material id.
-		int get_material_id() const {return matl_;};
+		int get_material_id() const { return matl_;};
 		//! Get section id.
-		int get_section_id() const {return sect_;};
+		int get_section_id() const { return sect_;};
 		//! Get node list.
-		std::vector<int> get_node_list() const {return nodes_;};
+		std::vector<int> get_node_list() const { return nodes_;};
 		//! Get option.
-		std::array<int, 10> get_option() const {return keyopt_;};
+		std::array<int, 10> get_option() const { return keyopt_;};
 		//! Get type of element.
-		ElementType get_element_type() const {return etype_;};
+		ElementType get_element_type() const { return etype_;};
 		//! Get id element type.
 		size_t get_element_type_id() const;
 		//! Get id of element.
-		int get_element_id() const {return id_;};
+		int get_element_id() const { return id_;};
 		//! Get order of element.
 		size_t get_element_order() const;
 		//! Get dofs of each node.
 		size_t get_dofs_per_node() const;
 		//! Get total number of nodes.
-		size_t get_total_num_of_node() const {return nodes_.size();};
+		size_t get_total_num_of_node() const { return nodes_.size();};
 		//! Get active number of nodes.
 		size_t get_active_num_of_node() const;
 		//! Get shape of element matrix.
@@ -184,9 +184,9 @@ class Element: public ObjectBase {
 		//! Get shape of result matrix.
 		std::array<size_t, 2> get_result_shape() const;
 		//! Get global dofs array.
-		std::vector<int> get_element_dofs() const {return global_dofs_;};
+		std::vector<int> get_element_dofs() const { return global_dofs_;};
 		//! Get mass format.
-		bool is_lumped_mass() const {return 0<keyopt_[0];};
+		bool is_lumped_mass() const { return 0<keyopt_[0];};
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
 		{

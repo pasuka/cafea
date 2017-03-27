@@ -30,7 +30,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		NodeBase(int id): ObjectBase{id, fmt::format("Node#{0}", id)},
+		NodeBase(int id): ObjectBase{ id, fmt::format("Node#{0}", id)},
 			csys_(CoordinateSystem::CARTESIAN) {};
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
@@ -45,7 +45,7 @@ class NodeBase: public ObjectBase {
 		 *  |Spherical  |2       |
 		 */
 		NodeBase(int id, CoordinateSystem csys): csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {};
+			ObjectBase{ id, fmt::format("Node#{0}", id)} {};
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -56,7 +56,7 @@ class NodeBase: public ObjectBase {
 		 *  \details Default coordinate system Cartesian.
 		 */
 		NodeBase(int id, T x, T y, T z): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {xyz_ << x, y, z;};
+			ObjectBase{ id, fmt::format("Node#{0}", id)} { xyz_ << x, y, z;};
 		/**
 		 *  \brief Initialize with node's id coordinate system and values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -66,7 +66,7 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] u3 value of axis-3.
 		 */
 		NodeBase(int id, CoordinateSystem csys, T u1, T u2, T u3): csys_(csys),
-			ObjectBase{id, fmt::format("Node#{0}", id)} {xyz_ << u1, u2, u3;};
+			ObjectBase{ id, fmt::format("Node#{0}", id)} { xyz_ << u1, u2, u3;};
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
@@ -80,7 +80,7 @@ class NodeBase: public ObjectBase {
 		 *  \details Euler angle must in degrees.
 		 */
 		NodeBase(int id, T x, T y, T z, T rx, T ry, T rz): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase{id, fmt::format("Node#{0}", id)}
+			ObjectBase{ id, fmt::format("Node#{0}", id)}
 		{
 			xyz_ << x, y, z;
 			angle_ << rx, ry, rz;
@@ -97,7 +97,7 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] value of rotate 3-axis.
 		 */
 		NodeBase(int id, CoordinateSystem csys, T u1, T u2, T u3, T ur1, T ur2, T ur3):
-			csys_(csys), ObjectBase{id, fmt::format("Node#{0}", id)}
+			csys_(csys), ObjectBase{ id, fmt::format("Node#{0}", id)}
 		{
 			xyz_ << u1, u2, u3;
 			angle_ << ur1, ur2, ur3;
@@ -106,7 +106,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate system and values.
 		 */
 		NodeBase(int id, CoordinateSystem csys, init_list_<T> val):
-			ObjectBase{id, fmt::format("Node#{0}", id)}, csys_(csys)
+			ObjectBase{ id, fmt::format("Node#{0}", id)}, csys_(csys)
 		{
 			assert(val.size()==3);
 			int i{0};
@@ -116,7 +116,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate values.
 		 */
 		NodeBase(int id, init_list_<T> val): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase{id, fmt::format("Node#{0}", id)}
+			ObjectBase{ id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3);
 			int i{0};
@@ -126,7 +126,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
 		NodeBase(int id, CoordinateSystem csys, init_list_<T> val, init_list_<T> val2):
-			csys_(csys), ObjectBase{id, fmt::format("Node#{0}", id)}
+			csys_(csys), ObjectBase{ id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
 			int i{0}, j{0};
@@ -137,7 +137,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
 		NodeBase(int id, init_list_<T> val, init_list_<T> val2):
-			csys_(CoordinateSystem::CARTESIAN), ObjectBase{id, fmt::format("Node#{0}", id)}
+			csys_(CoordinateSystem::CARTESIAN), ObjectBase{ id, fmt::format("Node#{0}", id)}
 		{
 			assert(val.size()==3&&val2.size()==3);
 			int i{0}, j{0};
@@ -147,23 +147,23 @@ class NodeBase: public ObjectBase {
 		//! Destructor.
 		~NodeBase() override {};
 		//! Get coordinate system.
-		CoordinateSystem get_csys() const {return csys_;};
+		CoordinateSystem get_csys() const { return csys_;};
 		//! Set coordinate system.
-		void set_csys(CoordinateSystem ct) {csys_ = ct;};
+		void set_csys(CoordinateSystem ct) { csys_ = ct;};
 
 		//! Get xyz values.
-		vec3_<T> get_xyz() const {return xyz_;};
+		vec3_<T> get_xyz() const { return xyz_;};
 		//! Get x value.
-		T get_x() const {return xyz_(0);};
+		T get_x() const { return xyz_(0);};
 		//! Get y value.
-		T get_y() const {return xyz_(1);};
+		T get_y() const { return xyz_(1);};
 		//! Get z value.
-		T get_z() const {return xyz_(2);};
+		T get_z() const { return xyz_(2);};
 
 		//! Set xyz values.
-		void set_xyz(T x, T y, T z) {xyz_ << x, y, z;};
+		void set_xyz(T x, T y, T z) { xyz_ << x, y, z;};
 		//! Set xyz values with 1d array.
-		void set_xyz(T val[3]) {xyz_ << val[0], val[1], val[2];};
+		void set_xyz(T val[3]) { xyz_ << val[0], val[1], val[2];};
 		//! Set xyz values with list.
 		void set_xyz(init_list_<T> val)
 		{
@@ -171,16 +171,16 @@ class NodeBase: public ObjectBase {
 			xyz_ << val[0], val[1], val[2];
 		};
 		//! Set x value.
-		void set_x(T x) {xyz_(0) = x;};
+		void set_x(T x) { xyz_(0) = x;};
 		//! Set y value.
-		void set_y(T y) {xyz_(1) = y;};
+		void set_y(T y) { xyz_(1) = y;};
 		//! Set z value.
-		void set_z(T z) {xyz_(2) = z;};
+		void set_z(T z) { xyz_(2) = z;};
 
 		//! Set Euler angle values.
-		void set_angle(T r1, T r2, T r3) {angle_ << r1, r2, r3;};
+		void set_angle(T r1, T r2, T r3) { angle_ << r1, r2, r3;};
 		//! Set Euler angle values with 1d array.
-		void set_angle(T val[3]) {angle_ << val[0], val[1], val[2];};
+		void set_angle(T val[3]) { angle_ << val[0], val[1], val[2];};
 		//! Set Euler angle values with list.
 		void set_angle(init_list_<T> val)
 		{
@@ -188,15 +188,15 @@ class NodeBase: public ObjectBase {
 			angle_ << val[0], val[1], val[2];
 		};
 		//! Get Euler angle values.
-		T get_rot_x() const {return get_rot(0);};
+		T get_rot_x() const { return get_rot(0);};
 		//! Get Euler angle values.
-		T get_rot_y() const {return get_rot(1);};
+		T get_rot_y() const { return get_rot(1);};
 		//! Get Euler angle values.
-		T get_rot_z() const {return get_rot(2);};
+		T get_rot_z() const { return get_rot(2);};
 		//! Get Euler angle values.
-		T get_rot(int x) const {return angle_(x)>T(180) ? T(0): angle_(x);};
+		T get_rot(int x) const { return angle_(x)>T(180) ? T(0): angle_(x);};
 		//! Get Euler angle in rad.
-		T get_rot_rad(int x) const {return PI<T>()*get_rot(x)/T(180);};
+		T get_rot_rad(int x) const { return PI<T>()*get_rot(x)/T(180);};
 		//! Get Euler transform matrix.
 		Eigen::Matrix<T, 3, 3> get_euler_tran() const
 		{
@@ -215,7 +215,7 @@ class NodeBase: public ObjectBase {
 			return tran;
 		};
 		//! Get Euler angle values.
-		vec3_<T> get_angle() const {return (angle_.array()>T(180)).any() ? vec3_<T>::Zero(): angle_;};
+		vec3_<T> get_angle() const { return (angle_.array()>T(180)).any() ? vec3_<T>::Zero(): angle_;};
 		//! Print node information.
 		friend std::ostream& operator<<(std::ostream& cout, const NodeBase &a)
 		{
@@ -271,15 +271,15 @@ class Node: public NodeBase<T> {
 		//! DOF manager init.
 		void dof_init(ElementType et);
 		//! DOF accumulate with default dof type.
-		void dof_accum(int *ij, DofType mt=DofType::NORMAL) {dof_accum_2(ij, mt);};
+		void dof_accum(int *ij, DofType mt=DofType::NORMAL) { dof_accum_2(ij, mt);};
 		//! DOF apply boundary and load.
 		void dof_apply(Boundary<T> bc);
 		//! DOF vector.
 		std::function<std::vector<int>()> dof_list = std::bind(&DofHandler::get_dofs, &dof_mgr_);
 		//! Activate node.
-		void activate(bool stat=true) {activate_ = stat;};
+		void activate(bool stat=true) { activate_ = stat;};
 		//! Check status of node.
-		bool is_activated() const {return activate_;};
+		bool is_activated() const { return activate_;};
 		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const Node &a)
 		{

@@ -36,25 +36,49 @@ class SolutionBase {
 		//! Clear model data.
 		virtual void clear()=0;
 		//! Destructor.
-		virtual ~SolutionBase() {fmt::print("Destructor of solution base.\n");};
+		virtual ~SolutionBase()
+		{
+			fmt::print("Destructor of solution base.\n");
+		};
 		//! Load input file.
-		virtual void load(const char* fn) {fmt::print("Load file:{}\n", fn);};
+		virtual void load(const char* fn)
+		{
+			fmt::print("Load file:{}\n", fn);
+		};
 		//! Load input file.
 		// virtual void load(const std::string fn) {load(fn.c_str());};
 		//! Check input model data.
-		virtual void check() {fmt::print("Check input.\n");};
+		virtual void check()
+		{
+			fmt::print("Check input.\n");
+		};
 		//! Analyze pattern.
-		virtual void analyze() {fmt::print("Analyze model.\n");};
+		virtual void analyze()
+		{
+			fmt::print("Analyze model.\n");
+		};
 		//! Assemble global matrix.
-		virtual void assembly() {fmt::print("Assemble matrix.\n");};
+		virtual void assembly()
+		{
+			fmt::print("Assemble matrix.\n");
+		};
 		//! Solve.
-		virtual void solve() {fmt::print("Solve problem.\n");};
+		virtual void solve()
+		{
+			fmt::print("Solve problem.\n");
+		};
 		//! Save MAT file.
-		virtual void write2mat(const char* mat, bool ver_73=false) {fmt::print("Save :{}\n", mat);};
+		virtual void write2mat(const char* mat, bool ver_73=false)
+		{
+			fmt::print("Save :{}\n", mat);
+		};
 		//! Save MAT file.
 		// virtual void write2mat(const std::string mat) {write2mat(mat.c_str());};
 		//! Post process.
-		virtual void post_process() {fmt::print("Post process.\n");};
+		virtual void post_process()
+		{
+			fmt::print("Post process.\n");
+		};
 		//! Get model information.
 		virtual std::array<size_t, 5> get_info() const
 		{
@@ -62,7 +86,10 @@ class SolutionBase {
 			return a;
 		};
 		//! Set mass matrix in lumped format.
-		virtual void set_mass_lumped(bool t=false) {fmt::print("Set Lumped mass.\n");};
+		virtual void set_mass_lumped(bool t=false)
+		{
+			fmt::print("Set Lumped mass.\n");
+		};
 		//! Set solve option in numeric values.
 		virtual void set_parameter(SolutionOption chk, init_list_<ResultScalar> val)
 		{
@@ -95,7 +122,11 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! default constructor.
 		SolutionStatic(){};
 		//! Destructor.
-		~SolutionStatic() override {fmt::print("Destructor of static analysis.\n"); clear();};
+		~SolutionStatic() override
+		{
+			fmt::print("Destructor of static analysis.\n");
+			clear();
+		};
 		//! Initialize environment.
 		void init() override;
 		//! Clear model data.
@@ -125,27 +156,27 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp, int res_span=0)const override;
 	protected:
 		FileReader file_parser_;//!< Input file loader.
-		
+
 		dict_<Material<Scalar>> matl_group_;//!< Material dictionary.
 		dict_<Section<Scalar>> sect_group_;//!< Section dictionary.
 		dict_<Node<Scalar, ResultScalar>> node_group_;//!< Node dictionary.
-		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.	
-		
+		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.
+
 		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary list.
-		
-		
+
+
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
-			
+
 		MassType mass_type_{MassType::CONSISTENT};
-		
+
 	private:
 		std::vector<Load<Scalar>> load_group_;//!< Load list.
 		std::unique_ptr<LinearSolver<ResultScalar>> solver_{nullptr};//!< Linear solver for Ax=b.
 		SolutionType sol_type_{SolutionType::STATIC};
 };
- 
+
 /**
- *  Solution of modal analysis.	
+ *  Solution of modal analysis.
  */
 template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
@@ -153,7 +184,11 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		//! Default constructor.
 		SolutionModal(){};
 		//! Destructor.
-		~SolutionModal() override {fmt::print("Destructor of modal analysis.\n"); clear();};
+		~SolutionModal() override
+		{
+			fmt::print("Destructor of modal analysis.\n");
+			clear();
+		};
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.
@@ -202,9 +237,13 @@ template <class FileReader, class Scalar=float, class ResultScalar=double>
 class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 	public:
 		//! Default constructor.
-		SolutionHarmonicFull(){};
+		SolutionHarmonicFull() {};
 		//! Destructor.
-		~SolutionHarmonicFull()override{fmt::print("Destructor of harmonic analysis.\n"); clear();};
+		~SolutionHarmonicFull() override
+		{
+			fmt::print("Destructor of harmonic analysis.\n");
+			clear();
+		};
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.
@@ -241,47 +280,12 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		vecX_<ResultScalar> damping_;
 		vecX_<ResultScalar> freq_range_;
 		std::vector<LoadSet<Scalar>> load_group_;
-		
+
 		matrix_<COMPLEX<ResultScalar>> disp_cmplx_;
 		matrix_<COMPLEX<ResultScalar>> rhs_cmplx_;
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
-		
-};
 
-/*template <class FileReader, class Scalar=float, class ResultScalar=double>
-class SolutionHarmonic: public SolutionBase <FileReader, Scalar, ResultScalar> {
-	public:
-		//! Default constructor.
-		SolutionHarmonic(){};
-		//! Destructor.
-		~SolutionHarmonic();
-		//! Initialize environment.
-		void init();
-		//! Load input file.
-		void load(const char* file_name);
-		//! Check input model data.
-		void check();
-		//! Analyze pattern.
-		void analyze();
-		//! Assemble global matrix.
-		void assembly();
-		//! Solve.
-		void solve();
-		//! Post process.
-		void post_process();
-		//! Print information.
-		friend std::ostream& operator<<(std::ostream& cout, const SolutionHarmonic &a)
-		{
-			return cout << "This is solution of harmonic analysis.\n";
-		};
-	protected:
-		dict_<Node<Scalar, std::complex<ResultScalar>>> node_group_;//!< Node dictionary.
-		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.
-		
-		vecX_<Scalar> damping_;//!< Damping ratio.
-		vecX_<Scalar> freq_range_;//!< Frequency range.
-		
-};*/
+};
 //! Specialization with float type.
 template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL8>;
 template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL4>;

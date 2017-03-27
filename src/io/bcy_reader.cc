@@ -2,16 +2,17 @@
 
 namespace cafea
 {
-
 /**
  * \brief Load input files.
+ * \param[in] fn input file path.
+ * \return 0 means okay.
  */
 template <class T>
 int FEModelReader<T>::load_model(const std::string fn)
 {
 	fs::path p = fn;
-	if(fs::exists(p)){
-		if(!p.empty()){
+	if(fs::exists(p)) {
+		if(!p.empty()) {
 			this->file_ = p;
 		}
 		else{
@@ -25,37 +26,37 @@ int FEModelReader<T>::load_model(const std::string fn)
 	}
 	if(this->fp_.is_open())this->fp_.close();
 	this->fp_.open(fn);
-	
-	if(this->fp_.is_open()){
+
+	if(this->fp_.is_open()) {
 		std::string line;
 		fmt::print("Begin to read file: {}\n", fn);
-		while(std::getline(this->fp_, line)){
-			if(!line.empty()){
-				if(startswith(line, "$NODE")){
+		while(std::getline(this->fp_, line)) {
+			if(!line.empty()) {
+				if(boost::starts_with(line, "$NODE")) {
 					this->parse_node_blk();
 				}
-				else if(startswith(line, "$ELEMENT")){	
+				else if(boost::starts_with(line, "$ELEMENT")) {
 					this->parse_element_blk();
 				}
-				else if(startswith(line, "$FORMAT_INFO")){
-					
+				else if(boost::starts_with(line, "$FORMAT_INFO")) {
+
 				}
-				else if(startswith(line, "$MATERIAL")){
+				else if(boost::starts_with(line, "$MATERIAL")) {
 					this->parse_material_blk();
 				}
-				else if(startswith(line, "$SECTION")){
+				else if(boost::starts_with(line, "$SECTION")) {
 					this->parse_section_blk();
 				}
-				else if(startswith(line, "$BOUNDARY")){
+				else if(boost::starts_with(line, "$BOUNDARY")) {
 					this->parse_boundary_blk();
 				}
-				else if(startswith(line, "$SOLUTION")){
+				else if(boost::starts_with(line, "$SOLUTION")) {
 					this->parse_solution_blk();
 				}
-				else if(startswith(line, "$END")){
-					
+				else if(boost::starts_with(line, "$END")) {
+
 				}
-				else if(startswith(line, "#")){
+				else if(boost::starts_with(line, "#")) {
 					fmt::print("Comment line.\n");
 				}
 				else{
@@ -65,7 +66,7 @@ int FEModelReader<T>::load_model(const std::string fn)
 		}
 	}
 	return 0;
-	
+
 };
 
 /**
@@ -77,20 +78,20 @@ int FEModelReader<T>::parse_node_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	int num_node = str2int(list[0]);
-	int max_node_id = str2int(list[1]);
-	int csys = str2int(list[2]);
-	int has_rot = str2int(list[3]);
+	int num_node = std::stoi(list[0]);
+	int max_node_id = std::stoi(list[1]);
+	int csys = std::stoi(list[2]);
+	int has_rot = std::stoi(list[3]);
 	fmt::print("Num. node: {} Max id: {} Coord. :{} xyz len: {}\n", num_node, max_node_id, csys, has_rot);
-	for(int i=0; i<num_node; i++){
+	for(int i=0; i<num_node; i++) {
 		std::getline(this->fp_, line);
 		auto per_node = this->parse_line(line);
-		wrapper_::node_bcy pt{str2int(per_node[0]), csys,
-			{str2float(per_node[1]), str2float(per_node[2]), str2float(per_node[3])}};
-		if(6==has_rot){
-			pt.rot_[0] = str2float(per_node[4]);
-			pt.rot_[1] = str2float(per_node[5]);
-			pt.rot_[2] = str2float(per_node[6]);
+		node_f03 pt{std::stoi(per_node[0]), csys,
+			{std::stof(per_node[1]), std::stof(per_node[2]), std::stof(per_node[3])}};
+		if(6==has_rot) {
+			pt.rot_[0] = std::stof(per_node[4]);
+			pt.rot_[1] = std::stof(per_node[5]);
+			pt.rot_[2] = std::stof(per_node[6]);
 		}
 		this->node_list_.push_back(std::move(pt));
 	}
@@ -106,14 +107,14 @@ int FEModelReader<T>::parse_element_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	int num_elem = str2int(list[0]);
-	int max_elem_id = str2int(list[1]);
+	int num_elem = std::stoi(list[0]);
+	int max_elem_id = std::stoi(list[1]);
 	fmt::print("Num. element: {} Max id: {}\n", num_elem, max_elem_id);
 	for(int i=0; i<num_elem; i++){
 		std::getline(this->fp_, line);
 		auto per_elem = this->parse_line(line);
-		wrapper_::elem_bcy pp{str2int(per_elem[0]), str2int(per_elem[1]), str2int(per_elem[2]), str2int(per_elem[3])};
-		for(int j=0; j<str2int(per_elem[4]); j++)pp.node_list_[j] = str2int(per_elem[5+j]);
+		elem_f03 pp{std::stoi(per_elem[0]), std::stoi(per_elem[1]), std::stoi(per_elem[2]), std::stoi(per_elem[3])};
+		for(int j=0; j<std::stoi(per_elem[4]); j++)pp.node_list_[j] = std::stoi(per_elem[5+j]);
 		this->elem_list_.push_back(std::move(pp));
 	}
 	return 0;
@@ -128,15 +129,15 @@ int FEModelReader<T>::parse_material_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	
-	int num_matl = str2int(list[0]);
-	int max_matl_id = str2int(list[1]);
+
+	int num_matl = std::stoi(list[0]);
+	int max_matl_id = std::stoi(list[1]);
 	fmt::print("Num. material: {} Max id: {}\n", num_matl, max_matl_id);
 	for(int i=0; i<num_matl; i++){
 		std::getline(this->fp_, line);
 		auto per_matl = this->parse_line(line);
-		wrapper_::matl_bcy pm{str2int(per_matl[0]), str2int(per_matl[1])};
-		for(int j=0; j<str2int(per_matl[2]); j++)pm.val_[j] = str2float(per_matl[3+j]);
+		matl_f03 pm{std::stoi(per_matl[0]), std::stoi(per_matl[1])};
+		for(int j=0; j<std::stoi(per_matl[2]); j++)pm.val_[j] = std::stof(per_matl[3+j]);
 		this->matl_list_.push_back(std::move(pm));
 	}
 	return 0;
@@ -151,15 +152,15 @@ int FEModelReader<T>::parse_section_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	
-	int num_sect = str2int(list[0]);
-	int max_sect_id = str2int(list[1]);
+
+	int num_sect = std::stoi(list[0]);
+	int max_sect_id = std::stoi(list[1]);
 	fmt::print("Num. section: {} Max id: {}\n", num_sect, max_sect_id);
-	for(int i=0; i<num_sect; i++){
+	for(int i=0; i<num_sect; i++) {
 		std::getline(this->fp_, line);
 		auto per_sect = this->parse_line(line);
-		wrapper_::sect_bcy ps{str2int(per_sect[0]), str2int(per_sect[1])};
-		for(int j=0; j<str2int(per_sect[2]); j++)ps.val_[j] = str2float(per_sect[3+j]);
+		sect_f03 ps{std::stoi(per_sect[0]), std::stoi(per_sect[1])};
+		for(int j=0; j<std::stoi(per_sect[2]); j++)ps.val_[j] = std::stof(per_sect[3+j]);
 		this->sect_list_.push_back(std::move(ps));
 	}
 	return 0;
@@ -174,15 +175,15 @@ int FEModelReader<T>::parse_boundary_blk()
 	std::string line;
 	std::getline(this->fp_, line);
 	auto list = this->parse_line(line);
-	
-	int num_bc = str2int(list[0]);
-	int num_dof_per = str2int(list[1]);
+
+	int num_bc = std::stoi(list[0]);
+	int num_dof_per = std::stoi(list[1]);
 	fmt::print("Num. boundary: {} Max dof per node: {}\n", num_bc, num_dof_per);
 	for(int i=0; i<num_bc; i++){
 		std::getline(this->fp_, line);
 		auto per_bc = this->parse_line(line);
-		wrapper_::bndy_bcy bc{str2int(per_bc[0]), str2int(per_bc[1])};
-		for(int j=0; j<str2int(per_bc[2]); j++)bc.val_[j] = str2int(per_bc[3+j]);
+		bndy_f03 bc{std::stoi(per_bc[0]), std::stoi(per_bc[1])};
+		for(int j=0; j<std::stoi(per_bc[2]); j++)bc.val_[j] = std::stoi(per_bc[3+j]);
 		this->bc_list_.push_back(std::move(bc));
 	}
 	return 0;
@@ -196,48 +197,48 @@ int FEModelReader<T>::parse_load_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
-	if(startswith(line, "$FREQ")){
+	if(boost::starts_with(line, "$FREQ")){
 		auto list = this->parse_line(line);
-		int step_id = str2int(list[1]);
-		float freq = str2float(list[2]);
-		std::vector<load_simple> tmp;
+		int step_id = std::stoi(list[1]);
+		float freq = std::stof(list[2]);
+		std::vector<load_f03> tmp;
 		while(true){
 			std::getline(this->fp_, line);
-			if(startswith(line, "$END_FREQ")){
+			if(boost::starts_with(line, "$END_FREQ")){
 				break;
 			}
-			else if(startswith(line, "$NUMPRES")){
+			else if(boost::starts_with(line, "$NUMPRES")){
 				auto list = this->parse_line(line);
-				int num_pres = str2int(list[1]);
+				int num_pres = std::stoi(list[1]);
 				for(int i=0; i<num_pres; i++){
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
-					load_simple pres_load{str2int(va[1]), str2int(va[3]), -1, str2int(va[2]), freq, {str2float(va[4]), str2float(va[5])}};
+					load_f03 pres_load{std::stoi(va[1]), std::stoi(va[3]), -1, std::stoi(va[2]), freq, {std::stof(va[4]), std::stof(va[5])}};
 					tmp.push_back(std::move(pres_load));
 				}
 			}
-			else if(startswith(line, "$NUMFORCE")){
+			else if(boost::starts_with(line, "$NUMFORCE")){
 				auto list = this->parse_line(line);
-				int num_force = str2int(list[1]);
+				int num_force = std::stoi(list[1]);
 				for(int i=0; i<num_force; i++){
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
-					load_simple force_load{str2int(va[1]), 1, str2int(va[2]), -1, freq, {str2float(va[3]), str2float(va[4])}};
+					load_f03 force_load{std::stoi(va[1]), 1, std::stoi(va[2]), -1, freq, {std::stof(va[3]), std::stof(va[4])}};
 					tmp.push_back(std::move(force_load));
 				}
 			}
-			else if(startswith(line, "$NUMDISP")){
+			else if(boost::starts_with(line, "$NUMDISP")){
 				auto list = this->parse_line(line);
-				int num_disp = str2int(list[1]);
+				int num_disp = std::stoi(list[1]);
 				for(int i=0; i<num_disp; i++){
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
-					load_simple disp_load{str2int(va[1]), 2, str2int(va[2]), -1, freq, {str2float(va[3]), str2float(va[4])}};
+					load_f03 disp_load{std::stoi(va[1]), 2, std::stoi(va[2]), -1, freq, {std::stof(va[3]), std::stof(va[4])}};
 					tmp.push_back(std::move(disp_load));
 				}
 			}
 			else{
-				
+
 			}
 		}
 		assert(!tmp.empty());
@@ -257,79 +258,36 @@ int FEModelReader<T>::parse_solution_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
-	int num_param = str2int(line);
-	
+	int num_param = std::stoi(line);
+
 	int antype{0};
 	int numfreq{0};
 	float damp{0.0f};
-	
+
 	for(int i=0; i<num_param; i++){
 		std::getline(this->fp_, line);
 		auto list = this->parse_line(line);
-		if(startswith(line, "$ANTYPE")){
-			antype = str2int(list[1]);
+		if(boost::starts_with(line, "$ANTYPE")){
+			antype = std::stoi(list[1]);
 			fmt::print("Analysis type: {}\n", antype);
 		}
-		else if(startswith(line, "$DMPSTR")){
-			damp = str2float(list[1]);
+		else if(boost::starts_with(line, "$DMPSTR")){
+			damp = std::stof(list[1]);
 			fmt::print("Damp coeff: {}\n", damp);
 		}
-		else if(startswith(line, "$NUMFREQ")){
-			numfreq = str2int(list[1]);
+		else if(boost::starts_with(line, "$NUMFREQ")){
+			numfreq = std::stoi(list[1]);
 			fmt::print("Num. Freq: {}\n", numfreq);
 		}
 		else{
-			
+
 		}
 	}
 	for(int i=0; i<numfreq; i++){
 		this->parse_load_blk();
 	}
-	solu_simple solu{antype, numfreq, {damp, -1.0f}};
+	solu_f03 solu{antype, numfreq, {damp, -1.0f}};
 	this->solu_list_.push_back(std::move(solu));
 	return 0;
-} 
 }
-
-// #include <vector>
-// #include <string>
-// #include <fstream>
-// #include <iostream>
-// #include <algorithm>
-// #include <boost/algorithm/string.hpp>
-
-// int main(int argc, char* argv[])
-// {
-	// if(1<argc){
-		// std::ifstream infile(argv[1]);
-		// if(infile.is_open()){
-			// std::string line;
-			// while(std::getline(infile, line)){
-			// boost::trim(line);
-			// if(!line.empty()){
-				// if(std::equal(line.begin(), line.begin() + 4, "$END")){
-					// std::cout << "This is END\n";
-				// }
-				// else if(std::equal(line.begin(), line.begin()+5, "$NODE")){
-					// std::cout << "This is keyword NODE begin\n";
-					// std::getline(infile, line);
-					// std::vector<std::string> list;
-					// boost::split(list, line, boost::is_any_of(","));
-					// if(2<list.size())std::cout << "Node Num: " << list[0] << " Max Id. " << list[1] << "\n";
-				// }
-				// else{
-					// std::cout << line << "\n";
-				// }
-				
-				
-			// }
-		// }
-		// }
-		// else{
-			// std::cout << "Could not find file: " << argv[1] << "!\n";
-		// }
-		
-		
-	// }
-	// return 0;
-// }
+}

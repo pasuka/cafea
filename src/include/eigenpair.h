@@ -14,11 +14,11 @@ template <class T=double, class Solver=Eigen::SimplicialLDLT<Eigen::SparseMatrix
 class LinearSolver{
 	public:
 		//! Destructor.
-		virtual ~LinearSolver() {clear();};
+		virtual ~LinearSolver() { clear();};
 		//! Load K.
 		void load(const T*, const SparseCell*, size_t, size_t);
 		//! Analyze pattern.
-		void analyze() {solver_.analyzePattern(matA_); isAnalyzed_ = true;};
+		void analyze() { solver_.analyzePattern(matA_); isAnalyzed_ = true;};
 		//! Factorize matirx K.
 		void factorize()
 		{
@@ -58,9 +58,9 @@ class LinearSolver{
 			isAnalyzed_ = isFactorized_ = isSolved_ = false;
 		};
 		//! Get result.
-		vecX_<T> get_X() const {return xx_;};
+		vecX_<T> get_X() const { return xx_;};
 		//! Get flag of solver status.
-		bool get_info() const {return isSolved_;};
+		bool get_info() const { return isSolved_;};
 	protected:
 		Eigen::SparseMatrix<T> matA_;//!< Global stiffness matrix.
 		vecX_<T> xx_;//!< Result vector.
@@ -83,11 +83,11 @@ class EigenSolver: public LinearSolver<T, Solver> {
 		void clear() override
 		{
 			LinearSolver<T, Solver>::clear();
-			
+
 			matB_.resize(0, 0);
 			matB_.setZero();
 			matB_.data().squeeze();
-			
+
 			X_.resize(0, 0);
 			lambda_.resize(0, 0);
 		};
@@ -100,11 +100,11 @@ class EigenSolver: public LinearSolver<T, Solver> {
 		//! Modify Gram-Schimidt B-orthogonal method.
 		matrix_<T> mgs(matrix_<T> y, const Eigen::SparseMatrix<T> B);
 		//! Get eigenvalues.
-		matrix_<T> get_eigenvalues() const {return lambda_;};
+		matrix_<T> get_eigenvalues() const { return lambda_;};
 		//! Get eigenvectors.
-		matrix_<T> get_eigenvectors() const {return X_;};
+		matrix_<T> get_eigenvectors() const { return X_;};
 		//! Get eigenpairs.
-		std::tuple<matrix_<T>, matrix_<T>> get_eigenpairs() const {return std::make_tuple(lambda_, X_);};
+		std::tuple<matrix_<T>, matrix_<T>> get_eigenpairs() const { return std::make_tuple(lambda_, X_);};
 	private:
 		Eigen::SparseMatrix<T> matB_;//!< Global mass matrix.
 		matrix_<T> X_, lambda_;//!< Eigenvectors and eigenvalues.
