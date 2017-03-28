@@ -7,8 +7,7 @@ namespace cafea
  * \param[in] fn input file path.
  * \return 0 means okay.
  */
-template <class T>
-int FEModelReader<T>::load_model(const std::string fn)
+int BCYReader::load_model(const std::string fn)
 {
 	fs::path p = fn;
 	if(fs::exists(p)) {
@@ -56,7 +55,7 @@ int FEModelReader<T>::load_model(const std::string fn)
 				else if(boost::starts_with(line, "$END")) {
 
 				}
-				else if(boost::starts_with(line, "#")) {
+				else if(boost::starts_with(line, "#")||boost::starts_with(line, "!")||boost::starts_with(line, "//")) {
 					fmt::print("Comment line.\n");
 				}
 				else{
@@ -72,8 +71,7 @@ int FEModelReader<T>::load_model(const std::string fn)
 /**
  * \brief Parse block of nodes.
  */
-template <class T>
-int FEModelReader<T>::parse_node_blk()
+int BCYReader::parse_node_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
@@ -86,7 +84,7 @@ int FEModelReader<T>::parse_node_blk()
 	for(int i=0; i<num_node; i++) {
 		std::getline(this->fp_, line);
 		auto per_node = this->parse_line(line);
-		node_f03 pt{std::stoi(per_node[0]), csys,
+		wrapper_::node_f03 pt{std::stoi(per_node[0]), csys,
 			{std::stof(per_node[1]), std::stof(per_node[2]), std::stof(per_node[3])}};
 		if(6==has_rot) {
 			pt.rot_[0] = std::stof(per_node[4]);
@@ -101,8 +99,7 @@ int FEModelReader<T>::parse_node_blk()
 /**
  * \brief Parse block of elements.
  */
-template <class T>
-int FEModelReader<T>::parse_element_blk()
+int BCYReader::parse_element_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
@@ -113,7 +110,7 @@ int FEModelReader<T>::parse_element_blk()
 	for(int i=0; i<num_elem; i++){
 		std::getline(this->fp_, line);
 		auto per_elem = this->parse_line(line);
-		elem_f03 pp{std::stoi(per_elem[0]), std::stoi(per_elem[1]), std::stoi(per_elem[2]), std::stoi(per_elem[3])};
+		wrapper_::elem_f03 pp{std::stoi(per_elem[0]), std::stoi(per_elem[1]), std::stoi(per_elem[2]), std::stoi(per_elem[3])};
 		for(int j=0; j<std::stoi(per_elem[4]); j++)pp.node_list_[j] = std::stoi(per_elem[5+j]);
 		this->elem_list_.push_back(std::move(pp));
 	}
@@ -123,8 +120,7 @@ int FEModelReader<T>::parse_element_blk()
 /**
  * \brief Parse block of materials.
  */
-template <class T>
-int FEModelReader<T>::parse_material_blk()
+int BCYReader::parse_material_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
@@ -136,7 +132,7 @@ int FEModelReader<T>::parse_material_blk()
 	for(int i=0; i<num_matl; i++){
 		std::getline(this->fp_, line);
 		auto per_matl = this->parse_line(line);
-		matl_f03 pm{std::stoi(per_matl[0]), std::stoi(per_matl[1])};
+		wrapper_::matl_f03 pm{std::stoi(per_matl[0]), std::stoi(per_matl[1])};
 		for(int j=0; j<std::stoi(per_matl[2]); j++)pm.val_[j] = std::stof(per_matl[3+j]);
 		this->matl_list_.push_back(std::move(pm));
 	}
@@ -146,8 +142,7 @@ int FEModelReader<T>::parse_material_blk()
 /**
  * \brief Parse block of sections.
  */
-template <class T>
-int FEModelReader<T>::parse_section_blk()
+int BCYReader::parse_section_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
@@ -159,7 +154,7 @@ int FEModelReader<T>::parse_section_blk()
 	for(int i=0; i<num_sect; i++) {
 		std::getline(this->fp_, line);
 		auto per_sect = this->parse_line(line);
-		sect_f03 ps{std::stoi(per_sect[0]), std::stoi(per_sect[1])};
+		wrapper_::sect_f03 ps{std::stoi(per_sect[0]), std::stoi(per_sect[1])};
 		for(int j=0; j<std::stoi(per_sect[2]); j++)ps.val_[j] = std::stof(per_sect[3+j]);
 		this->sect_list_.push_back(std::move(ps));
 	}
@@ -169,8 +164,7 @@ int FEModelReader<T>::parse_section_blk()
 /**
  * \brief Parse block of boundary.
  */
-template <class T>
-int FEModelReader<T>::parse_boundary_blk()
+int BCYReader::parse_boundary_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
@@ -182,7 +176,7 @@ int FEModelReader<T>::parse_boundary_blk()
 	for(int i=0; i<num_bc; i++){
 		std::getline(this->fp_, line);
 		auto per_bc = this->parse_line(line);
-		bndy_f03 bc{std::stoi(per_bc[0]), std::stoi(per_bc[1])};
+		wrapper_::bndy_f03 bc{std::stoi(per_bc[0]), std::stoi(per_bc[1])};
 		for(int j=0; j<std::stoi(per_bc[2]); j++)bc.val_[j] = std::stoi(per_bc[3+j]);
 		this->bc_list_.push_back(std::move(bc));
 	}
@@ -192,8 +186,7 @@ int FEModelReader<T>::parse_boundary_blk()
 /**
  * \brief Parse block of loads.
  */
-template <class T>
-int FEModelReader<T>::parse_load_blk()
+int BCYReader::parse_load_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
@@ -201,7 +194,7 @@ int FEModelReader<T>::parse_load_blk()
 		auto list = this->parse_line(line);
 		int step_id = std::stoi(list[1]);
 		float freq = std::stof(list[2]);
-		std::vector<load_f03> tmp;
+		std::vector<wrapper_::load_f03> tmp;
 		while(true){
 			std::getline(this->fp_, line);
 			if(boost::starts_with(line, "$END_FREQ")){
@@ -213,7 +206,7 @@ int FEModelReader<T>::parse_load_blk()
 				for(int i=0; i<num_pres; i++){
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
-					load_f03 pres_load{std::stoi(va[1]), std::stoi(va[3]), -1, std::stoi(va[2]), freq, {std::stof(va[4]), std::stof(va[5])}};
+					wrapper_::load_f03 pres_load{std::stoi(va[1]), std::stoi(va[3]), -1, std::stoi(va[2]), freq, {std::stof(va[4]), std::stof(va[5])}};
 					tmp.push_back(std::move(pres_load));
 				}
 			}
@@ -223,7 +216,7 @@ int FEModelReader<T>::parse_load_blk()
 				for(int i=0; i<num_force; i++){
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
-					load_f03 force_load{std::stoi(va[1]), 1, std::stoi(va[2]), -1, freq, {std::stof(va[3]), std::stof(va[4])}};
+					wrapper_::load_f03 force_load{std::stoi(va[1]), 1, std::stoi(va[2]), -1, freq, {std::stof(va[3]), std::stof(va[4])}};
 					tmp.push_back(std::move(force_load));
 				}
 			}
@@ -233,7 +226,7 @@ int FEModelReader<T>::parse_load_blk()
 				for(int i=0; i<num_disp; i++){
 					std::getline(this->fp_, line);
 					auto va = this->parse_line(line);
-					load_f03 disp_load{std::stoi(va[1]), 2, std::stoi(va[2]), -1, freq, {std::stof(va[3]), std::stof(va[4])}};
+					wrapper_::load_f03 disp_load{std::stoi(va[1]), 2, std::stoi(va[2]), -1, freq, {std::stof(va[3]), std::stof(va[4])}};
 					tmp.push_back(std::move(disp_load));
 				}
 			}
@@ -242,7 +235,7 @@ int FEModelReader<T>::parse_load_blk()
 			}
 		}
 		assert(!tmp.empty());
-		if(!tmp.empty())this->load_list_.push_back(tmp);
+		if(!tmp.empty())this->load_list_.push_back(std::move(tmp));
 	}
 	else{
 		return -1;
@@ -253,8 +246,7 @@ int FEModelReader<T>::parse_load_blk()
 /**
  * \brief Parse block of solution.
  */
-template <class T>
-int FEModelReader<T>::parse_solution_blk()
+int BCYReader::parse_solution_blk()
 {
 	std::string line;
 	std::getline(this->fp_, line);
@@ -286,7 +278,7 @@ int FEModelReader<T>::parse_solution_blk()
 	for(int i=0; i<numfreq; i++){
 		this->parse_load_blk();
 	}
-	solu_f03 solu{antype, numfreq, {damp, -1.0f}};
+	wrapper_::solu_f03 solu{antype, numfreq, {damp, -1.0f}};
 	this->solu_list_.push_back(std::move(solu));
 	return 0;
 }
