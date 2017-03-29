@@ -39,13 +39,10 @@ class FEModelContainer {
 		//! Get statistics.
 		virtual std::map<std::string, int> get_info() const
 		{
-			int num_node = node_list_.size();
-			int num_elem = elem_list_.size();
-			std::map<std::string, int> tmp{{"node", num_node}, {"element", num_elem}};
-			return std::move(tmp);
+			return {{"node", node_list_.size()}, {"element", elem_list_.size()}};
 		};
 		//! Print.
-		friend std::ostream& operator<<(std::ostream& cout, const FEModelContainer &a)
+		friend std::ostream& operator<<(std::ostream& cout, const FEModelContainer& a)
 		{
 			cout << "This is FEModelContainer.\n";
 			for(const auto &p: a.get_info()) {
@@ -93,18 +90,13 @@ class BCYReader: public FEModelContainer {
 		//! Check and print.
 		std::map<std::string, int> get_info() const override
 		{
-			int num_node = node_list_.size();
-			int num_elem = elem_list_.size();
-			int num_matl = matl_list_.size();
-			int num_sect = sect_list_.size();
-			int num_load = load_list_.size();
-			int num_solu = solu_list_.size();
-			int num_bc = bc_list_.size();
-
-			std::map<std::string, int>  tmp{{"node", num_node}, {"element", num_elem},
-				{"material", num_matl}, {"section", num_sect}, {"load", num_load},
-				{"solution", num_solu}, {"boundary", num_bc}};
-			return std::move(tmp);
+			return {{"node", node_list_.size()},
+				{"element", elem_list_.size()},
+				{"material", matl_list_.size()},
+				{"section", sect_list_.size()},
+				{"boundary", bc_list_.size()},
+				{"load", load_list_.size()},
+				{"solution", solu_list_.size()}};
 		};
 		//! Get material list pointer.
 		const wrapper_::matl_f03* get_material_ptr() const { return matl_list_.data();};
@@ -117,7 +109,7 @@ class BCYReader: public FEModelContainer {
 		//! Get load list pointer.
 		const std::vector<wrapper_::load_f03>* get_load_ptr() const { return load_list_.data();};
 		//! Print.
-		friend std::ostream& operator<<(std::ostream& cout, const BCYReader &a)
+		friend std::ostream& operator<<(std::ostream& cout, const BCYReader& a)
 		{
 			cout << "This is BCYReader.\n";
 			for(const auto &p: a.get_info()) {
