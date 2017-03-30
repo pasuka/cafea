@@ -1,8 +1,13 @@
-#ifndef UTILS_H
-#define UTILS_H
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef _CAFEA_UTILS_H_
+#define _CAFEA_UTILS_H_
 
-#include <cmath> //! C-style header.
-
+#include <cmath>
 #include <tuple>
 #include <vector>
 #include <limits>
@@ -10,8 +15,7 @@
 #include <complex>
 #include <unordered_map>
 
-namespace cafea
-{
+namespace cafea {
 //! Using i stands for imag part of complex.
 using namespace std::complex_literals;
 //! REAL(kind=4) in Fortran iso_c_binding.
@@ -19,7 +23,7 @@ using REAL4 = float;
 //! REAL(kind=8) in Fortran iso_c_binding.
 using REAL8 = double;
 //! Complex template.
-template <class T=REAL8>
+template <class T = REAL8>
 using COMPLEX = std::complex<T>;
 //! COMPLEX(kind=4) in Fortran iso_c_binding.
 using COMPLEX4 = COMPLEX<REAL4>;
@@ -34,10 +38,10 @@ using COMPLEX8 = COMPLEX<REAL8>;
     using COMPLEX16 = COMPLEX<REAL16>;
 #endif
 //! Precision of machine via different types.
-template<class T=REAL8>
+template<class T = REAL8>
 constexpr T EPS() { return std::numeric_limits<T>::epsilon();};
 //! M_PI.
-template<class T=REAL8>
+template<class T = REAL8>
 constexpr T PI() { return T(std::atan(1.0)*4.0);};
 
 //! Initializer list.
@@ -46,5 +50,5 @@ using init_list_ = std::initializer_list<T>;
 //! Dictionary.
 template <class T>
 using dict_ = std::unordered_map<int, T>;
-}
-#endif
+}  // namespace cafea
+#endif  // _CAFEA_UTILS_H_

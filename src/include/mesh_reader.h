@@ -1,8 +1,15 @@
-#ifndef MESH_READER_H
-#define MESH_READER_H
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef _CAFEA_MESH_READER_H_
+#define _CAFEA_MESH_READER_H_
 
 #include <map>
 #include <string>
+#include <vector>
 #include <fstream>
 #include <utility>
 #include <iostream>
@@ -12,22 +19,20 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "fmt/format.h"
+#include "../../fmt/format.h"
 
-#include "fortran_wrapper.h"
+#include "./fortran_wrapper.h"
 
 namespace fs = boost::filesystem;//!< C++17 not ready yet.
 
-namespace cafea
-{
+namespace cafea {
 /**
  *  \class FE Model Reader Basic.
  */
 class FEModelContainer {
 	public:
 		//! Destructor.
-		virtual ~FEModelContainer()
-		{
+		virtual ~FEModelContainer() {
 			if(!node_list_.empty())node_list_.clear();
 			if(!elem_list_.empty())elem_list_.clear();
 		};
@@ -37,19 +42,18 @@ class FEModelContainer {
 		//! Get element list pointer.
 		const wrapper_::elem_f03* get_element_ptr() const { return elem_list_.data();};
 		//! Get statistics.
-		virtual std::map<std::string, int> get_info() const
-		{
+		virtual std::map<std::string, int> get_info() const {
 			return {{"node", node_list_.size()}, {"element", elem_list_.size()}};
 		};
 		//! Print.
-		friend std::ostream& operator<<(std::ostream& cout, const FEModelContainer& a)
-		{
+		friend std::ostream& operator<<(std::ostream& cout, const FEModelContainer& a) {
 			cout << "This is FEModelContainer.\n";
 			for(const auto &p: a.get_info()) {
 				cout << fmt::format("Num. of {}: {}\n", p.first, p.second);
 			}
 			return cout;
 		};
+
 	protected:
 		std::vector<wrapper_::node_f03> node_list_;//!< Node set.
 		std::vector<wrapper_::elem_f03> elem_list_;//!< Element set.
@@ -64,14 +68,12 @@ class BCYReader: public FEModelContainer {
 		//! Load bcy file.
 		int load_model(const std::string fn);
 		//! Load bcy file.
-		int load_model(const char* fn)
-		{
+		int load_model(const char* fn) {
 			const std::string fn2(fn);
 			return load_model(fn2);
 		};
 		//! Clear model data in memory.
-		void clean_model()
-		{
+		void clean_model() {
 			file_.clear();
 			if(fp_.is_open())fp_.close();
 
@@ -88,8 +90,7 @@ class BCYReader: public FEModelContainer {
 			}
 		};
 		//! Check and print.
-		std::map<std::string, int> get_info() const override
-		{
+		std::map<std::string, int> get_info() const override {
 			return {{"node", node_list_.size()},
 				{"element", elem_list_.size()},
 				{"material", matl_list_.size()},
@@ -109,17 +110,17 @@ class BCYReader: public FEModelContainer {
 		//! Get load list pointer.
 		const std::vector<wrapper_::load_f03>* get_load_ptr() const { return load_list_.data();};
 		//! Print.
-		friend std::ostream& operator<<(std::ostream& cout, const BCYReader& a)
-		{
+		friend std::ostream& operator<<(std::ostream& cout, const BCYReader& a) {
 			cout << "This is BCYReader.\n";
 			for(const auto &p: a.get_info()) {
 				cout << fmt::format("Num. of {}: {}\n", p.first, p.second);
 			}
 			return cout;
 		};
+
 	private:
-		fs::path file_;//!< input file path.
-		std::ifstream fp_;//!< file handler.
+		fs::path file_;  //!< input file path.
+		std::ifstream fp_;  //!< file handler.
 
 		std::vector<wrapper_::matl_f03> matl_list_;
 		std::vector<wrapper_::sect_f03> sect_list_;
@@ -128,8 +129,7 @@ class BCYReader: public FEModelContainer {
 		std::vector<std::vector<wrapper_::load_f03>> load_list_;
 
 		//! Split line by delimer.
-		std::vector<std::string> parse_line(std::string line, std::string delim=",")
-		{
+		std::vector<std::string> parse_line(std::string line, std::string delim = ",") {
 			std::vector<std::string> list;
 			boost::trim(line);
 			boost::split(list, line, boost::is_any_of(delim));
@@ -150,5 +150,5 @@ class BCYReader: public FEModelContainer {
 		//! Read load block.
 		int parse_load_blk();
 };
-}
-#endif
+}  // namespace cafea
+#endif  // _CAFEA_MESH_READER_H_

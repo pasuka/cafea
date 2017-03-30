@@ -1,26 +1,35 @@
-#ifndef ELEMENT_H
-#define ELEMENT_H
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef _CAFEA_ELEMENT_H_
+#define _CAFEA_ELEMENT_H_
 
-#include "node.h"
-#include "load.h"
-#include "section.h"
-#include "material.h"
-#include "element_lib.h"
+#include <map>
+#include <vector>
+#include <string>
+#include <algorithm>
 
-namespace cafea
-{
+#include "./node.h"
+#include "./load.h"
+#include "./section.h"
+#include "./material.h"
+#include "./element_lib.h"
+
+namespace cafea {
 /**
  *  Element object definition.
  */
-template <class T=REAL8>
+template <class T = REAL8>
 class Element: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//* Default constructor.
-		Element()=delete;
+		Element() = delete;
 		//* Destructor.
-		~Element() override
-		{
+		~Element() override {
 			nodes_.clear();
 			global_dofs_.clear();
 			attr_.clear();
@@ -33,7 +42,7 @@ class Element: public ObjectBase {
 			rhs_cmplx_.resize(0, 0);
 			result_.resize(0, 0);
 			result_cmplx_.resize(0, 0);
-		};
+		}
 		/**
 		 *  \brief Initialize with element id type material type and node list.
 		 *  \param [in] id an integer must bigger than zero.
@@ -43,16 +52,15 @@ class Element: public ObjectBase {
 		 *  \param [in] nodes list of nodes id.
 		 */
 		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes):
-			ObjectBase{ id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp), sect_(st)
-		{
-			assert(sect_>0&&matl_>0);
-			assert(nodes.size()>0);
+			ObjectBase{ id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp), sect_(st) {
+			assert(sect_ > 0 && matl_ > 0);
+			assert(nodes.size() > 0);
 			// std::copy(nodes.begin(), nodes.end(), [nodes_](int x){if(x)nodes_.push_back(x);});
-			for(const auto& it: nodes){
-				assert(it>0);
+			for (const auto& it: nodes) {
+				assert(it > 0);
 				nodes_.push_back(it);
 			}
-		};
+		}
 		/**
 		 *  \brief Initialize with element id material.
 		 *  \param [in] id an positive integer.
@@ -60,83 +68,79 @@ class Element: public ObjectBase {
 		 *  \param [in] st number of section type.
 		 */
 		Element(int id, int mp, int st):ObjectBase{ id, fmt::format("Elem#{0}",
-			id)}, matl_(mp), sect_(st) { assert(sect_>0&&matl_>0);};
+			id)}, matl_(mp), sect_(st) { assert(sect_ > 0 && matl_ > 0);}
 
 		//! Generate stifness mass matrix of element.
-		template <class U=REAL4>
+		template <class U = REAL4>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*);
 
-		template <class U=REAL4>
+		template <class U = REAL4>
 		void form_matrix(const std::vector<Node<U, T>>, const Material<U>*, const Section<U>*);
 
-		template <class U=REAL4>
+		template <class U = REAL4>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 
-		template <class U=REAL4>
+		template <class U = REAL4>
 		void form_matrix(const std::vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 
 		//! Get stiffness matrix.
-		matrix_<T> get_stif() const { return stif_;};
+		matrix_<T> get_stif() const { return stif_;}
 		//! Get mass matrix.
-		matrix_<T> get_mass() const { return mass_;};
+		matrix_<T> get_mass() const { return mass_;}
 		//! Get transpose matrix.
-		matrix_<T> get_tran() const { return tran_;};
+		matrix_<T> get_tran() const { return tran_;}
 		//! Get right-hand side matrix.
-		vecX_<T> get_rhs() const { return rhs_;};
+		vecX_<T> get_rhs() const { return rhs_;}
 		//!
-		template <class ResType=T>
+		template <class ResType = T>
 		matrix_<ResType> get_rhs() const;
 		//! Get result matrix.
-		matrix_<T> get_result() const { return result_;};
+		matrix_<T> get_result() const { return result_;}
 		//!
-		template <class ResType=T>
+		template <class ResType = T>
 		matrix_<ResType> get_result() const;
 		//!
-		cmatrix_<T> get_rhs_cmplx() const { return rhs_cmplx_;};
+		cmatrix_<T> get_rhs_cmplx() const { return rhs_cmplx_;}
 
 		//! Get raw pointer of stiffness matrix.
-		const T *get_stif_ptr() const { return stif_.data();};
+		const T* get_stif_ptr() const { return stif_.data();}
 		//! Get raw pointer of mass matrix.
-		const T *get_mass_ptr() const { return mass_.data();};
+		const T* get_mass_ptr() const { return mass_.data();}
 		//! Get raw pointer of transpose matrix.
-		const T *get_tran_ptr() const { return tran_.data();};
+		const T* get_tran_ptr() const { return tran_.data();}
 		//! Get raw pointer of right-hand side matrix.
-		const T *get_rhs_ptr() const { return rhs_.data();};
+		const T* get_rhs_ptr() const { return rhs_.data();}
 		//! Get raw pointer of result matrix.
-		const T *get_result_ptr() const { return result_.data();};
+		const T* get_result_ptr() const { return result_.data();}
 
 		//! Post process.
 		void post_stress(const vecX_<T>);
 
-		template <class ResType=T>
+		template <class ResType = T>
 		void post_stress(const matrix_<ResType>);
 		// void post_stress(const matrix_<T>);
 		// void post_stress(const matrix_<std::complex<T>>);
 
 		//! Set node list.
-		void set_node_list(const int a[], int m)
-		{
-			if(!nodes_.empty())nodes_.clear();
-			for(int i=0; i<m; i++)nodes_.push_back(a[i]);
-		};
+		void set_node_list(const int a[], int m) {
+			if (!nodes_.empty()) nodes_.clear();
+			for ( int i = 0; i < m; i++) nodes_.push_back(a[i]);
+		}
 		//! Set node list with c++11 initializer_list.
-		void set_node_list(init_list_<int> a)
-		{
-			if(!nodes_.empty())nodes_.clear();
+		void set_node_list(init_list_<int> a) {
+			if (!nodes_.empty()) nodes_.clear();
 			std::copy(a.begin(), a.end(), std::back_inserter(nodes_));
 			// for(const auto& it: a)nodes_.push_back(it);
-		};
+		}
 		//! Set element option.
-		void set_option(init_list_<int> a)
-		{
-			assert(0<a.size()&&a.size()<=10);
+		void set_option(init_list_<int> a) {
+			assert(0 < a.size() && a.size() <= 10);
 			std::copy(a.begin(), a.end(), keyopt_.begin());
-		};
+		}
 		//! Set element option.
-		void set_option(const int a[], int m)
-		{
-			assert(0<m&&m<=10);
-			for(int i=0; i<m; i++)keyopt_[i] = a[i];
+		void set_option(const int a[], int m) {
+			assert(0 < m && m <= 10);
+			for (int i = 0; i < m; i++) keyopt_[i] = a[i];
 		};
 		//! Set id of element.
 		void set_element_id(int x) { id_ = x;};
@@ -151,9 +155,11 @@ class Element: public ObjectBase {
 		//! Set dof index of element.
 		void set_element_dofs(int x) { global_dofs_.push_back(x);};
 		//! Clear dof index of element.
-		void clear_element_dofs() { if(!global_dofs_.empty())global_dofs_.clear();};
+		void clear_element_dofs() {
+			if (!global_dofs_.empty()) global_dofs_.clear();
+		}
 		//! Set mass matrix format.
-		void set_lumped_mass(bool val=false) { if(val)keyopt_[0]=1;};
+		void set_lumped_mass(bool val = false) { if (val) { keyopt_[0] = 1;}}
 
 		//! Get material id.
 		int get_material_id() const { return matl_;};
@@ -186,10 +192,9 @@ class Element: public ObjectBase {
 		//! Get global dofs array.
 		std::vector<int> get_element_dofs() const { return global_dofs_;};
 		//! Get mass format.
-		bool is_lumped_mass() const { return 0<keyopt_[0];};
+		bool is_lumped_mass() const { return 0 < keyopt_[0];};
 		//! Print information.
-		friend std::ostream& operator<<(std::ostream& cout, const Element &a)
-		{
+		friend std::ostream& operator<<(std::ostream& cout, const Element &a) {
 			cout << fmt::format("Element id:{}\t", a.id_);
 			cout << fmt::format("Num node:{}\t", a.get_total_num_of_node());
 			cout << fmt::format("Active node:{}\t", a.get_active_num_of_node());
@@ -197,7 +202,8 @@ class Element: public ObjectBase {
 			cout << fmt::format("Dof per node:{}\t", a.get_dofs_per_node());
 			return cout << "\n";
 		}
- 	private:
+
+	private:
 		ElementType etype_{ElementType::UNKNOWN};//!< Type of element.
 		int matl_{-1};//!< Material id.
 		int sect_{-1};//!< Section id.
@@ -223,5 +229,5 @@ class Element: public ObjectBase {
 //! Specialization.
 template class Element<REAL8>;
 template class Element<REAL4>;
-}
-#endif
+}  // namespace cafea
+#endif  // _CAFEA_ELEMENT_H_

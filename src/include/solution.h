@@ -1,132 +1,123 @@
-#ifndef SOLUTION_H
-#define SOLUTION_H
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef CAFEA_SOLUTION_H_
+#define CAFEA_SOLUTION_H_
 
-#include <complex>
 #include <cstddef>
 #include <array>
 #include <vector>
+#include <memory>
+#include <complex>
 #include <ostream>
 #include <typeinfo>
 #include <typeindex>
 
 #include <Eigen/Eigen>
-// #include <Eigen/SPQRSupport>
-// #include <Eigen/UmfPackSupport>
-#include "fmt/format.h"
 
-#include "node.h"
-#include "element.h"
-#include "material.h"
-#include "section.h"
-#include "boundary.h"
-#include "sparse_matrix.h"
-#include "mesh_reader.h"
-#include "eigenpair.h"
+#include "../../fmt/format.h"
 
-namespace cafea
-{
+#include "./node.h"
+#include "./element.h"
+#include "./material.h"
+#include "./section.h"
+#include "./boundary.h"
+#include "./sparse_matrix.h"
+#include "./mesh_reader.h"
+#include "./eigenpair.h"
+
+namespace cafea {
 /**
  *  Solution base def.
  */
-template <class FileReader, class Scalar=float, class ResultScalar=double>
+template <class FileReader, class Scalar = REAL4, class ResultScalar = REAL8>
 class SolutionBase {
 	public:
 		//! Initialize environment.
-		virtual void init()=0;
+		virtual void init() = 0;
 		//! Clear model data.
-		virtual void clear()=0;
+		virtual void clear() = 0;
 		//! Destructor.
-		virtual ~SolutionBase()
-		{
+		virtual ~SolutionBase() {
 			fmt::print("Destructor of solution base.\n");
-		};
+		}
 		//! Load input file.
-		virtual void load(const char* fn)
-		{
+		virtual void load(const char* fn) {
 			fmt::print("Load file:{}\n", fn);
-		};
+		}
 		//! Load input file.
 		// virtual void load(const std::string fn) {load(fn.c_str());};
 		//! Check input model data.
-		virtual void check()
-		{
+		virtual void check() {
 			fmt::print("Check input.\n");
-		};
+		}
 		//! Analyze pattern.
-		virtual void analyze()
-		{
+		virtual void analyze() {
 			fmt::print("Analyze model.\n");
-		};
+		}
 		//! Assemble global matrix.
-		virtual void assembly()
-		{
+		virtual void assembly() {
 			fmt::print("Assemble matrix.\n");
-		};
+		}
 		//! Solve.
-		virtual void solve()
-		{
+		virtual void solve() {
 			fmt::print("Solve problem.\n");
-		};
+		}
 		//! Save MAT file.
-		virtual void write2mat(const char* mat, bool ver_73=false)
-		{
+		virtual void write2mat(const char* mat, bool ver_73 = false) {
 			fmt::print("Save :{}\n", mat);
-		};
+		}
 		//! Save MAT file.
 		// virtual void write2mat(const std::string mat) {write2mat(mat.c_str());};
 		//! Post process.
-		virtual void post_process()
-		{
+		virtual void post_process() {
 			fmt::print("Post process.\n");
-		};
+		}
 		//! Get model information.
-		virtual std::array<size_t, 5> get_info() const
-		{
-			std::array<size_t, 5> a{0, 0, 0, 0,0};
+		virtual std::array<size_t, 5> get_info() const {
+			std::array<size_t, 5> a{0, 0, 0, 0, 0};
 			return a;
-		};
+		}
 		//! Set mass matrix in lumped format.
-		virtual void set_mass_lumped(bool t=false)
-		{
+		virtual void set_mass_lumped(bool t = false) {
 			fmt::print("Set Lumped mass.\n");
-		};
+		}
 		//! Set solve option in numeric values.
-		virtual void set_parameter(SolutionOption chk, init_list_<ResultScalar> val)
-		{
+		virtual void set_parameter(SolutionOption chk, init_list_<ResultScalar> val) {
 			fmt::print("Set solve option. in numeric.\n");
-		};
+		}
 		//! Set solve option in boolean values.
-		virtual void set_parameter(SolutionOption chk, bool val=false)
-		{
+		virtual void set_parameter(SolutionOption chk, bool val = false) {
 			fmt::print("Set solve option in boolean.\n");
-		};
+		}
 		//! Get result matrix.
-		virtual matrix_<ResultScalar> get_result() const
-		{
+		virtual matrix_<ResultScalar> get_result() const {
 			matrix_<ResultScalar> tmp;
 			return tmp;
-		};
+		}
 		//! Get node result.
-		virtual matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp, int res_span=0) const
-		{
+		virtual matrix_<ResultScalar> get_node_result(int node_id,
+			LoadType res_tp, int res_span = 0) const {
 			return get_result();
-		};
+		}
 };
 
 /**
  *  Solution of static analysis.
  */
-template <class FileReader, class Scalar=float, class ResultScalar=double>
+template <class FileReader, class Scalar = REAL4, class ResultScalar = REAL8>
 class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 	public:
 		//! default constructor.
-		SolutionStatic(){};
+		SolutionStatic() {}
 		//! Destructor.
-		~SolutionStatic() override
-		{
+		~SolutionStatic() override {
 			fmt::print("Destructor of static analysis.\n");
 			clear();
-		};
+		}
 		//! Initialize environment.
 		void init() override;
 		//! Clear model data.
@@ -142,18 +133,19 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		//! Solve.
 		void solve() override;
 		//! Save MAT file.
-		void write2mat(const char *mat, bool ver_73=false) override;
+		void write2mat(const char* mat, bool ver_73 = false) override;
 		//! Post process.
 		void post_process() override;
 		//! Get model information.
 		std::array<size_t, 5> get_info()const override;
 		//!
-		void set_mass_lumped(bool val=false) override
-		{
+		void set_mass_lumped(bool val = false) override {
 			mass_type_ = val ? MassType::LUMPED : MassType::CONSISTENT;
-		};
+		}
 		//!
-		matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp, int res_span=0)const override;
+		matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp,
+			int res_span = 0) const override;
+
 	protected:
 		FileReader file_parser_;//!< Input file loader.
 
@@ -163,7 +155,6 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 		dict_<Element<ResultScalar>> elem_group_;//!< Element dictionary.
 
 		std::vector<Boundary<Scalar>> bc_group_;//!< Boundary list.
-
 
 		SparseMat<ResultScalar> mat_pair_;//!< Global stiffness and mass matrix.
 
@@ -178,17 +169,16 @@ class SolutionStatic: public SolutionBase <FileReader, Scalar, ResultScalar> {
 /**
  *  Solution of modal analysis.
  */
-template <class FileReader, class Scalar=float, class ResultScalar=double>
+template <class FileReader, class Scalar = REAL4, class ResultScalar = REAL8>
 class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 	public:
 		//! Default constructor.
-		SolutionModal(){};
+		SolutionModal() {}
 		//! Destructor.
-		~SolutionModal() override
-		{
+		~SolutionModal() override {
 			fmt::print("Destructor of modal analysis.\n");
 			clear();
-		};
+		}
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.
@@ -204,20 +194,20 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 		//! Post process.
 		void post_process() override;
 		//! Save variables to MAT files.
-		void write2mat(const char *mat, bool ver_73=false) override;
+		void write2mat(const char* mat, bool ver_73 = false) override;
 		//! Get information.
-		std::array<size_t, 5> get_info()const override;
+		std::array<size_t, 5> get_info() const override;
 		//! Print information.
-		friend std::ostream& operator<<(std::ostream& cout, const SolutionModal &a)
-		{
+		friend std::ostream& operator<<(std::ostream& cout, const SolutionModal &a) {
 			return cout << "This is solution of modal analysis.\n";
-		};
+		}
 		//! Set solve option in numeric values.
 		void set_parameter(SolutionOption chk, init_list_<ResultScalar> val) override;
 		//! Set solve option in boolean values.
-		void set_parameter(SolutionOption chk, bool val=false) override;
+		void set_parameter(SolutionOption chk, bool val = false) override;
 		//! Get result.
-		matrix_<ResultScalar> get_result() const override {return natural_freq_;};
+		matrix_<ResultScalar> get_result() const override { return natural_freq_;}
+
 	protected:
 		matrix_<ResultScalar> mode_shape_;//!< Mode shape of FEA model.
 		matrix_<ResultScalar> natural_freq_;//!< Natural frequencies and errors.
@@ -233,17 +223,16 @@ class SolutionModal: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 /**
  *  Solution of harmonic
  */
-template <class FileReader, class Scalar=float, class ResultScalar=double>
+template <class FileReader, class Scalar = REAL4, class ResultScalar = REAL8>
 class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultScalar> {
 	public:
 		//! Default constructor.
-		SolutionHarmonicFull() {};
+		SolutionHarmonicFull() {}
 		//! Destructor.
-		~SolutionHarmonicFull() override
-		{
+		~SolutionHarmonicFull() override {
 			fmt::print("Destructor of harmonic analysis.\n");
 			clear();
-		};
+		}
 		//! Initialize environment.
 		void init() override;
 		//! Clear variables.
@@ -261,20 +250,21 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		//! Post process.
 		void post_process() override;
 		//! Save variables to MAT files.
-		void write2mat(const char *mat, bool ver_73=false) override;
+		void write2mat(const char* mat, bool ver_73 = false) override;
 		//! Get information.
-		std::array<size_t, 5> get_info()const override;
+		std::array<size_t, 5> get_info() const override;
 		//! Print information.
-		friend std::ostream& operator<<(std::ostream& cout, const SolutionHarmonicFull &a)
-		{
+		friend std::ostream& operator<<(std::ostream& cout, const SolutionHarmonicFull &a) {
 			return cout << "This is solution of harmonic analysis.\n";
-		};
+		}
 		//! Set solve option in numeric values.
 		void set_parameter(SolutionOption chk, init_list_<ResultScalar> val) override;
 		//! Set solve option in boolean values.
-		void set_parameter(SolutionOption chk, bool val=false) override;
+		void set_parameter(SolutionOption chk, bool val = false) override;
 		//! Get result.
-		matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp, int res_span=0)const override;
+		matrix_<ResultScalar> get_node_result(int node_id, LoadType res_tp,
+			int res_span = 0) const override;
+
 	private:
 		bool has_pressure_{false};
 		vecX_<ResultScalar> damping_;
@@ -284,7 +274,6 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		matrix_<COMPLEX<ResultScalar>> disp_cmplx_;
 		matrix_<COMPLEX<ResultScalar>> rhs_cmplx_;
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
-
 };
 //! Specialization with float type.
 template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL8>;
@@ -303,5 +292,5 @@ template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL4>;
 
 template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL4>;
 template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL8>;
-}
-#endif
+}  // namespace cafea
+#endif  // CAFEA_SOLUTION_H_

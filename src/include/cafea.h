@@ -1,3 +1,9 @@
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
 #ifndef CAFEA_H
 #define CAFEA_H
 
