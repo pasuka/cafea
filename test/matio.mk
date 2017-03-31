@@ -12,7 +12,7 @@ CFLAGS := -D_GNU_SOURCE=1
 # Source path.
 SRC_DIR := ../matio/src
 # Add header files.
-CFLAGS += -I../src/include/matio -I$(SRC_DIR)
+CFLAGS += -I../src/include/cafea/matio -I$(SRC_DIR)
 # Add library path.
 CFLAGS += -lhdf5 -lz -lm -fPIC -shared
 # Source files.

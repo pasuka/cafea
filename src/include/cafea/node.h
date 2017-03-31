@@ -16,11 +16,11 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-#include "./base.h"
-#include "./boundary.h"
-#include "./utils_ext.h"
-#include "./dof_handler.h"
-#include "./element_attr.h"
+#include "cafea/base.h"
+#include "cafea/boundary.h"
+#include "cafea/utils_ext.h"
+#include "cafea/dof_handler.h"
+#include "cafea/element_attr.h"
 
 namespace cafea {
 /**
@@ -128,22 +128,22 @@ class NodeBase: public ObjectBase {
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
-		NodeBase(int id, CoordinateSystem csys, init_list_<T> val, init_list_<T> val2):
+		NodeBase(int id, CoordinateSystem csys, init_list_<T> va, init_list_<T> vb):
 			csys_(csys), ObjectBase {id, fmt::format("Node#{0}", id)} {
-			assert(val.size() == 3 && val2.size() == 3);
+			assert(va.size() == 3 && vb.size() == 3);
 			int i{0}, j{0};
-			for (auto it: val) xyz_(i++) = it;
-			for( auto it: val2) angle_(j++) = it;
+			for (auto it: va) xyz_(i++) = it;
+			for( auto it: vb) angle_(j++) = it;
 		}
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
-		NodeBase(int id, init_list_<T> val, init_list_<T> val2):
-			csys_(CoordinateSystem::CARTESIAN), ObjectBase {id, fmt::format("Node#{0}", id)} {
-			assert(val.size() == 3 && val2.size() == 3);
+		NodeBase(int id, init_list_<T> va, init_list_<T> vb): csys_(CoordinateSystem::CARTESIAN),
+			ObjectBase {id, fmt::format("Node#{0}", id)} {
+			assert(va.size() == 3 && vb.size() == 3);
 			int i{0}, j{0};
-			for (auto &it: val) xyz_(i++) = it;
-			for (auto &it: val2) angle_(j++) = it;
+			for (auto &it: va) xyz_(i++) = it;
+			for (auto &it: vb) angle_(j++) = it;
 		}
 		//! Destructor.
 		~NodeBase() override {}
@@ -275,7 +275,7 @@ class Node: public NodeBase<T> {
 		//! DOF manager init.
 		void dof_init(ElementType et);
 		//! DOF accumulate with default dof type.
-		void dof_accum(int* ij, DofType mt = DofType::NORMAL) { dof_accum_2(ij, mt);}
+		void dof_accum(int *ij, DofType mt = DofType::NORMAL) { dof_accum_2(ij, mt);}
 		//! DOF apply boundary and load.
 		void dof_apply(Boundary<T> bc);
 		//! DOF vector.
@@ -344,20 +344,20 @@ struct NodeFunc {
 	//! Coordinate transform for 2-node element.
 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*);
 	//! Coordinate transform for 2-node and up direction.
-	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
-		const T[]);
+	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*, const T[]);
 	//! Coordinate transform for 2-node and up direction.
-	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
-		init_list_<T>);
+	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*, init_list_<T>);
 	//! Coordinate transform for 2-node and up direction.
-	static varargout_2_<U> coord_tran(const NodeBase<T>* p1, const NodeBase<T>* p2,
-		T up_x, T up_y, T up_z) { return coord_tran(p1, p2, {up_x, up_y, up_z});}
+	static varargout_2_<U> coord_tran(
+		const NodeBase<T> *p1,
+		const NodeBase<T> *p2,
+		T up_x,
+		T up_y,
+		T up_z) { return coord_tran(p1, p2, {up_x, up_y, up_z});}
 	//! Coordinate transform for triangle.
-	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
-		const NodeBase<T>*);
+	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*);
 	//! Coordinate transform for quadrangle.
-	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*,
-		const NodeBase<T>*, const NodeBase<T>*);
+	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*);
 };
 
 //! Specialization.

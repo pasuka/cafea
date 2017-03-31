@@ -10,7 +10,7 @@
 #include <chrono>
 #include <ostream>
 
-#include "../../fmt/format.h"
+#include "fmt/format.h"
 
 namespace cafea {
 /**
@@ -27,7 +27,7 @@ class Timer {
 		 *  \param [out] time elapsed.
 		 */
 		double elapsed() const {
-			return std::chrono::duration_cast<second_>(clock_::now()-beg_).count();
+			return std::chrono::duration_cast<second_>(clock_::now() - beg_).count();
 		}
 		//! Print time cost.
 		friend std::ostream& operator<<(std::ostream& cout, const Timer &a) {

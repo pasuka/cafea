@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef _CAFEA_UTILS_H_
-#define _CAFEA_UTILS_H_
+#ifndef CAFEA_UTILS_H_
+#define CAFEA_UTILS_H_
 
 #include <cmath>
 #include <tuple>
@@ -34,8 +34,8 @@ using COMPLEX8 = COMPLEX<REAL8>;
 #define REAL_16_ON 0
 #endif
 #if REAL_16_ON
-    using REAL16 = long double;
-    using COMPLEX16 = COMPLEX<REAL16>;
+using REAL16 = long double;
+using COMPLEX16 = COMPLEX<REAL16>;
 #endif
 //! Precision of machine via different types.
 template<class T = REAL8>
@@ -51,4 +51,4 @@ using init_list_ = std::initializer_list<T>;
 template <class T>
 using dict_ = std::unordered_map<int, T>;
 }  // namespace cafea
-#endif  // _CAFEA_UTILS_H_
+#endif  // CAFEA_UTILS_H_

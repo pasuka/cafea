@@ -1,19 +1,24 @@
-#ifndef BOUNDARY_H
-#define BOUNDARY_H
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef CAFEA_BOUNDARY_H_
+#define CAFEA_BOUNDARY_H_
 
-#include "enum_lib.h"
-#include "base.h"
+#include "cafea/enum_lib.h"
+#include "cafea/base.h"
 
-namespace cafea
-{
+namespace cafea {
 /**
  *  \class Boundary definition.
  */
-template <class T=REAL4>
+template <class T = REAL4>
 class Boundary: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;// Inherit Base's constructors.
-		Boundary()=delete;
+		Boundary() = delete;
 		/**
 		 *  \brief Constructor with id boundary type.
 		 *  \param [in] id boundary's id.
@@ -21,7 +26,7 @@ class Boundary: public ObjectBase {
 		 *  \param [in] dl dof label.
 		 */
 		Boundary(int id, BoundaryType bc, DofLabel dl): bc_(bc), dl_(dl),
-			ObjectBase{ id, fmt::format("Boundary#{0}", id)} {};
+			ObjectBase {id, fmt::format("Boundary#{0}", id)} {}
 		/**
 		 *  \brief Constructor with id boundary type values.
 		 *  \param [in] id boundary's id.
@@ -29,26 +34,26 @@ class Boundary: public ObjectBase {
 		 *  \param [in] value of boundary.
 		 */
 		Boundary(int id, BoundaryType bc, DofLabel dl, T val): bc_(bc), dl_(dl),
-			val_(val), ObjectBase{ id, fmt::format("Boundary#{0}", id)} {};
+			val_(val), ObjectBase {id, fmt::format("Boundary#{0}", id)} {}
 		//! A destructor.
-		~Boundary() override {};
+		~Boundary() override {}
 		//! Set boundary type.
-		void set_boundary_type(BoundaryType bc) { bc_ = bc;};
+		void set_boundary_type(BoundaryType bc) { bc_ = bc;}
 		//! Get boundary type.
-		BoundaryType get_boundary_type() const { return bc_;};
+		BoundaryType get_boundary_type() const { return bc_;}
 		//! Set dof label.
-		void set_dof_label(DofLabel t) { dl_ = t;};
+		void set_dof_label(DofLabel t) { dl_ = t;}
 		//! Get dof label.
-		DofLabel get_dof_label() const { return dl_;};
+		DofLabel get_dof_label() const { return dl_;}
 		//! Set boundary value.
-		void set_boundary_val(T bv) { val_ = bv;};
+		void set_boundary_val(T bv) { val_ = bv;}
 		//! Get boundary value.
-		T get_boundary_val() const { return val_;};
+		T get_boundary_val() const { return val_;}
 		//! Print boundary.
-		friend std::ostream& operator<<(std::ostream& cout, const Boundary &a)
-		{
+		friend std::ostream& operator<<(std::ostream& cout, const Boundary &a) {
 			return cout << fmt::format("{}\n", a.name_);
-		};
+		}
+
 	private:
 		BoundaryType bc_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
 		DofLabel dl_ = DofLabel::UNKNOWN;//!< Enumerate of dof label.
@@ -57,5 +62,5 @@ class Boundary: public ObjectBase {
 //! Specialization.
 template class Boundary<REAL4>;
 template class Boundary<REAL8>;
-}
-#endif
+}  // namespace cafea
+#endif  // CAFEA_BOUNDARY_H_

@@ -1,3 +1,11 @@
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef CAFEA_ELEMENT_EXT_HPP
+#define CAFEA_ELEMENT_EXT_HPP
 /**
  *  \brief Form element matrix.
  *  \param [in] p array of nodes.
@@ -6,8 +14,7 @@
  */
 template <class ResT>
 template <class U>
-void Element<ResT>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl, const Section<U> *sect)
-{
+void Element<ResT>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl, const Section<U> *sect) {
 	auto opt = this->get_option();
 	switch (this->etype_) {
 		case ElementType::PIPE16:
@@ -44,16 +51,15 @@ void Element<ResT>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl
 		case ElementType::UNKNOWN:
 		default: fmt::print("Unsupported element type\n");
 	}
-};
+}
 /**
  *  \brief Form element matrix.
  */
 template <class ResT>
 template <class U>
-void Element<ResT>::form_matrix(const std::vector<Node<U, ResT>> pt, const Material<U> *mp, const Section<U> *sect)
-{
+void Element<ResT>::form_matrix(const std::vector<Node<U, ResT>> pt, const Material<U> *mp, const Section<U> *sect) {
 	auto opt = this->get_option();
-	switch(this->etype_){
+	switch (this->etype_) {
 		case ElementType::PIPE16:
 			std::tie(this->stif_, this->mass_, this->tran_, this->rhs_,
 				this->attr_) = StructuralElement<U, ResT>::pipe16(pt, mp, sect, opt.data());
@@ -88,4 +94,5 @@ void Element<ResT>::form_matrix(const std::vector<Node<U, ResT>> pt, const Mater
 		case ElementType::UNKNOWN:
 		default: fmt::print("Unsupported element type\n");
 	}
-};
+}
+#endif  // CAFEA_ELEMENT_EXT_HPP

@@ -4,10 +4,10 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef _CAFEA_FORTRAN_WRAPPER_H_
-#define _CAFEA_FORTRAN_WRAPPER_H_
+#ifndef CAFEA_FORTRAN_WRAPPER_H_
+#define CAFEA_FORTRAN_WRAPPER_H_
 
-#include "./utils.h"
+#include "cafea/utils.h"
 
 namespace cafea {
 namespace wrapper_ {
@@ -75,4 +75,4 @@ struct solu_f03 {
 #endif
 }  // namespace wrapper_
 }  // namespace cafea
-#endif  // _CAFEA_FORTRAN_WRAPPER_H_
+#endif  // CAFEA_FORTRAN_WRAPPER_H_

@@ -18,16 +18,16 @@
 
 #include <Eigen/Eigen>
 
-#include "../../fmt/format.h"
+#include "fmt/format.h"
 
-#include "./node.h"
-#include "./element.h"
-#include "./material.h"
-#include "./section.h"
-#include "./boundary.h"
-#include "./sparse_matrix.h"
-#include "./mesh_reader.h"
-#include "./eigenpair.h"
+#include "cafea/node.h"
+#include "cafea/element.h"
+#include "cafea/material.h"
+#include "cafea/section.h"
+#include "cafea/boundary.h"
+#include "cafea/sparse_matrix.h"
+#include "cafea/mesh_reader.h"
+#include "cafea/eigenpair.h"
 
 namespace cafea {
 /**

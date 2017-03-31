@@ -4,26 +4,28 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef _CAFEA_EIGENPAIR_H_
-#define _CAFEA_EIGENPAIR_H_
+#ifndef CAFEA_EIGENPAIR_H_
+#define CAFEA_EIGENPAIR_H_
+
+#include <tuple>
 
 #include <Eigen/Eigen>
 
-#include "./sparse_matrix.h"
+#include "cafea/sparse_matrix.h"
 
 namespace cafea {
 /**
  *  \brief Linear solver for static solution.
  */
-template <class T = double, class Solver = Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>>>
+template <class T = REAL8, class Solver = Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>>>
 class LinearSolver {
 	public:
 		//! Destructor.
-		virtual ~LinearSolver() { clear();};
+		virtual ~LinearSolver() { clear();}
 		//! Load K.
 		void load(const T*, const SparseCell*, size_t, size_t);
 		//! Analyze pattern.
-		void analyze() { solver_.analyzePattern(matA_); isAnalyzed_ = true;};
+		void analyze() { solver_.analyzePattern(matA_); isAnalyzed_ = true;}
 		//! Factorize matirx K.
 		void factorize() {
 			if (!isAnalyzed_) analyze();
@@ -36,7 +38,7 @@ class LinearSolver {
 			if (!isFactorized_) factorize();
 		}
 		//! Solve.
-		bool solve(const T* rhs, size_t n) {
+		bool solve(const T *rhs, size_t n) {
 			analyze_factorize();
 			vecX_<T> bb = vecX_<T>::Zero(n);
 			for (int i = 0; i < n; i++) bb(i) = rhs[i];
@@ -73,16 +75,15 @@ class LinearSolver {
 /**
  *  \brief Solve eigenpair problems.
  */
-template <class T=double, class Solver=Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>>>
+template <class T = REAL8, class Solver = Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>>>
 class EigenSolver: public LinearSolver<T, Solver> {
 	public:
 		//! Destructor.
-		~EigenSolver() {clear();};
+		~EigenSolver() {clear();}
 		//! Load K M matrix.
 		void load(const T*, const T*, const SparseCell*, size_t, size_t);
 		//! Clear variables.
-		void clear() override
-		{
+		void clear() override {
 			LinearSolver<T, Solver>::clear();
 
 			matB_.resize(0, 0);
@@ -91,21 +92,22 @@ class EigenSolver: public LinearSolver<T, Solver> {
 
 			X_.resize(0, 0);
 			lambda_.resize(0, 0);
-		};
+		}
 		//! Subspace iteration method in eigenpair number.
-		std::tuple<matrix_<T>, matrix_<T>> subspace(int num=1, T tol=sqrt(EPS<T>()), T sigma=T(-1));
+		std::tuple<matrix_<T>, matrix_<T>> subspace(int num = 1, T tol = sqrt(EPS<T>()), T sigma = T(-1));
 		//! Subspace iteration method in specified range.
-		std::tuple<matrix_<T>, matrix_<T>> subspace(T ubound, T lbound=T(0), T tol=sqrt(EPS<T>()), T sigma=T(-1));
+		std::tuple<matrix_<T>, matrix_<T>> subspace(T ubound, T lbound = T(0), T tol = sqrt(EPS<T>()), T sigma = T(-1));
 		//! Sturm check in specified range.
-		size_t sturm_check(T ubound, T lbound=T(0));
+		size_t sturm_check(T ubound, T lbound = T(0));
 		//! Modify Gram-Schimidt B-orthogonal method.
 		matrix_<T> mgs(matrix_<T> y, const Eigen::SparseMatrix<T> B);
 		//! Get eigenvalues.
-		matrix_<T> get_eigenvalues() const { return lambda_;};
+		matrix_<T> get_eigenvalues() const { return lambda_;}
 		//! Get eigenvectors.
-		matrix_<T> get_eigenvectors() const { return X_;};
+		matrix_<T> get_eigenvectors() const { return X_;}
 		//! Get eigenpairs.
-		std::tuple<matrix_<T>, matrix_<T>> get_eigenpairs() const { return std::make_tuple(lambda_, X_);};
+		std::tuple<matrix_<T>, matrix_<T>> get_eigenpairs() const { return std::make_tuple(lambda_, X_);}
+
 	private:
 		Eigen::SparseMatrix<T> matB_;//!< Global mass matrix.
 		matrix_<T> X_, lambda_;//!< Eigenvectors and eigenvalues.
@@ -126,5 +128,5 @@ template class EigenSolver<REAL8, Eigen::SparseLU<Eigen::SparseMatrix<REAL8>>>;
 
 template class EigenSolver<REAL4, Eigen::SparseQR<Eigen::SparseMatrix<REAL4>, Eigen::COLAMDOrdering<int>>>;
 template class EigenSolver<REAL8, Eigen::SparseQR<Eigen::SparseMatrix<REAL8>, Eigen::COLAMDOrdering<int>>>;
-}
-#endif
+}  // namespace cafea
+#endif  // CAFEA_EIGENPAIR_H_

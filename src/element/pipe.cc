@@ -1,20 +1,24 @@
-#include "element_lib.h"
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#include "cafea/element_lib.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using Eigen::Vector3d;
 
-namespace cafea
-{
+namespace cafea {
 /**
  *  \brief Straight Pipe Element No.16
  *
  */
 template <class T, class U>
 elem_out_5<U> StructuralElement<T, U>::pipe16(const std::vector<Node<T, U>> pt, const Material<T> *mp,
-	const Section<T> *sect, const int *opt)
-{
-	assert(2==pt.size());
+											  const Section<T> *sect, const int *opt) {
+	assert(2 == pt.size());
 	return StructuralElement<T, U>::pipe16(&pt[0], &pt[1], mp, sect, opt);
 }
 
@@ -23,10 +27,8 @@ elem_out_5<U> StructuralElement<T, U>::pipe16(const std::vector<Node<T, U>> pt, 
  *
  */
 template <class T, class U>
-elem_out_5<U> StructuralElement<T, U>::pipe18(const std::vector<Node<T, U>> pt, const Material<T> *mp,
-	const Section<T> *sect)
-{
-	assert(3==pt.size());
+elem_out_5<U> StructuralElement<T, U>::pipe18(const std::vector<Node<T, U>> pt, const Material<T> *mp, const Section<T> *sect) {
+	assert(3 == pt.size());
 	return StructuralElement<T, U>::pipe18(&pt[0], &pt[1], &pt[2], mp, sect);
 }
 
@@ -41,9 +43,8 @@ elem_out_5<U> StructuralElement<T, U>::pipe18(const std::vector<Node<T, U>> pt, 
  *  \details Details
  */
 template <class T, class U>
-elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const Material<T> *prop, const Section<T> *sect, const int *opt)
-{
+elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeBase<T> *p2, const Material<T> *prop,
+											  const Section<T> *sect, const int *opt) {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);//! Stiffness matrix.
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);//! Mass matrix.
 	vecX_<U>   rhs  = vecX_<U>::Zero(12);//! Right-hand side vector.
@@ -83,21 +84,21 @@ elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeB
 	decltype(Ro) EIy = prop->get_material_prop(MaterialProp::YOUNG)*Iyy;
 
 	// Bending.
-	stif( 1, 1) = stif( 7,  7) = 12.*EIy/(Le*Le*Le*(1. + Ksy));
-	stif( 5, 5) = stif(11, 11) = (4. + Ksy)*EIy/(Le*(1. + Ksy));
-	stif( 5, 1) = stif( 1,  5) = 6.*EIy/(Le*Le*(1. + Ksy));
-	stif(11, 5) = stif( 5, 11) = (2. - Ksy)*EIy/(Le*(1. + Ksy));
-	stif(11, 7) = stif( 7, 11) = stif(7, 5) = stif(5, 7) = -stif(5, 1);
-	stif(11, 1) = stif( 1, 11) = stif(5, 1);
-	stif( 7, 1) = stif( 1,  7) = -stif(1, 1);
+	stif(1, 1)  = stif(7,  7)  = 12.*EIy/(Le*Le*Le*(1. + Ksy));
+	stif(5, 5)  = stif(11, 11) = (4. + Ksy)*EIy/(Le*(1. + Ksy));
+	stif(5, 1)  = stif(1, 5)   = 6.*EIy/(Le*Le*(1. + Ksy));
+	stif(11, 5) = stif(5, 11)  = (2. - Ksy)*EIy/(Le*(1. + Ksy));
+	stif(11, 7) = stif(7, 11)  =  stif(7, 5) = stif(5, 7) = -stif(5, 1);
+	stif(11, 1) = stif(1, 11)  =  stif(5, 1);
+	stif(7, 1)  = stif(1, 7)   = -stif(1, 1);
 	// Bending.
-	stif( 2, 2) = stif( 8,  8) = 12.*EIz/(Le*Le*Le*(1. + Ksz));
-	stif( 4, 4) = stif(10, 10) = (4. + Ksz)*EIz/(Le*(1. + Ksz));
-	stif( 4, 2) = stif( 2,  4) = -6.*EIz/(Le*Le*(1. + Ksz));
-	stif(10, 4) = stif( 4, 10) = (2. - Ksz)*EIz/(Le*(1. + Ksz));
-	stif(10, 8) = stif( 8, 10) = stif(8, 4) = stif(4, 8) = -stif(4, 2);
-	stif(10, 2) = stif( 2, 10) = stif(4, 2);
-	stif( 8, 2) = stif( 2,  8) = -stif(2, 2);
+	stif(2, 2)  = stif(8, 8)   = 12.*EIz/(Le*Le*Le*(1. + Ksz));
+	stif(4, 4)  = stif(10, 10) = (4. + Ksz)*EIz/(Le*(1. + Ksz));
+	stif(4, 2)  = stif(2, 4)   = -6.*EIz/(Le*Le*(1. + Ksz));
+	stif(10, 4) = stif(4, 10)  = (2. - Ksz)*EIz/(Le*(1. + Ksz));
+	stif(10, 8) = stif(8, 10)  =  stif(8, 4) = stif(4, 8) = -stif(4, 2);
+	stif(10, 2) = stif(2, 10)  =  stif(4, 2);
+	stif(8, 2)  = stif(2, 8)   = -stif(2, 2);
 
 	decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*Le;
 	decltype(Ro) Je = prop->get_material_prop(MaterialProp::DENS)*Jxx*Le;
@@ -105,14 +106,14 @@ elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeB
 	decltype(Ro) ry = prop->get_material_prop(MaterialProp::DENS)*Iyy;
 
 	// Lumped Mass.
-	if(0<opt[0]){
- 		mass(0, 0) = mass( 6,  6) = Me/2.;
-		mass(1, 1) = mass( 7,  7) = mass(2, 2) = mass(8, 8) = Me/2.;
-		mass(3, 3) = mass( 9,  9) = Je/2.;
+	if (0 < opt[0]) {
+		mass(0, 0) = mass(6, 6) = Me/2.;
+		mass(1, 1) = mass(7, 7) = Me/2.;
+		mass(2, 2) = mass(8, 8) = Me/2.;
+		mass(3, 3) = mass(9, 9) = Je/2.;
 		mass(4, 4) = mass(10, 10) = ry/2.;
 		mass(5, 5) = mass(11, 11) = rz/2.;
-	}
-    else{
+	} else {
 		mass(0, 0) = mass(6, 6) = Me/3.;
 		mass(0, 6) = mass(6, 0) = mass(0, 0)/2.;
 
@@ -120,8 +121,8 @@ elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeB
 		mass(3, 9) = mass(9, 3) = mass(3, 3)/2.;
 		mass(1, 1) = mass(7, 7) = 13.*Me/35. + 6.*rz/(5.*Le);
 
-		mass( 5, 5) = mass(11, 11) = Me*Le*Le/105. + 2.*Le*rz/15.;
-		mass(11, 5) = mass( 5, 11) = -Me*Le*Le/140. - rz*Le/30.;
+		mass(5, 5)  = mass(11, 11) = Me*Le*Le/105. + 2.*Le*rz/15.;
+		mass(11, 5) = mass(5, 11)  = -Me*Le*Le/140. - rz*Le/30.;
 
 		mass(5, 1) = mass(1, 5) = 11.*Me*Le/210. + rz/10.;
 		mass(7, 5) = mass(5, 7) = 13.*Me*Le/420. - rz/10.;
@@ -130,8 +131,8 @@ elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeB
 		mass(11, 7) = mass(7, 11) = -mass(5, 1);
 		mass(11, 1) = mass(1, 11) = -mass(5, 7);
 
-		mass( 4, 4) = mass(10, 10) = Me*Le*Le/105. + 2.*Le*ry/15.;
-		mass(10, 4) = mass( 4, 10) = -Me*Le*Le/140. - ry*Le/30.;
+		mass(4, 4)  = mass(10, 10) = Me*Le*Le/105. + 2.*Le*ry/15.;
+		mass(10, 4) = mass(4, 10)  = -Me*Le*Le/140. - ry*Le/30.;
 
 		mass(2, 2) = mass(8, 8) = 13.*Me/35. + 6.*ry/(5.*Le);
 		mass(4, 2) = mass(2, 4) = -11.*Me*Le/210. - ry/10.;
@@ -141,10 +142,10 @@ elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeB
 		mass(10, 2) = mass(2, 10) = -mass(4, 8);
 		mass(10, 8) = mass(8, 10) = -mass(4, 2);
 	}
-	{
+    {
 		decltype(Ro) fluid_dens = sect->get_sect_prop(SectionProp::DENSFL);
-		if(fluid_dens>EPS<>()){
-			for(int i: {0, 1, 2, 6, 7, 8}){
+		if (fluid_dens > EPS<>()) {
+			for (int i: {0, 1, 2, 6, 7, 8}) {
 				mass(i, i) += fluid_dens*PI<U>()*Ri*Ri*Le*0.5;
 			}
 			fmt::print("Pipe16 Fluid mass:{}\n", fluid_dens*PI<U>()*Ri*Ri*Le);
@@ -168,9 +169,8 @@ elem_out_5<U> StructuralElement<T, U>::pipe16(const NodeBase<T> *p1, const NodeB
  *	\brief Curved Pipe Element No.18
  */
 template <class T, class U>
-elem_out_5<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2,
-	const NodeBase<T> *cen, const Material<T> *prop, const Section<T> *sect)
-{
+elem_out_5<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1, const NodeBase<T> *p2, const NodeBase<T> *cen,
+											  const Material<T> *prop, const Section<T> *sect) {
 	matrix_<U> stif = matrix_<U>::Zero(12, 12);
 	matrix_<U> mass = matrix_<U>::Zero(12, 12);
 	vecX_<U> rhs    = vecX_<U>::Zero(12);
@@ -208,7 +208,7 @@ elem_out_5<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1, const NodeB
 	tt.row(2) << vzz(0), vzz(1), vzz(2);
 
 	matrix_<U> loc2gbl = matrix_<U>::Zero(12, 12);
-	for(int i: {0, 1, 2, 3})loc2gbl.block(i*3, i*3, 3, 3) = tt;
+	for (int i: {0, 1, 2, 3}) loc2gbl.block(i*3, i*3, 3, 3) = tt;
 
 	decltype(Ro) the = 2.0*asin(.5*la/R);
 	decltype(Ro) l = R*the, cos_the = cos(the), sin_the = sin(the);
@@ -225,25 +225,24 @@ elem_out_5<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1, const NodeB
 	decltype(Ro) GI = prop->get_material_prop(MaterialProp::YOUNG)*Iyy*.5/(1.0 + v);
 
 	decltype(Ro) Me = prop->get_material_prop(MaterialProp::DENS)*Ax*l;
-	{
+    {
 		decltype(Ro) fluid_dens = sect->get_sect_prop(SectionProp::DENSFL);
-		if(fluid_dens>EPS<>())Me += fluid_dens*PI<U>()*Ri*Ri*l;
-		if(fluid_dens>EPS<>())fmt::print("PIPE18 Fluid mass:{}\n", fluid_dens*PI<U>()*Ri*Ri*l);
+		if (fluid_dens > EPS<>()) Me += fluid_dens*PI<U>()*Ri*Ri*l;
+		if (fluid_dens > EPS<>()) fmt::print("PIPE18 Fluid mass:{}\n", fluid_dens*PI<U>()*Ri*Ri*l);
 	}
 
 	decltype(Ro) kp;
-	{
+    {
 		decltype(Ro) r = Ro - .5*t, h = t*R/(r*r), pr = sect->get_sect_prop(SectionProp::PRESIN);
 		decltype(Ro) Xk;
-		if(1.7>(R/r)){
+		if (1.7 > (R/r)) {
 			Xk = 0.;
-		}
-		else{
+		} else {
 			Xk = pow(r/t, 4./3.)*pow(R/r, 1./3.);
 		}
 		// kp = 1.65/(h*(1.+6.*pr*Xk/(prop->get_material_prop(MaterialProp::YOUNG)*t)));
 		kp = 1.65/h;
-		if(kp<1.)kp = 1.;
+		if (kp < 1.) kp = 1.;
 	}
 
 	// Flexibility sub-matrix.
@@ -261,18 +260,18 @@ elem_out_5<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1, const NodeB
 	fij(4, 2) = fij(2, 4) = R2/4.0/GI*(2.0 - 2.0*cos_the - the*sin_the) - kp*R2/2.0/EI*the*sin_the;
 	fij(3, 4) = fij(4, 3) = (R/8.0/GI - kp*R/4.0/EI)*(1.0 - cos_2the);
 
-	for(int i=0; i<6; i++)H(i, i) = -1.0;
+	for (int i = 0; i < 6; i++) H(i, i) = -1.0;
 	H(3, 2) = -R*(1.0 - cos_the);
 	H(4, 2) =  R*sin_the;
 	H(5, 0) = -R*(cos_the - 1.0);
 	H(5, 1) = -R*sin_the;
 
- 	sij = fij.inverse();
+	sij = fij.inverse();
 	stif.block(0, 0, 6, 6) = H*sij*H.transpose();
 	stif.block(0, 6, 6, 6) = H*sij;
 	stif.block(6, 0, 6, 6) = sij*H.transpose();
 	stif.block(6, 6, 6, 6) = sij;
-	{
+    {
 		auto r = Ro - 0.5*t;
 		auto pres = sect->get_sect_prop(SectionProp::PRESIN);
 		auto young = prop->get_material_prop(MaterialProp::YOUNG);
@@ -303,29 +302,29 @@ elem_out_5<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1, const NodeB
 	tmp.row(1) << sin_b,  cos_b, 0.;
 	tmp.row(2) <<    0.,     0., 1.;
 
-	for(int i: {0, 1, 2, 3})t2.block(i*3, i*3, 3, 3) = tmp;
+	for (int i: {0, 1, 2, 3}) t2.block(i*3, i*3, 3, 3) = tmp;
 	stif = t2.transpose()*stif*t2;
-	{
+    {
 		rhs = t2.transpose()*rhs;
 	}
 
-	for(int i: {0, 1, 2, 6, 7, 8})mass(i, i) = 0.5*Me;
+	for (int i: {0, 1, 2, 6, 7, 8}) mass(i, i) = 0.5*Me;
 	//! From Code-Aster reference formulation.
 	// mass(3, 3) = mass(9, 9) = prop.param[0]*Iyy*R*the;
 	// mass(4, 4) = mass(10, 10) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
 	// mass(5, 5) = mass(11, 11) = 2.*prop.param[0]*Iyy*R*the/15.+prop.param[0]*Ax*R*R*the*the*fmin(R*the/105., 1./48.);
 
 	decltype(Ro) SIF = U(1);
-	{
+    {
 		decltype(Ro) he = U(4)*t*R/pow(Ro + Ri, 2.0);
 		decltype(Ro) val = U(0.9)/pow(he, 2./3.);
-		if(val>1.0)SIF = val;
+		if (val > 1.0) SIF = val;
 	}
 	std::map<std::string, U> attr{{"Length", l}, {"Area", Ax}, {"Volume", Ax*l}, {"Mass", Me},
 	 	{"Aw", Ax}, {"Thick", t}, {"OuterDiameter", U(2)*Ro}, {"InnerDiameter", U(2)*Ri},
 		{"Iy", Iyy}, {"Iz", Iyy}, {"Jx", Jxx}, {"CurvatureRadius", R}, {"Angle", the},
 		{"InternalPressure", sect->get_sect_prop(SectionProp::PRESIN)},
-		{"StressIntensificationFactor", SIF},};
+		{"StressIntensificationFactor", SIF}};
 
 	return std::make_tuple(stif, mass, loc2gbl, rhs, attr);
 }
@@ -334,25 +333,25 @@ elem_out_5<U> StructuralElement<T, U>::pipe18(const NodeBase<T> *p1, const NodeB
  * \brief Post-Process of element pipe.
  */
 template <class T>
-matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T> tran,
-	const matrix_<T> x, const matrix_<T> rhs, const std::map<std::string, T> attr, bool is_pres, T pres_in, T pres_out)
-{
+matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T> tran, const matrix_<T> x,
+										  const matrix_<T> rhs, const std::map<std::string, T> attr,
+										  bool is_pres, T pres_in, T pres_out) {
 	// fmt::print("This is for pipe post process in real domain.\n");
 	matrix_<T> esol = matrix_<T>::Zero(99, 2);
 	matrix_<T> tmp  = stif*tran*x;
 	// Element force in local.
 	tmp.col(0) = rhs.col(0) - tmp.col(0);
 
-	auto get_val = [=](auto k){auto p = attr.find(k); return p!=attr.end() ? p->second: EPS<T>();};
+	auto get_val = [=] (auto k) { auto p = attr.find(k); return p != attr.end() ? p->second: EPS<T>();};
 
 	// Elbow pipe.
 	auto the = get_val("Angle");
-	if(the>EPS<T>()){
+	if (the > EPS<T>()) {
 		auto cb = cos(0.5*the);
 		auto sb = sin(0.5*the);
 		matrix_<T> tran = matrix_<T>::Zero(12, 12);
-		for(int i: {2, 5, 8, 11})tran(i, i) = 1.0;
-		for(int i: {0, 1, 3, 4, 6, 7, 9, 10})tran(i, i) = cb;
+		for (int i: {2, 5, 8, 11}) tran(i, i) = 1.0;
+		for (int i: {0, 1, 3, 4, 6, 7, 9, 10}) tran(i, i) = cb;
 		tran(1, 0) = tran(4, 3) = tran(6, 7) = tran(9, 10) =  sb;
 		tran(0, 1) = tran(3, 4) = tran(7, 6) = tran(10, 9) = -sb;
 		tmp = tran*tmp;
@@ -375,7 +374,7 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	auto Jx = T(2)*Ir;
 	auto PresOut = T(0);
 
-	if(is_pres){
+	if (is_pres) {
 		Pres = pres_in;
 		PresOut = pres_out;
 	}
@@ -389,7 +388,7 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 	|:ST:   |:SMISC 14, 16:|:SMISC 14, 16:|
 	|:SSF:  |:NMISC 91, 93:|:NMISC 92, 94:|
 	*/
-	for(auto i: {0, 1}){
+	for (auto i: {0, 1}) {
 		// SDIR: Direct stress.
 		// esol(6, i) = esol(0, i)/Aw;
 		esol(6, i) = (esol(0, i) + Fe)/Aw;
@@ -401,7 +400,7 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
 		esol(9, i) = (T(2)*Pres*Din*Din - PresOut*(Dout*Dout + Din*Din))/(Dout*Dout - Din*Din);
 		// SSF: lateral force shear stress.
 		esol(10, i) = T(2)*hypot(esol(1, i), esol(2, i))/Aw;
-		for(int j=0; j<8; j++){
+		for (int j = 0; j < 8; j++) {
 			auto phi = .25*T(j)*PI<T>();
 			// SAXL: axial stress on outside surface.
 			esol(11+j, i) = esol(6, i) + sin(phi)*esol(7, i);
@@ -448,21 +447,22 @@ matrix_<T> StructuralElementPost<T>::pipe(const matrix_<T> stif, const matrix_<T
  * \brief Post-Process of element pipe.
  */
 template <class T>
-cmatrix_<T> StructuralElementPost<T>::pipe_cmplx(const matrix_<T> stif, const matrix_<T> tran,
-	const cmatrix_<T> x, const cmatrix_<T> rhs, const cmatrix_<T> load, const std::map<std::string, T> attr)
-{
-	assert(x.cols()==rhs.cols());
-	assert(x.cols()==load.cols());
+cmatrix_<T> StructuralElementPost<T>::pipe_cmplx(const matrix_<T> stif, const matrix_<T> tran, const cmatrix_<T> x,
+												 const cmatrix_<T> rhs, const cmatrix_<T> load, const std::map<std::string, T> attr) {
+	assert(x.cols() == rhs.cols());
+	assert(x.cols() == load.cols());
 
 	int n_cols{1};
-	if(n_cols<x.cols())n_cols = x.cols();
+	if (n_cols < x.cols()) n_cols = x.cols();
 
 	cmatrix_<T> esol = cmatrix_<T>::Zero(99, 2*n_cols);
 
-	for(int i=0; i<n_cols; i++){
-		esol.block(0, i*2, 99, 2).real() = StructuralElementPost<T>::pipe(stif, tran, x.col(i).real(), rhs.col(i).real(), attr, true, load(0, i).real());
-		esol.block(0, i*2, 99, 2).imag() = StructuralElementPost<T>::pipe(stif, tran, x.col(i).imag(), rhs.col(i).imag(), attr, true, load(0, i).imag());
+	for (int i = 0; i < n_cols; i++) {
+		esol.block(0, i*2, 99, 2).real() = StructuralElementPost<T>::pipe(stif, tran,
+			x.col(i).real(), rhs.col(i).real(), attr, true, load(0, i).real());
+		esol.block(0, i*2, 99, 2).imag() = StructuralElementPost<T>::pipe(stif, tran,
+			x.col(i).imag(), rhs.col(i).imag(), attr, true, load(0, i).imag());
 	}
 	return esol;
 }
-}
+}  // namespace cafea

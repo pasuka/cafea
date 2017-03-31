@@ -1,7 +1,7 @@
 #include <chrono>
 #include <random>
 
-#include "enum_lib.h"
+#include "cafea/enum_lib.h"
 //! Generate random component.
 
 using cafea::LoadType;
@@ -17,21 +17,18 @@ using cafea::SectionProp;
 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 std::mt19937 gen(seed);
 
-int random_value(int a, int b)
-{
+int random_value(int a, int b) {
     std::uniform_int_distribution<> dis(a, b);
     return dis(gen);
 }
 
-template <class T=float>
-T random_value(T a, T b)
-{
+template <class T = float>
+T random_value(T a, T b) {
     std::uniform_real_distribution<T> dis(a, b);
     return dis(gen);
 }
 
-LoadType gen_load_type(int ith=random_value(0, 6))
-{
+LoadType gen_load_type(int ith = random_value(0, 6)) {
     switch (ith) {
         case 0: return LoadType::FORCE;
         case 1: return LoadType::DISP;
@@ -44,8 +41,7 @@ LoadType gen_load_type(int ith=random_value(0, 6))
     }
 }
 
-LoadDomain gen_load_domain(int ith=random_value(0, 1))
-{
+LoadDomain gen_load_domain(int ith = random_value(0, 1)) {
     switch (ith) {
         case 0: return LoadDomain::TIME;
         case 1:
@@ -53,8 +49,7 @@ LoadDomain gen_load_domain(int ith=random_value(0, 1))
     }
 }
 
-DofLabel gen_dof_label(int ith=random_value(0, 10))
-{
+DofLabel gen_dof_label(int ith = random_value(0, 10)) {
     switch (ith) {
         case 0: return DofLabel::UX;
         case 1: return DofLabel::UY;
@@ -71,8 +66,7 @@ DofLabel gen_dof_label(int ith=random_value(0, 10))
     }
 }
 
-BoundaryType gen_boundary_type(int ith=random_value(0, 2))
-{
+BoundaryType gen_boundary_type(int ith = random_value(0, 2)) {
     switch (ith) {
         case 0: return BoundaryType::FIXED;
         case 1: return BoundaryType::INIT_VAL;
@@ -81,8 +75,7 @@ BoundaryType gen_boundary_type(int ith=random_value(0, 2))
     }
 }
 
-MaterialType gen_material_type(int ith=random_value(0, 3))
-{
+MaterialType gen_material_type(int ith = random_value(0, 3)) {
     switch (ith) {
         case 0: return MaterialType::LINEAR_ELASTIC;
         case 1: return MaterialType::SPRING_STIFFNESS;
@@ -92,8 +85,7 @@ MaterialType gen_material_type(int ith=random_value(0, 3))
     }
 }
 
-MaterialProp gen_material_prop(int ith=random_value(0, 18))
-{
+MaterialProp gen_material_prop(int ith = random_value(0, 18)) {
     switch (ith) {
         case  0: return MaterialProp::DENS;
         case  1: return MaterialProp::YOUNG;
@@ -118,8 +110,7 @@ MaterialProp gen_material_prop(int ith=random_value(0, 18))
     }
 }
 
-SectionType gen_section_type(int ith=random_value(0, 15))
-{
+SectionType gen_section_type(int ith = random_value(0, 15)) {
     switch (ith) {
         case  0: return SectionType::PIPE;
         case  1: return	SectionType::SHELL;
@@ -141,8 +132,7 @@ SectionType gen_section_type(int ith=random_value(0, 15))
     }
 }
 
-SectionProp gen_section_prop(int ith=random_value(0, 7))
-{
+SectionProp gen_section_prop(int ith = random_value(0, 7)) {
     switch (ith) {
         case 0: return SectionProp::OD;//!< Pipe outer diameter.
         case 1: return SectionProp::TKWALL;//!< Wall thickness.
@@ -156,8 +146,7 @@ SectionProp gen_section_prop(int ith=random_value(0, 7))
     }
 }
 
-DofType gen_dof_type(int ith=random_value(0, 6))
-{
+DofType gen_dof_type(int ith = random_value(0, 6)) {
     switch (ith) {
         case 0: return DofType::ELIMINATE;
         case 1: return DofType::CONSTRAINT;

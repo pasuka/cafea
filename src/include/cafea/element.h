@@ -4,19 +4,19 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef _CAFEA_ELEMENT_H_
-#define _CAFEA_ELEMENT_H_
+#ifndef CAFEA_ELEMENT_H_
+#define CAFEA_ELEMENT_H_
 
 #include <map>
 #include <vector>
 #include <string>
 #include <algorithm>
 
-#include "./node.h"
-#include "./load.h"
-#include "./section.h"
-#include "./material.h"
-#include "./element_lib.h"
+#include "cafea/node.h"
+#include "cafea/load.h"
+#include "cafea/section.h"
+#include "cafea/material.h"
+#include "cafea/element_lib.h"
 
 namespace cafea {
 /**
@@ -51,8 +51,8 @@ class Element: public ObjectBase {
 		 *  \param [in] st number of section type.
 		 *  \param [in] nodes list of nodes id.
 		 */
-		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes):
-			ObjectBase{ id, fmt::format("Elem#{0}", id)}, etype_(et), matl_(mp), sect_(st) {
+		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes): etype_(et),
+			ObjectBase {id, fmt::format("Elem#{0}", id)}, matl_(mp), sect_(st) {
 			assert(sect_ > 0 && matl_ > 0);
 			assert(nodes.size() > 0);
 			// std::copy(nodes.begin(), nodes.end(), [nodes_](int x){if(x)nodes_.push_back(x);});
@@ -67,7 +67,7 @@ class Element: public ObjectBase {
 		 *  \param [in] mp number of material type.
 		 *  \param [in] st number of section type.
 		 */
-		Element(int id, int mp, int st):ObjectBase{ id, fmt::format("Elem#{0}",
+		Element(int id, int mp, int st): ObjectBase {id, fmt::format("Elem#{0}",
 			id)}, matl_(mp), sect_(st) { assert(sect_ > 0 && matl_ > 0);}
 
 		//! Generate stifness mass matrix of element.
@@ -141,19 +141,19 @@ class Element: public ObjectBase {
 		void set_option(const int a[], int m) {
 			assert(0 < m && m <= 10);
 			for (int i = 0; i < m; i++) keyopt_[i] = a[i];
-		};
+		}
 		//! Set id of element.
-		void set_element_id(int x) { id_ = x;};
+		void set_element_id(int x) { id_ = x;}
 		//! Set type of element.
 		void set_element_type(int x);
 		//! Set material id.
-		void set_material_id(int x) { matl_ = x;};
+		void set_material_id(int x) { matl_ = x;}
 		//! Set section id.
-		void set_section_id(int x) { sect_ = x;};
+		void set_section_id(int x) { sect_ = x;}
 		//! set type of element.
-		void set_element_type(ElementType et) { etype_ = et;};
+		void set_element_type(ElementType et) { etype_ = et;}
 		//! Set dof index of element.
-		void set_element_dofs(int x) { global_dofs_.push_back(x);};
+		void set_element_dofs(int x) { global_dofs_.push_back(x);}
 		//! Clear dof index of element.
 		void clear_element_dofs() {
 			if (!global_dofs_.empty()) global_dofs_.clear();
@@ -162,25 +162,25 @@ class Element: public ObjectBase {
 		void set_lumped_mass(bool val = false) { if (val) { keyopt_[0] = 1;}}
 
 		//! Get material id.
-		int get_material_id() const { return matl_;};
+		int get_material_id() const { return matl_;}
 		//! Get section id.
-		int get_section_id() const { return sect_;};
+		int get_section_id() const { return sect_;}
 		//! Get node list.
-		std::vector<int> get_node_list() const { return nodes_;};
+		std::vector<int> get_node_list() const { return nodes_;}
 		//! Get option.
-		std::array<int, 10> get_option() const { return keyopt_;};
+		std::array<int, 10> get_option() const { return keyopt_;}
 		//! Get type of element.
-		ElementType get_element_type() const { return etype_;};
+		ElementType get_element_type() const { return etype_;}
 		//! Get id element type.
 		size_t get_element_type_id() const;
 		//! Get id of element.
-		int get_element_id() const { return id_;};
+		int get_element_id() const { return id_;}
 		//! Get order of element.
 		size_t get_element_order() const;
 		//! Get dofs of each node.
 		size_t get_dofs_per_node() const;
 		//! Get total number of nodes.
-		size_t get_total_num_of_node() const { return nodes_.size();};
+		size_t get_total_num_of_node() const { return nodes_.size();}
 		//! Get active number of nodes.
 		size_t get_active_num_of_node() const;
 		//! Get shape of element matrix.
@@ -190,9 +190,9 @@ class Element: public ObjectBase {
 		//! Get shape of result matrix.
 		std::array<size_t, 2> get_result_shape() const;
 		//! Get global dofs array.
-		std::vector<int> get_element_dofs() const { return global_dofs_;};
+		std::vector<int> get_element_dofs() const { return global_dofs_;}
 		//! Get mass format.
-		bool is_lumped_mass() const { return 0 < keyopt_[0];};
+		bool is_lumped_mass() const { return 0 < keyopt_[0];}
 		//! Print information.
 		friend std::ostream& operator<<(std::ostream& cout, const Element &a) {
 			cout << fmt::format("Element id:{}\t", a.id_);
@@ -230,4 +230,4 @@ class Element: public ObjectBase {
 template class Element<REAL8>;
 template class Element<REAL4>;
 }  // namespace cafea
-#endif  // _CAFEA_ELEMENT_H_
+#endif  // CAFEA_ELEMENT_H_

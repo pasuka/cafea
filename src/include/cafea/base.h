@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef _CAFEA_BASE_H_
-#define _CAFEA_BASE_H_
+#ifndef CAFEA_BASE_H_
+#define CAFEA_BASE_H_
 
 #include <cassert>
 #include <array>
@@ -14,9 +14,9 @@
 #include <iterator>
 #include <algorithm>
 
-#include "../../fmt/format.h"
+#include "fmt/format.h"
 
-#include "./utils.h"
+#include "cafea/utils.h"
 
 namespace cafea {
 /**
@@ -92,4 +92,4 @@ class ObjectBase {
 		std::string name_{"Empty"};//!< Object's name.
 };
 }  // namespace cafea
-#endif  // _CAFEA_BASE_H_
+#endif  // CAFEA_BASE_H_

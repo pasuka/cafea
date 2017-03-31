@@ -1,3 +1,9 @@
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
 #include "cafea.h"
 
 namespace cafea
@@ -36,7 +42,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::clear()
 	if(!this->bc_group_.empty())this->bc_group_.clear();
 	if(!this->load_group_.empty())this->load_group_.clear();
 	this->mat_pair_.clear();
-	
+
 	fmt::print("This is harmonic clear.\n");
 	// fmt::print("Damping size{}\n", this->damping_.size());
 	// fmt::print("Frequency size{}\n", this->freq_range_.size());
@@ -44,7 +50,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::clear()
 	// fmt::print("disp row{} col{}\n", this->disp_cmplx_.rows(), this->disp_cmplx_.cols());
 	if(0<this->damping_.size())this->damping_.resize(0);
 	if(0<this->freq_range_.size())this->freq_range_.resize(0);
-	
+
 	if(0<this->rhs_cmplx_.rows()&&0<this->rhs_cmplx_.cols())this->rhs_cmplx_.resize(0, 0);
 	if(0<this->disp_cmplx_.rows()&&0<this->disp_cmplx_.cols())this->disp_cmplx_.resize(0, 0);
 };
@@ -56,7 +62,7 @@ template <class FileReader, class Scalar, class ResultScalar>
 std::array<size_t, 5> SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::get_info()const
 {
 	std::array<size_t, 5> param{this->node_group_.size(), this->elem_group_.size(),
-		this->matl_group_.size(), this->sect_group_.size(), this->bc_group_.size()};	
+		this->matl_group_.size(), this->sect_group_.size(), this->bc_group_.size()};
 	return param;
 };
 /**
@@ -99,9 +105,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::analyze()
 	}
 	int num{0};
 	for(auto &it: this->node_group_)it.second.dof_accum(&num, DofType::NORMAL);
-	
+
 	fmt::print("Total Dimension:{}\n", num);
-	
+
 	for(const auto &it: this->elem_group_){
 		const auto &p_elem = it.second;
 		auto node_list = p_elem.get_node_list();
@@ -129,7 +135,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::analyze()
 	this->mat_pair_.unique();
 	fmt::print("Non Zeros: {}\n", this->mat_pair_.get_nnz());
 	fmt::print("Dimension: {}\n", this->mat_pair_.get_dim());
-	
+
 	this->rhs_cmplx_.resize(this->mat_pair_.get_dim(), this->load_group_.size());
 	this->disp_cmplx_.resize(this->mat_pair_.get_dim(), this->load_group_.size());
 	this->rhs_cmplx_.fill(COMPLEX<ResultScalar>(0.0, 0.0));
@@ -145,8 +151,8 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 	// fmt::print("Assembly matrix in harmonic full analysis.\n");
 	bool lumped{false};
 	if(this->mass_type_==MassType::LUMPED)lumped = true;
-	
-	// 
+
+	//
 	std::vector<LoadCell<Scalar>> pres;
 	if(this->has_pressure_){
 		for(auto p: this->load_group_){
@@ -182,7 +188,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 		p_mass = p_tran.transpose()*p_mass*p_tran;
 		p_rhs = p_tran.transpose()*p_rhs;
 		p_rhs_cmplx = p_tran.transpose()*p_rhs_cmplx;
-		
+
 		auto nn = p_elem.get_active_num_of_node();
 		auto ndof = p_elem.get_dofs_per_node();
 		for(auto ia=0; ia<nn; ia++){
@@ -203,7 +209,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
 					}
 				}
 			}
-			
+
 		}
 	}
 }
@@ -222,11 +228,11 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 	// Eigen::LeastSquaresConjugateGradient<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 	auto dim = this->mat_pair_.get_dim();
 	auto nnz = this->mat_pair_.get_nnz();
-	
+
 	Eigen::SparseMatrix<COMPLEX<U>> mat_K(dim, dim), mat_M(dim, dim);
 	mat_K.reserve(nnz);
 	mat_M.reserve(nnz);
-	
+
 	std::vector<Eigen::Triplet<COMPLEX<U>>> triList(nnz);
 	fmt::print("Form Global stiffness matrix.\n");
 	for(int i=0; i<nnz; i++){
@@ -274,7 +280,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 					if(dof_label<va.size()){
 						if(0<=va[dof_label])rhs(va[dof_label]) += force_val;
 					}
-				}	
+				}
 			}
 		}
 		auto disp = this->load_group_[i].get_load_by_type(LoadType::DISP);
@@ -297,7 +303,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 			}
 		}
 		this->disp_cmplx_.col(i) = solver.solve(rhs);
-		
+
 		if(solver.info()!=Eigen::ComputationInfo::Success){
 			fmt::print("Solve Failed!\n");
 		}
@@ -314,7 +320,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 			matrix_<COMPLEX<U>> x = matrix_<COMPLEX<U>>::Zero(tmp.size(), num_step) ;
 			for(int i=0; i<tmp.size(); i++){
 				if(tmp[i]>=0)x.row(i) = this->disp_cmplx_.row(tmp[i]);
-			}	
+			}
 			p_node.template set_result<COMPLEX<U>>(SolutionType::HARMONIC_FULL, LoadType::DISP, -1, x);
 		}
 		// fmt::print("Set displace result finish.\n");
@@ -338,17 +344,17 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 		assert(0<info["section"]);
 		assert(0<info["solution"]);
 		assert(0<info["load"]);
-		
-		auto p_node = this->file_parser_.get_node_ptr(); 
+
+		auto p_node = this->file_parser_.get_node_ptr();
 		auto p_elem = this->file_parser_.get_element_ptr();
 		auto p_matl = this->file_parser_.get_material_ptr();
 		auto p_sect = this->file_parser_.get_section_ptr();
 		auto p_bc = this->file_parser_.get_boundary_ptr();
 		auto p_solu = this->file_parser_.get_solution_ptr();
 		auto p_load = this->file_parser_.get_load_ptr();
-		
+
 		wrapper_::AdapterF2Cpp<T, U> f2cpp;
-		
+
 		for(int i=0; i<info["node"]; i++, p_node++){
 			auto got = this->node_group_.find(p_node->id_);
 			if(got==this->node_group_.end()){
@@ -358,7 +364,7 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 				fmt::print("Duplicated node id:{}\n", p_node->id_);
 			}
 		}
-		
+
 		for(int i=0; i<info["element"]; i++, p_elem++){
 			auto got = this->elem_group_.find(p_elem->id_);
 			if(got==this->elem_group_.end()){
@@ -368,7 +374,7 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 				fmt::print("Duplicated element id:{}\n", p_elem->id_);
 			}
 		}
-			
+
 		for(int i=0; i<info["material"]; i++, p_matl++){
 			auto got = this->matl_group_.find(p_matl->id_);
 			if(got==this->matl_group_.end()){
@@ -378,31 +384,31 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 				fmt::print("Duplicated material id:{}\n", p_matl->id_);
 			}
 		}
-		
+
 		for(int i=0; i<info["section"]; i++, p_sect++){
 			auto got = this->sect_group_.find(p_sect->id_);
 			if(got==this->sect_group_.end()){
 				auto st = f2cpp.bcy2sect(p_sect);
 				st.set_sect_prop(SectionProp::PRESIN, T(1));
 				this->sect_group_[p_sect->id_] = st;
-				
+
 			}
 			else{
 				fmt::print("Duplicated section id:{}\n", p_sect->id_);
 			}
 		}
-		
+
 		for(int i=0; i<info["boundary"]; i++, p_bc++){
 			this->bc_group_.push_back(f2cpp.bcy2bndy(p_bc));
 		}
-		
+
 		fmt::print("analysis type: {}\n", p_solu->antype_);
 		fmt::print("Step of analysis: {}\n", p_solu->num_step_);
 		fmt::print("Damp coeff: {}\n", p_solu->damp_[0]);
 		this->damping_ = vecX_<U>::Zero(2);
 		this->freq_range_ = vecX_<U>::Zero(p_solu->num_step_);
 		this->damping_ << p_solu->damp_[0], p_solu->damp_[1];
-		
+
 		for(int i=0; i<info["load"]; i++, p_load++){
 			LoadSet<T> tmp_frame = {i+1, LoadDomain::FREQ, T(0)};
 			for(int j=0; j<p_load->size(); j++){
@@ -412,7 +418,7 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 					tmp_frame.set_value(it.range_);
 				}
 				DofLabel label = DofLabel::UNKNOWN;
-				
+
 				switch(it.dof_){
 				case 1: label = DofLabel::UX; break;
 				case 2: label = DofLabel::UY; break;
@@ -422,7 +428,7 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn)
 				case 6: label = DofLabel::URZ; break;
 				default: label = DofLabel::UNKNOWN; // fmt::print("Unsupported dof label: {}\n", it.dof_);
 				}
-				
+
 				switch(it.type_){
 				case 5:
 					// fmt::print("Add pressure:\n");
@@ -496,7 +502,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	else{
 		matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT5);
 	}
-	
+
 	if(NULL==matfp){
 		fmt::print("Error creating MAT file\n");
 		return;
@@ -506,7 +512,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		"stif", "mass", "tran", "rhs", "result"};
 	size_t elem_dims[2] = {this->elem_group_.size(), 1};
 	matvar_t *elem_list = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames, nfields);
-	
+
 	size_t num{0}, dim_vec[2] = {1, 1}, dim1x1[2] = {1, 1};
 	double val[4];
 	for(const auto &it: this->elem_group_){
@@ -532,7 +538,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 			sz.data(), const_cast<ResultScalar*>(it.second.get_mass_ptr()), MAT_F_DONT_COPY_DATA);
 		matvar[7] = Mat_VarCreate(fieldnames[7], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
 			sz.data(), const_cast<ResultScalar*>(it.second.get_tran_ptr()), MAT_F_DONT_COPY_DATA);
-		
+
 		matrix_<COMPLEX<ResultScalar>> rhs = it.second.template get_rhs<COMPLEX<ResultScalar>>();
 		// matrix_<COMPLEX<ResultScalar>> rhs = it.second.get_rhs_cmplx();
 		size_t dim_rhs[2]={1, 1};
@@ -543,7 +549,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		mat_complex_split_t c_rhs{rhs_re.data(), rhs_im.data()};
 		matvar[8] = Mat_VarCreate(fieldnames[8], MAT_C_DOUBLE, MAT_T_DOUBLE, 2,
 			dim_rhs, &c_rhs, MAT_F_COMPLEX);
-		
+
 		matrix_<COMPLEX<ResultScalar>> stress = it.second.template get_result<COMPLEX<ResultScalar>>();
 		size_t dim_stress[2]={1, 1};
 		if(1>stress.rows()&&1>stress.cols()){
@@ -566,7 +572,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	}
 	Mat_VarWrite(matfp, elem_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(elem_list);
-	
+
 	const size_t nfields2{5};
 	const char *fieldnames2[nfields2] = {"id", "csys", "xyz", "result", "disp"};
 	size_t node_dims[2] = {this->node_group_.size(), 1};
@@ -587,7 +593,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		xyz[2] = double(p_node.get_z());
 		matvar[2] = Mat_VarCreate(fieldnames2[2], MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dim3x1, xyz, 0);
 		if(p_node.is_activated()){
-			// 
+			//
 			matrix_<COMPLEX<ResultScalar>> rst = p_node.template get_result<COMPLEX<ResultScalar>>(SolutionType::HARMONIC_FULL, LoadType::STRESS, -1);
 			size_t sz[2] = {1, 1};
 			if(1<rst.rows())sz[0] = rst.rows();
@@ -622,7 +628,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 	}
 	Mat_VarWrite(matfp, node_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(node_list);
-	
+
 	{
 		matvar_t *freq;
 		size_t dims[2] = {1, 1};
@@ -637,9 +643,9 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::write2mat(const cha
 		Mat_VarWrite(matfp, freq, MAT_COMPRESSION_ZLIB);
 		Mat_VarFree(freq);
 	}
-	
-	
-	
+
+
+
 	auto global_stif = this->mat_pair_.get_stif_mat();
 	dim_vec[0] = dim_vec[1] = this->mat_pair_.get_dim();
 	// fmt::print("Global matrix dimension:{}x{}\n", dim_vec[0], dim_vec[1]);

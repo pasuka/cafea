@@ -1,17 +1,21 @@
-#ifndef ELEMENT_ATTR_H
-#define ELEMENT_ATTR_H
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef CAFEA_ELEMENT_ATTR_H_
+#define CAFEA_ELEMENT_ATTR_H_
 
 #include <cstddef>
 
-#include "enum_lib.h"
+#include "cafea/enum_lib.h"
 
-namespace cafea
-{
+namespace cafea {
 /**
  *  \brief Attribution of element.
  */
-struct ElementAttr
-{
+struct ElementAttr {
     //! Get dofs per node.
 	static size_t get_dofs_per_node(ElementType);
 	//! Get activated number of nodes.
@@ -21,5 +25,5 @@ struct ElementAttr
 	//! Get element type in Ansys rules.
 	static size_t get_element_type_id(ElementType);
 };
-}
-#endif
+}  // namespace cafea
+#endif  // CAFEA_ELEMENT_ATTR_H_

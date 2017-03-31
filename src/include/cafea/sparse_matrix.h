@@ -13,10 +13,10 @@
 #include <memory>
 #include <algorithm>
 
-#include "../../fmt/format.h"
-#include "../../matio/src/matio.h"
+#include "fmt/format.h"
+#include "matio/src/matio.h"
 
-#include "./utils.h"
+#include "cafea/utils.h"
 
 namespace cafea {
 /**
@@ -27,7 +27,7 @@ struct SparseCell {
 	//! Constructor with row and column index.
 	SparseCell(size_t ir, size_t jc): row(ir), col(jc) {}
 	//! Compare ().
-	bool operator() (const SparseCell* a, const SparseCell* b) const {
+	bool operator() (const SparseCell *a, const SparseCell *b) const {
 		return a->row == b->row && a->col == b->col;
 	}
 	//! Compare <.

@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "mesh_reader.h"
+#include "cafea/mesh_reader.h"
 
 namespace cafea {
 /**
@@ -149,7 +149,7 @@ int BCYReader::parse_section_blk() {
 	int num_sect = std::stoi(list[0]);
 	int max_sect_id = std::stoi(list[1]);
 	fmt::print("Num. section: {} Max id: {}\n", num_sect, max_sect_id);
-	for (int i = 0; i<num_sect; i++) {
+	for (int i = 0; i < num_sect; i++) {
 		std::getline(this->fp_, line);
 		auto per_sect = this->parse_line(line);
 		wrapper_::sect_f03 ps{std::stoi(per_sect[0]), std::stoi(per_sect[1])};

@@ -4,14 +4,14 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef _CAFEA_UTILS_EXT_H_
-#define _CAFEA_UTILS_EXT_H_
+#ifndef CAFEA_UTILS_EXT_H_
+#define CAFEA_UTILS_EXT_H_
 
 #include <tuple>
 
 #include <Eigen/Dense>
 
-#include "./utils.h"
+#include "cafea/utils.h"
 
 namespace cafea {
 //! Vector3.
@@ -47,4 +47,4 @@ using varargout_6_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T
 //! Gauss integrate point and weight.
 std::tuple<vecX_<>, vecX_<>> gauss_quad(int n = 2);
 }  // namespace cafea
-#endif  // _CAFEA_UTILS_EXT_H_
+#endif  // CAFEA_UTILS_EXT_H_

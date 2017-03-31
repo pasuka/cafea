@@ -1,16 +1,21 @@
-#ifndef ENUM_LIB_H
-#define ENUM_LIB_H
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef CAFEA_ENUM_LIB_H_
+#define CAFEA_ENUM_LIB_H_
 
-namespace cafea
-{
+namespace cafea {
 /**
  *  \enum Coordinate system.
  */
 enum struct CoordinateSystem {
-	CARTESIAN=0,
+	CARTESIAN = 0,
 	CYLINDRICAL,
 	SPHERICAL,
-	UNKNOWN=-99,
+	UNKNOWN   = -99,
 };
 
 /**
@@ -22,7 +27,7 @@ enum struct ElementType {
 	SOLID185, SOLID186, C3D4, C3D8, C3D20,
 	SHELL181, SHELL281, S3R, S4R, S8R, S9R,
 	MASS21, COMBIN14,
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
@@ -31,31 +36,31 @@ enum struct ElementType {
 enum struct BoundaryType {
 	FIXED,
 	INIT_VAL,
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
  *  \enum DOF type in global matrix.
  */
 enum struct DofType {
-	ELIMINATE=-11,
-	CONSTRAINT=-12,
-	PENALTY_FUN=-13,
-	NORMAL=-1,
-	MASTER=-2,
-	SLAVE=-3,
-	UNKNOWN=-99,
+	ELIMINATE   = -11,
+	CONSTRAINT  = -12,
+	PENALTY_FUN = -13,
+	NORMAL      = -1,
+	MASTER      = -2,
+	SLAVE       = -3,
+	UNKNOWN     = -99,
 };
 
 /**
  *  \enum DOF label.
  */
 enum struct DofLabel {
-	UX=0, UY, UZ,
+	UX = 0, UY, UZ,
 	URX, URY, URZ,
 	WARP,
 	U_ALL, UR_ALL, ALL,
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
@@ -68,7 +73,7 @@ enum struct LoadType {
 	ACCEL,
 	PRES,
 	STRESS,
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
@@ -86,7 +91,7 @@ enum struct MaterialType {
 	LINEAR_ELASTIC,
 	SPRING_STIFFNESS,
 	MASS_VALUES,
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
@@ -96,26 +101,26 @@ enum struct MaterialProp {
 	DENS,//!< Mass density.
 	YOUNG, EX, EY, EZ,//!< Elastic modulus.
 	GXY, GYZ, GXZ,//!< Shear elastic modulus.
-	NU, NUXY, NUYZ, NUXZ,//!< Minor Poisson's ratios. 
+	NU, NUXY, NUYZ, NUXZ,//!< Minor Poisson's ratios.
 	PRXY, PRYZ, PRXZ,//!< Major Poisson's ratios.
 	DMPR,//!< Constant structural damping coefficient in full harmonic analysis or damping ratio in mode-superposition analysis.
 	ALPD,//!< Mass matrix multiplier for damping.
 	BETD,//!< Stiffness matrix multiplier for damping.
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
  *  \enum Section type.
  */
 enum struct SectionType {
-	PIPE, 
+	PIPE,
 	SHELL,
 	SOLID,
 	SPRING,
 	MASS,
 	I_BEAM,//!< I-shaped beam section.
 	L_BEAM,//!< L-shaped beam section.
-	T_BEAM,//!< T-shaped beam section. 
+	T_BEAM,//!< T-shaped beam section.
 	Z_BEAM,//!< Z-shaped beam section.
 	RECT_BEAM,//!< Rectangle beam section.
 	CSOLID_BEAM,//!< Circular solid beam section.
@@ -123,7 +128,7 @@ enum struct SectionType {
 	HATS_BEAM,//!< Hat-shaped beam section.
 	HREC_BEAM,//!< Hollow rectangle or box beam section.
 	CTUBE_BEAM,//!< Circular tube section.
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
@@ -137,7 +142,7 @@ enum struct SectionProp {
 	PRESIN,//!< Internal pressure.
 	ADDONMASS,//!< Add-on mass.
 	ADDONSPRING,//!< Add-on spring.
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
@@ -148,7 +153,7 @@ enum struct SolutionType {
 	MODAL,
 	HARMONIC_FULL,
 	HARMONIC_MODAL_SUPERPOSITION,
-	UNKNOWN=-99,
+	UNKNOWN = -99,
 };
 
 /**
@@ -173,5 +178,5 @@ enum struct SolutionOption {
 	MODAL_FREQ_RANGE,
 	PRESSURE_INTERNAL,
 };
-}
-#endif
+}  // namespace cafea
+#endif  // CAFEA_ENUM_LIB_H_

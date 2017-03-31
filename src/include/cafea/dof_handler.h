@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "./base.h"
-#include "./enum_lib.h"
+#include "cafea/base.h"
+#include "cafea/enum_lib.h"
 
 namespace cafea {
 /**
@@ -30,7 +30,7 @@ class DofHandler {
 		//! Apply constraint.
 		void set_constraint(DofLabel, DofType);
 		//! Accumalte.
-		void accum(int* ij, DofType mt = DofType::NORMAL);
+		void accum(int *ij, DofType mt = DofType::NORMAL);
 		//! Get constraint.
 		DofType get_constraint(DofLabel) const;
 		//! Print information.

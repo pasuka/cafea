@@ -1,3 +1,9 @@
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
 #include "cafea.h"
 
 namespace cafea
@@ -27,7 +33,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::clear()
 	if(this->solver_)this->solver_.reset(nullptr);
 	if(0<this->mode_shape_.rows())(*this).mode_shape_.resize(0, 0);
 	if(0<this->natural_freq_.rows())(*this).natural_freq_.resize(0, 0);
-	
+
 };
 /**
  *  \brief Get model info.
@@ -37,7 +43,7 @@ template <class FileReader, class Scalar, class ResultScalar>
 std::array<size_t, 5> SolutionModal<FileReader, Scalar, ResultScalar>::get_info()const
 {
 	std::array<size_t, 5> param{this->node_group_.size(), this->elem_group_.size(),
-		this->matl_group_.size(), this->sect_group_.size(), this->bc_group_.size()};	
+		this->matl_group_.size(), this->sect_group_.size(), this->bc_group_.size()};
 	return param;
 };
 /**
@@ -80,9 +86,9 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::analyze()
 	}
 	int num{0};
 	for(auto &it: this->node_group_)it.second.dof_accum(&num, DofType::NORMAL);
-	
+
 	fmt::print("Total Dimension:{}\n", num);
-	
+
 	for(const auto &it: this->elem_group_){
 		const auto &p_elem = it.second;
 		auto node_list = p_elem.get_node_list();
@@ -158,7 +164,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::assembly()
 					}
 				}
 			}
-			
+
 		}
 	}
 }
@@ -174,10 +180,10 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 	auto nnz = this->mat_pair_.get_nnz();
 	auto eps = EPS<ResultScalar>();
 	auto hz2rad = [=](ResultScalar x) {return ResultScalar(pow(x*2.0*PI<>(), 2.));};
-	
+
 	this->solver_->load(this->mat_pair_.get_stif_ptr(), this->mat_pair_.get_mass_ptr(),
 		this->mat_pair_.get_coord_ptr(), nnz, dim);
-	
+
 	if(0<this->freq_num_ && dim>=this->freq_num_){
 		std::tie(val, shp) = this->solver_->subspace(this->freq_num_);
 	}
@@ -208,7 +214,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::solve()
 				for(int i=0; i<x.rows(); i++){
 					if(0<=tmp[i])x.row(i) = shp.row(tmp[i]);
 				}
-				
+
 				p_node.set_result(SolutionType::MODAL, LoadType::DISP, -1, x);
 			}
 		}
@@ -238,7 +244,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 	else{
 		matfp = Mat_CreateVer(fname, NULL, MAT_FT_MAT5);
 	}
-	
+
 	if(NULL==matfp){
 		fmt::print("Error creating MAT file\n");
 		return;
@@ -248,7 +254,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 		"stif", "mass", "tran"};
 	size_t elem_dims[2] = {this->elem_group_.size(), 1};
 	matvar_t *elem_list = Mat_VarCreateStruct("elem", 2, elem_dims, fieldnames, nfields);
-	
+
 	size_t num{0}, dim_vec[2] = {1, 1}, dim1x1[2] = {1, 1};
 	double val[4];
 	for(const auto &it: this->elem_group_){
@@ -281,7 +287,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 	}
 	Mat_VarWrite(matfp, elem_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(elem_list);
-	
+
 	const size_t nfields2{4};
 	const char *fieldnames2[nfields2] = {"id", "csys", "xyz", "result"};
 	size_t node_dims[2] = {this->node_group_.size(), 1};
@@ -319,7 +325,7 @@ void SolutionModal<FileReader, Scalar, ResultScalar>::write2mat(const char* fnam
 	}
 	Mat_VarWrite(matfp, node_list, MAT_COMPRESSION_ZLIB);
 	Mat_VarFree(node_list);
-	
+
 	{
 		matvar_t *freq;
 		size_t dims[2] = {1, 1};
@@ -402,7 +408,7 @@ void SolutionModal<FP, T, U>::set_parameter(SolutionOption chk, init_list_<U> va
 		break;
 	default: fmt::print("Unsupport numeric parameter in modal analyze");
 	}
-	
+
 }
 
 /**

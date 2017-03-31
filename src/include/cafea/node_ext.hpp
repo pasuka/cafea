@@ -1,3 +1,11 @@
+/*
+ *  cafea --- A FEA library for dynamic analysis.
+ *  Copyright (c) 2007-2017 T.Q.
+ *  All rights reserved.
+ *  Distributed under GPL v3 license.
+ */
+#ifndef CAFEA_NODE_EXT_HPP_
+#define CAFEA_NODE_EXT_HPP_
 /**
  *  \brief Set result data.
  *  \param [in] sol type of solution.
@@ -7,30 +15,27 @@
  */
 template <class T, class U>
 template <class ResType>
-void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResType> rst)
-{
-	if(!this->is_activated())return;
-	if(std::type_index(typeid(ResType))==std::type_index(typeid(U))){
+void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResType> rst) {
+	if (!this->is_activated()) return;
+	if (std::type_index(typeid(ResType)) == std::type_index(typeid(U))) {
 		return this->set_result(sol, lt, n, rst);
 	}
 	// fmt::print("Template Function Set result Input Type: {}", typeid(ResType).name());
 	// fmt::print(" {}\n", typeid(U).name());
-	switch(sol) {
+	switch (sol) {
 		case SolutionType::HARMONIC_FULL:
-			switch(lt) {
+			switch (lt) {
 				case LoadType::DISP:
-					if(0>n) {
+					if (0 > n) {
 						this->disp_cmplx_ = rst;
-					}
-					else{
+					} else {
 						this->disp_cmplx_.col(n) = rst;
 					}
 					break;
 				case LoadType::STRESS:
-					if(0>n) {
+					if (0 > n) {
 						this->stress_cmplx_ = rst;
-					}
-					else{
+					} else {
 						this->stress_cmplx_.col(n) = rst;
 					}
 					break;
@@ -42,7 +47,7 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResTyp
 		case SolutionType::MODAL:
 		default: fmt::print("Unsupported solution type definition\n");
 	}
-};
+}
 
 /**
  *  \brief Get result.
@@ -53,31 +58,27 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResTyp
  */
 template <class T, class U>
 template <class ResType>
-matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const
-{
+matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const {
 	matrix_<ResType> tmp;
-
-	if(!this->is_activated())return tmp;
-	if(std::type_index(typeid(ResType))==std::type_index(typeid(U))){
+	if (!this->is_activated()) return tmp;
+	if (std::type_index(typeid(ResType)) == std::type_index(typeid(U))) {
 		return this->get_result(sol, lt, n);
 	}
 	// fmt::print("Template Function Get result Input Type:{}\n", typeid(ResType).name());
-	switch(sol) {
+	switch (sol) {
 		case SolutionType::HARMONIC_FULL:
-			switch(lt) {
+			switch (lt) {
 				case LoadType::DISP:
-					if(0>n) {
+					if (0 > n) {
 						tmp = this->disp_cmplx_;
-					}
-					else{
+					} else {
 						tmp = this->disp_cmplx_.col(n);
 					}
 					break;
 				case LoadType::STRESS:
-					if(0>n) {
+					if (0 > n) {
 						tmp = this->stress_cmplx_;
-					}
-					else{
+					} else {
 						tmp = this->stress_cmplx_.col(n);
 					}
 					break;
@@ -90,4 +91,5 @@ matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) co
 		default: fmt::print("Unsupported solution type definition\n");
 	}
 	return tmp;
-};
+}
+#endif  // CAFEA_NODE_EXT_HPP_
