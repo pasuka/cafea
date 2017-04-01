@@ -5,8 +5,9 @@ CXX := g++
 # Compile options.
 CXXFLAGS := -O3# -g
 # Include.
-CXXFLAGS += -I../fmt -I../Catch/single_include -I../eigen -I../src/include \
--I../matio/src
+CXXFLAGS += -I../fmt -I../Catch/single_include -I../eigen -I../matio/src
+CXXFLAGS += -I../src/include
+
 # Boost.
 LIB_BOOST := -lboost_system-mt -lboost_filesystem-mt
 # Color definitions.
