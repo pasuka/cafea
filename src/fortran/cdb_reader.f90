@@ -275,51 +275,51 @@ contains
 			elseif(keyword(1:4)=='GXY ')then
 			! Shear moduli (also GYZ, GXZ).
 				model_matl(ii)%val(4) = r_tmp(1)
-			elseif(keyword(1:4)=='GYZ ')then
-			elseif(keyword(1:4)=='GXZ ')then
-			elseif(keyword(1:4)=='ALPD')then
+			elseif (keyword(1:4) == 'GYZ ') then
+			elseif (keyword(1:4) == 'GXZ ') then
+			elseif (keyword(1:4) == 'ALPD') then
 			! Mass matrix multiplier for damping.
 				model_matl(ii)%val(6) = r_tmp(1)
-			elseif(keyword(1:4)=='BETD')then
+			elseif (keyword(1:4) == 'BETD') then
 			! Stiffness matrix multiplier for damping.
 				model_matl(ii)%val(7) = r_tmp(1)
-			elseif(keyword(1:4)=='ALPX')then
+			elseif (keyword(1:4) == 'ALPX') then
 			! Secant coefficients of thermal expansion (also ALPY, ALPZ).
-			elseif(keyword(1:4)=='ALPY')then
-			elseif(keyword(1:4)=='ALPZ')then
-			elseif(keyword(1:4)=='KXX ')then
+			elseif (keyword(1:4) == 'ALPY') then
+			elseif (keyword(1:4) == 'ALPZ') then
+			elseif (keyword(1:4) == 'KXX ') then
 			! Thermal conductivities (also KYY, KZZ).
-			elseif(keyword(1:4)=='KYY ')then
-			elseif(keyword(1:4)=='KZZ ')then
-			elseif(keyword(1:4)=='EX  ')then
+			elseif (keyword (1:4) == 'KYY ') then
+			elseif (keyword (1:4) == 'KZZ ') then
+			elseif (keyword (1:4) == 'EX  ') then
 			! Elastic moduli (also EY, EZ).
 				model_matl(ii)%val(2) = r_tmp(1)
-			elseif(keyword(1:4)=='EY  ')then
-			elseif(keyword(1:4)=='EZ  ')then
+			elseif (keyword(1:4) == 'EY  ') then
+			elseif (keyword(1:4) == 'EZ  ') then
 			else
                 write(*,'(1x, "Unsupprot material keyword: ", A)')keyword(1:4)
             endif
-        elseif(line(1:2)=='D,')then
+        elseif (line(1:2) == 'D,') then
         ! read boundary.
 	        read(line(3:), *)i, keyword, r_tmp(1:2)
 	        node_id = maxloc(model_node%id, 1, model_node%id==i)
-	        if(node_id==0)cycle
-	        if(keyword(1:2)=='UX')then
+	        if (node_id == 0) cycle
+	        if (keyword(1:2) == 'UX') then
 	        	model_node(node_id)%boundary(1) = -1
-			elseif(keyword(1:2)=='UY')then
+			elseif (keyword(1:2) == 'UY') then
 				model_node(node_id)%boundary(2) = -1
-			elseif(keyword(1:2)=='UZ')then
+			elseif (keyword(1:2) == 'UZ') then
 				model_node(node_id)%boundary(3) = -1
-			elseif(keyword(1:3)=='ALL')then
+			elseif (keyword(1:3) == 'ALL') then
 				model_node(node_id)%boundary(:) = -1
-			elseif(keyword(1:4)=='ROTX')then
+			elseif (keyword(1:4) == 'ROTX') then
 				model_node(node_id)%boundary(4) = -1
-			elseif(keyword(1:4)=='ROTY')then
+			elseif (keyword(1:4) == 'ROTY') then
 				model_node(node_id)%boundary(5) = -1
-			elseif(keyword(1:4)=='ROTZ')then
+			elseif (keyword(1:4) == 'ROTZ') then
 				model_node(node_id)%boundary(6) = -1
-			elseif(keyword(1:4)=='SECT')then
-			elseif(keyword(1:4)=='WARP')then
+			elseif (keyword(1:4) == 'SECT') then
+			elseif (keyword(1:4) == 'WARP') then
 				model_node(node_id)%boundary(7) = -1
 			else
 				write(*, '(1x, "Unsupport boundary keyword: ", A)')keyword(1:4)
@@ -330,13 +330,13 @@ contains
     close(fid)
     deallocate(tmp_etype)
 
-#if(PRINT_ON==1)
-	if(allocated(model_node))then
-		if(num_node>99)write(*, '(1x, a)')'Print first 99 of nodes.'
+#if (PRINT_ON == 1)
+	if (allocated(model_node)) then
+		if (num_node > 99) write(*, '(1x, a)')'Print first 99 of nodes.'
 		print_fmt = '(1x, "Node id:", i6, 1x, "XYZ:", *(F10.3))'
 		do i = 1, min(99, num_node)
 			associate(pt=>model_node(i))
-			if(pt%rot(1)>1.8E2)then
+			if (pt%rot(1) > 1.8E2) then
 				write(*, print_fmt)pt%id, pt%xyz
 			else
 				write(*, print_fmt)pt%id, pt%xyz, pt%rot
@@ -344,40 +344,40 @@ contains
 			end associate
 		enddo
 	endif
-	if(allocated(model_elem))then
-		if(num_elem>99)write(*, '(1x, "Print first 99of elements.")')
+	if (allocated(model_elem)) then
+		if (num_elem > 99) write(*, '(1x, "Print first 99of elements.")')
 		print_fmt = '(1x, "Element id:", i4, 1x, "type:", i4, 1x, "nodes: ", *(i6))'
 		do j = 1, min(99, num_elem)
 			associate(pt=>model_elem(j))
 			write(*, print_fmt)pt%id, pt%etype, pt%node_list(:get_num_by_type(pt%etype))
-			if(sum(pt%opt)>0)write(*, '(1x, "Keyopt:", *(I2))')pt%opt
+			if (sum(pt%opt) > 0) write(*, '(1x, "Keyopt:", *(I2))')pt%opt
 			end associate
 		enddo
 	endif
 #endif
-#if(PRINT_ON>1)
+#if (PRINT_ON > 1)
    	open(newunit=fid, file='test_nml.txt')
    	group_flag(1:2) = [allocated(model_node), allocated(model_elem)]
    	group_flag(3:4) = [allocated(model_matl), allocated(model_real)]
-#if(PRINT_ON==2)
+#if (PRINT_ON == 2)
    	if(group_flag(1))write(fid, nml=group_node)
-#elif(PRINT_ON==3)
+#elif (PRINT_ON == 3)
 	if(group_flag(2))write(fid, nml=group_elem)
-#elif(PRINT_ON==4)
+#elif (PRINT_ON == 4)
 	if(all(group_flag(3:4)))write(fid, nml=group_matl)
-#elif(PRINT_ON==5)
+#elif (PRINT_ON == 5)
 	if(all(group_flag(1:2)))write(fid, nml=group_node_elem)
-#elif(PRINT_ON==6)
-	if(all(group_flag))write(fid, nml=group_all)
+#elif (PRINT_ON == 6)
+	if (all(group_flag)) write(fid, nml=group_all)
 #else
 #endif
 	close(fid)
 #endif
 	! Clear variables.
-	if(present(is_keep))then
-		if(.not.is_keep)call model_init()
+	if (present(is_keep)) then
+		if (.not.is_keep) call model_init()
 	endif
-#if(PRINT_ON==1)
+#if (PRINT_ON == 1)
 	write(*, '(1x, "Finish read file.")')
 #endif
 	end subroutine
@@ -390,9 +390,9 @@ contains
 
 	do
 		read(input_unit, '(A)', iostat=fid_stat)fn
-		if(fid_stat==iostat_end)exit
+		if (fid_stat == iostat_end) exit
 		i = len_trim(fn)
-		if(fn(i-3:i)=='.cdb')then
+		if (3 < i .AND. fn(i-3:i) == '.cdb') then
 			call cdb_reader(fn)
 		endif
 	enddo
