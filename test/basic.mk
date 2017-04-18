@@ -4,6 +4,7 @@ FC := gfortran
 CXX := g++
 # Compile options.
 CXXFLAGS := -O3# -g
+FFLAGS := -cpp
 # Include.
 CXXFLAGS += -I../fmt -I../Catch/single_include -I../eigen -I../matio/src
 CXXFLAGS += -I../src/include
@@ -36,6 +37,12 @@ all: a01 a02 a03 a04 a05 a06 b01 b02 b03 b04
 	@echo -e $(BLANK)$(ORANGE)"[Basic] Compile c++ files."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) -c $(CXXFLAGS) $<
+
+%.o: %.f90
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(CYAN)"[Basic] Compile f90 files."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(FC) -c $(FFLAGS) $<
 
 a01: ../fmt/fmt/format.o ./basic/a01.o
 	@echo -e $(COMMENT)
@@ -136,6 +143,16 @@ b04: ../fmt/fmt/format.o $(addprefix ../src/io/, $(addsuffix .o, bcy_reader)) ./
 	@echo -e $(BLANK)$(RED)"[Basic] BCY Reader test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) $(LIB_BOOST) -o test_$@
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	./test_$@
+
+f01: $(addprefix ../src/fortran/, $(addsuffix .o, common_reader cdb_reader)) ./basic/f01.o
+	@echo -e $(COMMENT)
+	@echo -e $(BLANK)$(RED)"[Basic] CDB Reader test."$(COLOR_OFF)
+	@echo -e $(COMMENT)
+	$(CXX) $(notdir $^) $(CXXFLAGS) -lgfortran -o test_$@
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
