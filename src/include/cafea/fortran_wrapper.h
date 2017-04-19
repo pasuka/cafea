@@ -15,8 +15,8 @@ namespace wrapper_ {
 extern "C" {
 #endif
 //! Length of parameter list.
-const int LEN_ARRAY_{16};
-const int MAX_NODES_PER_ELEM_{27};
+static const int LEN_ARRAY_{16};
+static const int MAX_NODES_PER_ELEM_{27};
 
 //! Fortran and C compatible node set.
 struct node_f03 {
@@ -70,6 +70,33 @@ struct solu_f03 {
 	int num_step_{-1};
 	REAL4 damp_[2]{0.0f, -1.0f};//!< Damp parameter.
 };
+//! CDB node.
+struct cdb_node {
+    int id{-1}, csys{0};
+    REAL4 xyz[3]{0.0E0, 0.0E0, 0.0E0}, rot[3]{1.81E2, 1.81E2, 1.81E2};
+};
+//! CDB element.
+struct cdb_elem {
+    int id{-1}, etype{0}, prop[2]{0, 0}, opt[LEN_ARRAY_], node_list[MAX_NODES_PER_ELEM_];
+};
+//! CDB material and real constants.
+struct cdb_prop {
+    int id{-1}, prop_type{-1};
+    REAL4 arrb[LEN_ARRAY_], arrb2[LEN_ARRAY_];
+};
+//! CDB boundary.
+struct cdb_bc {
+    int id{-1}, dof_label[LEN_ARRAY_];
+    REAL4 val[LEN_ARRAY_], val2[LEN_ARRAY_];
+};
+//! Clear CDB model container.
+void cdb_reader_init();
+//! Print CDB model info.
+void cdb_reader_info();
+//! Read CDB model.
+void cdb_reader_load(const char*, int);
+//! Get CDB model data pointer.
+void cdb_reader_ptr(cdb_node**, cdb_elem**, cdb_prop**, cdb_prop**, cdb_bc**, int*, int*, int*, int*, int*);
 #ifdef __cplusplus
 }
 #endif

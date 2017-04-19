@@ -50,7 +50,10 @@ type(prop_base), target, allocatable:: model_matl(:)
 type(prop_base), target, allocatable:: model_const(:)
 type(bc_base), target, allocatable:: model_bc(:)
 type(elem_type), allocatable:: model_etype(:)
-
+!!
+#ifndef PRINT_LEVEL
+#define PRINT_LEVEL 0
+#endif
 contains
 	subroutine model_init() bind(c, name = "cdb_reader_init")
 	!> @fn Clear global variables.
@@ -61,6 +64,11 @@ contains
 	if (allocated(model_const)) deallocate(model_const)
 	if (allocated(model_bc)) deallocate(model_bc)
 	if (allocated(model_etype)) deallocate(model_etype)
+#if (1 <= PRINT_LEVEL)
+	write(*, "(A)")repeat("*", 80)
+	write(*, "('CDB model container cleared!')")
+	write(*, "(A)")repeat(" ", 80)
+#endif
 	end subroutine
 
 	subroutine model_prnt() bind(c, name = "cdb_reader_info")
@@ -72,28 +80,59 @@ contains
 		write(*, line_fmt)size(model_node), count(model_node%id .GT. 0)
 		deallocate(line_fmt)
 	else
-		write(*, *)"Node array is empty!"
+		write(*, '("Node array is empty!")')
 	endif
 	if (allocated(model_elem)) then
 		line_fmt = "('      Element max id:', 1X, I6, 1X, 'Total:', 1X, I6)"
 		write(*, line_fmt)size(model_elem), count(model_elem%id .GT. 0)
 		deallocate(line_fmt)
 	else
-		write(*, *)"Element array is empty!"
+		write(*, '("Element array is empty!")')
 	endif
 	if (allocated(model_matl)) then
 		line_fmt = "('     Material max id:', 1X, I6, 1X, 'Total:', 1X, I6)"
 		write(*, line_fmt)size(model_matl), count(model_matl%id .GT. 0)
 		deallocate(line_fmt)
 	else
-		write(*, *)"Material array is empty!"
+		write(*, '("Material array is empty!")')
 	endif
 	if (allocated(model_const)) then
 		line_fmt = "('Real constant max id:', 1X, I6, 1X, 'Total:', 1X, I6)"
 		write(*, line_fmt)size(model_const), count(model_const%id .GT. 0)
 		deallocate(line_fmt)
 	else
-		write(*, *)"Real constant is empty!"
+		write(*, '("Real constant is empty!")')
+	endif
+	end subroutine
+
+	subroutine model_get_ptr(node, elem, prop, prop2, bc, n1, n2, n3, n4, n5) bind(c, name = "cdb_reader_ptr")
+	!> @fn Get model pointer.
+	implicit none
+	type(c_ptr), intent(out):: node, elem, prop, prop2, bc
+	integer(c_int), intent(out):: n1, n2, n3, n4, n5
+	n1 = -1; n2 = -1; n3 = -1; n4 = -1; n5 = -1
+	node = c_null_ptr; elem = c_null_ptr; prop = c_null_ptr
+	prop2 = c_null_ptr; bc = c_null_ptr
+
+	if (allocated(model_node)) then
+		n1 = size(model_node)
+		node = c_loc(model_node(1))
+	endif
+	if (allocated(model_elem)) then
+		n2 = size(model_elem)
+		elem = c_loc(model_elem(1))
+	endif
+	if (allocated(model_matl)) then
+		n3 = size(model_matl)
+		prop = c_loc(model_matl(1))
+	endif
+	if (allocated(model_const)) then
+		n4 = size(model_const)
+		prop2 = c_loc(model_const(1))
+	endif
+	if (allocated(model_bc)) then
+		n5 = size(model_bc)
+		bc = c_loc(model_bc(1))
 	endif
 	end subroutine
 
@@ -110,11 +149,13 @@ contains
 	! Open cdb file.
 	open(newunit = fid, file = trim(fn), status = 'old', iostat = fid_stat)
 	if (fid_stat /= 0) then
-		write(*, *)"Open: ", trim(fn), " Failed!"
-		write(*, *)"Error code: ", fid_stat
+		write(*, '("Open:", A, 1X, "Failed!")')trim(fn)
+		write(*, '("Error code:", I8)')fid_stat
 		return
 	else
-		write(*, *)"Begin read: ", trim(fn)
+		write(*, "(A)")repeat("=", 80)
+		write(*, '("Begin read:", A)')trim(fn)
+		write(*, "(A)")repeat(" ", 80)
 	endif
 	call model_init()
 	do
@@ -139,7 +180,9 @@ contains
 				read(line(13:), *)j
 				allocate(model_etype(j))
 			else
-				write(*, *)"Unsupported keyword: ", line(8:11), line(13:)
+#if (2 <= PRINT_LEVEL)
+				write(*, '("Ignored:", 1X, A)')line(8:)
+#endif
 			endif
 		elseif (line(:8) == "RLBLOCK,") then
 			read(fid, '(A)')line_fmt
@@ -206,11 +249,15 @@ contains
 				model_matl(j)%arrb(kk) = rot(1)
 			endif
 		else
-			! write(*, *)'Get:'
-			! write(*, *)trim(line)
+#if (2 <= PRINT_LEVEL)
+			write(*, "('Ignored:', 1X, A)")trim(line)
+#endif
 		endif
 	end do
 	close(fid)
+#if (1 <= PRINT_LEVEL)
+	write(*, "(A)")repeat("+", 80)
+#endif
 	end subroutine
 
 	subroutine test_single_file(fn, str_len) bind(c, name = "cdb_reader_load")

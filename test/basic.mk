@@ -4,7 +4,7 @@ FC := gfortran
 CXX := g++
 # Compile options.
 CXXFLAGS := -O3# -g
-FFLAGS := -cpp
+FFLAGS := -cpp -DPRINT_LEVEL=1
 # Include.
 CXXFLAGS += -I../fmt -I../Catch/single_include -I../eigen -I../matio/src
 CXXFLAGS += -I../src/include
@@ -28,7 +28,7 @@ ASTERISK36 = "************************************"
 COMMENT = $(GREEN)$(ASTERISK36)$(ASTERISK36)"********"$(COLOR_OFF)
 BLANK = "      "
 
-all: a01 a02 a03 a04 a05 a06 b01 b02 b03 b04
+all: a01 a02 a03 a04 a05 a06 b01 b02 b03 b04 f01
 	@echo "[Basic] Test all cases."
 	$(MAKE) -f basic.mk clean
 
@@ -148,7 +148,7 @@ b04: ../fmt/fmt/format.o $(addprefix ../src/io/, $(addsuffix .o, bcy_reader)) ./
 	@echo -e $(COMMENT)
 	./test_$@
 
-f01: $(addprefix ../src/fortran/, $(addsuffix .o, common_reader cdb_reader)) ./basic/f01.o
+f01: ../fmt/fmt/format.o $(addprefix ../src/fortran/, $(addsuffix .o, common_reader cdb_reader)) ./basic/f01.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] CDB Reader test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
