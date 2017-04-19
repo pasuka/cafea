@@ -29,8 +29,10 @@ struct node_f03 {
 struct elem_f03 {
 	int id_{-1};
 	int etype_{-1};//!< Element number.
-	int mtype_{-1};//!< Material number.
-	int stype_{-1};//!< Section number.
+	int prop_[2]{-1, -1};//!< Property number.
+	// int mtype_{-1};//!< Material number.
+	// int stype_{-1};//!< Section number.
+	int opt_[LEN_ARRAY_]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,};//!< Element option.
 	int node_list_[MAX_NODES_PER_ELEM_]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 };
@@ -71,14 +73,16 @@ struct solu_f03 {
 	REAL4 damp_[2]{0.0f, -1.0f};//!< Damp parameter.
 };
 //! CDB node.
-struct cdb_node {
-    int id{-1}, csys{0};
-    REAL4 xyz[3]{0.0E0, 0.0E0, 0.0E0}, rot[3]{1.81E2, 1.81E2, 1.81E2};
-};
+// struct cdb_node {
+//     int id{-1}, csys{0};
+//     REAL4 xyz[3]{0.0E0, 0.0E0, 0.0E0}, rot[3]{1.81E2, 1.81E2, 1.81E2};
+// };
+using cdb_node = node_f03;
 //! CDB element.
-struct cdb_elem {
-    int id{-1}, etype{0}, prop[2]{0, 0}, opt[LEN_ARRAY_], node_list[MAX_NODES_PER_ELEM_];
-};
+// struct cdb_elem {
+//     int id{-1}, etype{0}, prop[2]{0, 0}, opt[LEN_ARRAY_], node_list[MAX_NODES_PER_ELEM_];
+// };
+using cdb_elem = elem_f03;
 //! CDB material and real constants.
 struct cdb_prop {
     int id{-1}, prop_type{-1};

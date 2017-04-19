@@ -106,7 +106,7 @@ int BCYReader::parse_element_blk() {
 		std::getline(this->fp_, line);
 		auto per_elem = this->parse_line(line);
 		wrapper_::elem_f03 pp{std::stoi(per_elem[0]), std::stoi(per_elem[1]),
-			std::stoi(per_elem[2]), std::stoi(per_elem[3])};
+			{std::stoi(per_elem[2]), std::stoi(per_elem[3])}};
 		for (int j = 0; j < std::stoi(per_elem[4]); j++) {
 			pp.node_list_[j] = std::stoi(per_elem[5+j]);
 		}

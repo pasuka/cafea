@@ -33,29 +33,6 @@ TEST_CASE("demo", "[CDBReader]") {
         REQUIRE(1 == n3);
         REQUIRE(20 == n4);
         REQUIRE(11 == n5);
-        for (int i = 0; i < n1; i++, p_node++) {
-            if (0 < p_node->id) {
-                std::cout << "node id: " << p_node->id;
-                std::cout << " xyz: " << p_node->xyz[0];
-                std::cout << " " << p_node->xyz[1];
-                std::cout << " " << p_node->xyz[2] << "\n";
-            }
-        }
-        for (int i = 0; i < n2; i++, p_elem++) {
-            if (0 < p_elem->id) {
-                std::cout << "element id: " << p_elem->id;
-                std::cout << " etype: " << p_elem->etype;
-                std::cout << " material: " << p_elem->prop[0];
-                std::cout << " real constant: " << p_elem->prop[2] << "\nnodes: ";
-                for (int j = 0; j < 27; j++) {
-                    if (0 > p_elem->node_list[j]) {
-                        std::cout << "\n";
-                        break;
-                    }
-                    std::cout << p_elem->node_list[j] << " ";
-                }
-            }
-        }
     }
     SECTION("case 02") {
         std::string ex("./ansys/nrc1677_1_2.cdb");
@@ -85,13 +62,13 @@ TEST_CASE("demo", "[CDBReader]") {
             cdb_reader_ptr(&p_node, &p_elem, &p_matl, &p_rconst, &p_bc, &n1, &n2, &n3, &n4, &n5);
             int count_node{0};
             for (int i = 0; i < n1; i++, p_node++) {
-                if (0 < p_node->id) {
-                    std::cout << "id: " << p_node->id;
-                    std::cout << " xyz: " << p_node->xyz[0];
-                    std::cout << " " << p_node->xyz[1];
-                    std::cout << " " << p_node->xyz[2];
-                    if (1.8E2 > p_node->rot[0]) {
-                        for (const auto &x: p_node->rot) { std::cout << " " << x;}
+                if (0 < p_node->id_) {
+                    std::cout << "id: " << p_node->id_;
+                    std::cout << " xyz: " << p_node->xyz_[0];
+                    std::cout << " " << p_node->xyz_[1];
+                    std::cout << " " << p_node->xyz_[2];
+                    if (1.8E2 > p_node->rot_[0]) {
+                        for (const auto &x: p_node->rot_) { std::cout << " " << x;}
                     }
                     std::cout << "\n";
                     count_node++;
@@ -100,12 +77,12 @@ TEST_CASE("demo", "[CDBReader]") {
             std::cout << "Total Nodes: " << count_node << "\n";
             int count_elem{0};
             for (int i = 0; i < n2; i++, p_elem++) {
-                if (0 < p_elem->id) {
-                    std::cout << "id: " << p_elem->id;
-                    std::cout << " etype: " << p_elem->etype;
-                    std::cout << " material: " << p_elem->prop[0];
-                    std::cout << " real constant: " << p_elem->prop[1] << " nodes: ";
-                    for(const auto &x: p_elem->node_list) {
+                if (0 < p_elem->id_) {
+                    std::cout << "id: " << p_elem->id_;
+                    std::cout << " etype: " << p_elem->etype_;
+                    std::cout << " material: " << p_elem->prop_[0];
+                    std::cout << " real constant: " << p_elem->prop_[1] << " nodes: ";
+                    for(const auto &x: p_elem->node_list_) {
                         if (0 > x) {
                             std::cout << "\n";
                             break;
