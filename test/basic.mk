@@ -148,11 +148,12 @@ b04: ../fmt/fmt/format.o $(addprefix ../src/io/, $(addsuffix .o, bcy_reader)) ./
 	@echo -e $(COMMENT)
 	./test_$@
 
-f01: ../fmt/fmt/format.o $(addprefix ../src/fortran/, $(addsuffix .o, common_reader cdb_reader)) ./basic/f01.o
+f01: ../fmt/fmt/format.o $(addprefix ../src/fortran/, $(addsuffix .o, common_reader cdb_reader2)) \
+$(addprefix ../src/io/, $(addsuffix .o, cdb_reader)) ./basic/f01.o
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(RED)"[Basic] CDB Reader test."$(COLOR_OFF)
 	@echo -e $(COMMENT)
-	$(CXX) $(notdir $^) $(CXXFLAGS) -lgfortran -o test_$@
+	$(CXX) $(notdir $^) $(CXXFLAGS) $(LIB_BOOST) -lgfortran -o test_$@
 	@echo -e $(COMMENT)
 	@echo -e $(BLANK)$(PURPLE)"Execute test."$(COLOR_OFF)
 	@echo -e $(COMMENT)

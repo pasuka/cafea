@@ -12,6 +12,7 @@
 #include <vector>
 #include <fstream>
 #include <utility>
+#include <iterator>
 #include <iostream>
 #include <algorithm>
 #include <functional>
@@ -33,6 +34,7 @@ class FEModelContainer {
 	public:
 		//! Destructor.
 		virtual ~FEModelContainer() {
+			file_.clear();
 			if (!node_list_.empty()) node_list_.clear();
 			if (!elem_list_.empty()) elem_list_.clear();
 		}
@@ -44,6 +46,22 @@ class FEModelContainer {
 		virtual std::map<std::string, int> get_info() const {
 			return {{"node", node_list_.size()}, {"element", elem_list_.size()}};
 		}
+		//! Check exists and empty of input file.
+		int check_file(const std::string fn) {
+			fs::path p = fn;
+			if (fs::exists(p)) {
+				if (!p.empty()) {
+					file_ = p;
+					return 0;
+				} else {
+					fmt::print("Input file: {} is empty!\n", fn);
+					return -1;
+				}
+			} else {
+				fmt::print("Input file: {} is not exists!\n", fn);
+				return -2;
+			}
+		}
 		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const FEModelContainer &a) {
 			cout << "This is FEModelContainer.\n";
@@ -54,6 +72,7 @@ class FEModelContainer {
 		}
 
 	protected:
+		fs::path file_;  //!< input file path.
 		std::vector<wrapper_::node_f03> node_list_;//!< Node set.
 		std::vector<wrapper_::elem_f03> elem_list_;//!< Element set.
 };
@@ -73,7 +92,6 @@ class BCYReader: public FEModelContainer {
 		}
 		//! Clear model data in memory.
 		void clean_model() {
-			file_.clear();
 			if (fp_.is_open()) fp_.close();
 
 			if (!matl_list_.empty()) matl_list_.clear();
@@ -118,7 +136,6 @@ class BCYReader: public FEModelContainer {
 		}
 
 	private:
-		fs::path file_;  //!< input file path.
 		std::ifstream fp_;  //!< file handler.
 
 		std::vector<wrapper_::matl_f03> matl_list_;
@@ -148,6 +165,51 @@ class BCYReader: public FEModelContainer {
 		int parse_solution_blk();
 		//! Read load block.
 		int parse_load_blk();
+};
+/**
+ *  \class CDB reader.
+ */
+class CDBReader: public FEModelContainer {
+	public:
+		//! Destructor.
+		~CDBReader() override { clean_model();}
+		//! Load bcy file.
+		int load_model(const std::string fn);
+		//! Load bcy file.
+		int load_model(const char* fn) {
+			const std::string fn2(fn);
+			return load_model(fn2);
+		}
+		void clean_model() {
+			if (!matl_list_.empty()) matl_list_.clear();
+			if (!sect_list_.empty()) sect_list_.clear();
+			if (!bc_list_.empty()) bc_list_.clear();
+		}
+		//! Get material list pointer.
+		const wrapper_::cdb_prop* get_material_ptr() const { return matl_list_.data();}
+		//! Get section list pointer
+		const wrapper_::cdb_prop* get_section_ptr() const { return sect_list_.data();}
+		//! Get boundary list pointer.
+		const wrapper_::cdb_bc* get_boundary_ptr() const { return bc_list_.data();}
+		//! Check and print.
+		std::map<std::string, int> get_info() const override {
+			return {{"node", node_list_.size()},
+				{"element", elem_list_.size()},
+				{"material", matl_list_.size()},
+				{"real_constant", sect_list_.size()}};
+		}
+		//! Print.
+		friend std::ostream& operator<<(std::ostream& cout, const CDBReader &a) {
+			cout << "This is CDBReader.\n";
+			for(const auto &p: a.get_info()) {
+				cout << fmt::format("Num. of {}: {}\n", p.first, p.second);
+			}
+			return cout;
+		}
+
+	private:
+		std::vector<wrapper_::cdb_prop> matl_list_, sect_list_;
+		std::vector<wrapper_::cdb_bc> bc_list_;
 };
 }  // namespace cafea
 #endif  // CAFEA_MESH_READER_H_

@@ -13,18 +13,9 @@ namespace cafea {
  * \return 0 means okay.
  */
 int BCYReader::load_model(const std::string fn) {
-    fs::path p = fn;
-	if (fs::exists(p)) {
-		if (!p.empty()) {
-			this->file_ = p;
-		} else {
-			fmt::print("Input file: {} is empty!\n", fn);
-			return -1;
-		}
-	} else {
-		fmt::print("Input file: {} is not exists!\n", fn);
-		return -2;
-	}
+    int flag = this->check_file(fn);
+    if (0 > flag) return flag;
+
 	if (this->fp_.is_open()) this->fp_.close();
 	this->fp_.open(fn);
 

@@ -5,6 +5,19 @@
 #include <string>
 #include <iostream>
 
+#include "cafea/mesh_reader.h"
+
+using cafea::CDBReader;
+
+TEST_CASE("demo", "[CDBReader]") {
+    SECTION("case 01") {
+        std::string ex01("./ansys/nrc1677_1_1.cdb");
+        CDBReader fp;
+        fp.load_model(ex01);
+        std::cout << fp;
+    }
+}
+/*
 #include "cafea/fortran_wrapper.h"
 
 using cafea::wrapper_::cdb_node;
@@ -97,3 +110,4 @@ TEST_CASE("demo", "[CDBReader]") {
         }
     }
 }
+*/
