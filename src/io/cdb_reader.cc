@@ -47,4 +47,15 @@ int CDBReader::load_model(const std::string fn) {
     wrapper_::cdb_reader_init();
     return 0;
 }
+/**
+ *  \brief Clean model data.
+ */
+void CDBReader::clean_model() {
+    this->file_.clear();
+    if (!this->node_list_.empty()) this->node_list_.clear();
+    if (!this->elem_list_.empty()) this->elem_list_.clear();
+    if (!this->matl_list_.empty()) this->matl_list_.clear();
+    if (!this->sect_list_.empty()) this->sect_list_.clear();
+    if (!this->bc_list_.empty()) this->bc_list_.clear();
+}
 }  // namespace cafea

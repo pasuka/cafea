@@ -43,7 +43,7 @@ class FEModelContainer {
 		//! Get element list pointer.
 		const wrapper_::elem_f03* get_element_ptr() const { return elem_list_.data();}
 		//! Get statistics.
-		virtual std::map<std::string, int> get_info() const {
+		virtual std::map<std::string, size_t> get_info() const {
 			return {{"node", node_list_.size()}, {"element", elem_list_.size()}};
 		}
 		//! Check exists and empty of input file.
@@ -82,16 +82,7 @@ class FEModelContainer {
 class BCYReader: public FEModelContainer {
 	public:
 		//! Destructor.
-		~BCYReader() override { clean_model();}
-		//! Load bcy file.
-		int load_model(const std::string fn);
-		//! Load bcy file.
-		int load_model(const char* fn) {
-			const std::string fn2(fn);
-			return load_model(fn2);
-		}
-		//! Clear model data in memory.
-		void clean_model() {
+		~BCYReader() override {
 			if (fp_.is_open()) fp_.close();
 
 			if (!matl_list_.empty()) matl_list_.clear();
@@ -106,8 +97,17 @@ class BCYReader: public FEModelContainer {
 				load_list_.clear();
 			}
 		}
+		//! Load bcy file.
+		int load_model(const std::string fn);
+		//! Load bcy file.
+		int load_model(const char* fn) {
+			const std::string fn2(fn);
+			return load_model(fn2);
+		}
+		//! Clear model data in memory.
+		void clean_model();
 		//! Check and print.
-		std::map<std::string, int> get_info() const override {
+		std::map<std::string, size_t> get_info() const override {
 			return {{"node", node_list_.size()},
 				{"element", elem_list_.size()},
 				{"material", matl_list_.size()},
@@ -172,7 +172,11 @@ class BCYReader: public FEModelContainer {
 class CDBReader: public FEModelContainer {
 	public:
 		//! Destructor.
-		~CDBReader() override { clean_model();}
+		~CDBReader() override {
+			if (!matl_list_.empty()) matl_list_.clear();
+			if (!sect_list_.empty()) sect_list_.clear();
+			if (!bc_list_.empty()) bc_list_.clear();
+		}
 		//! Load bcy file.
 		int load_model(const std::string fn);
 		//! Load bcy file.
@@ -180,11 +184,8 @@ class CDBReader: public FEModelContainer {
 			const std::string fn2(fn);
 			return load_model(fn2);
 		}
-		void clean_model() {
-			if (!matl_list_.empty()) matl_list_.clear();
-			if (!sect_list_.empty()) sect_list_.clear();
-			if (!bc_list_.empty()) bc_list_.clear();
-		}
+		//! Clear all model data.
+		void clean_model();
 		//! Get material list pointer.
 		const wrapper_::cdb_prop* get_material_ptr() const { return matl_list_.data();}
 		//! Get section list pointer
@@ -192,11 +193,12 @@ class CDBReader: public FEModelContainer {
 		//! Get boundary list pointer.
 		const wrapper_::cdb_bc* get_boundary_ptr() const { return bc_list_.data();}
 		//! Check and print.
-		std::map<std::string, int> get_info() const override {
+		std::map<std::string, size_t> get_info() const override {
 			return {{"node", node_list_.size()},
 				{"element", elem_list_.size()},
 				{"material", matl_list_.size()},
-				{"real_constant", sect_list_.size()}};
+				{"real_constant", sect_list_.size()},
+				{"BC", bc_list_.size()}};
 		}
 		//! Print.
 		friend std::ostream& operator<<(std::ostream& cout, const CDBReader &a) {

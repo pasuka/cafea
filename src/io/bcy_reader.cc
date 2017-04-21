@@ -268,4 +268,21 @@ int BCYReader::parse_solution_blk() {
 	this->solu_list_.push_back(std::move(solu));
 	return 0;
 }
+/**
+ ** \brief Clear model data.
+ */
+void BCYReader::clean_model() {
+    this->file_.clear();
+    if (this->fp_.is_open()) this->fp_.close();
+    if (!this->node_list_.empty()) this->node_list_.clear();
+    if (!this->elem_list_.empty()) this->elem_list_.clear();
+    if (!this->matl_list_.empty()) this->matl_list_.clear();
+    if (!this->sect_list_.empty()) this->sect_list_.clear();
+    if (!this->solu_list_.empty()) this->solu_list_.clear();
+    if (!this->bc_list_.empty()) this->bc_list_.clear();
+    if (!this->load_list_.empty()) {
+        for (auto &x: this->load_list_) { if (!x.empty()) x.clear(); }
+        this->load_list_.clear();
+    }
+}
 }  // namespace cafea
