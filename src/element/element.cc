@@ -108,4 +108,37 @@ template <class T>
 size_t Element<T>::get_element_type_id() const {
 	return ElementAttr::get_element_type_id(this->etype_);
 }
+/**
+ *
+ */
+template <class T>
+void Element<T>::set_element_type(int x) {
+	switch (x) {
+		case 14:
+			this->etype_ = ElementType::COMBIN14;
+			break;
+		case 16:
+			this->etype_ = ElementType::PIPE16;
+			break;
+		case 18:
+			this->etype_ = ElementType::PIPE18;
+			break;
+		case 21:
+			this->etype_ = ElementType::MASS21;
+			break;
+		case 181:
+			this->etype_ = ElementType::SHELL181;
+			break;
+		case 185:
+			this->etype_ = ElementType::SOLID185;
+			break;
+		case 186:
+			this->etype_ = ElementType::SOLID186;
+			break;
+		case 281:
+			this->etype_ = ElementType::SHELL281;
+			break;
+		default: this->etype_ = ElementType::UNKNOWN;
+	}
+}
 }  // namespace cafea

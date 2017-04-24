@@ -21,6 +21,7 @@
 #include "cafea/utils_ext.h"
 #include "cafea/dof_handler.h"
 #include "cafea/element_attr.h"
+#include "cafea/fortran_wrapper.h"
 
 namespace cafea {
 /**
@@ -144,6 +145,21 @@ class NodeBase: public ObjectBase {
 			int i{0}, j{0};
 			for (auto &it: va) xyz_(i++) = it;
 			for (auto &it: vb) angle_(j++) = it;
+		}
+		/**
+		 *  \brief Initialize with fortran struct.
+		 */
+		NodeBase(const wrapper_::node_f03 *p_node): ObjectBase {
+			p_node->id_, fmt::format("Node#{}", p_node->id_)} {
+			xyz_ << p_node->xyz_[0], p_node->xyz_[1], p_node->xyz_[2];
+			angle_ << p_node->rot_[0], p_node->rot_[1], p_node->rot_[2];
+			if (1 == p_node->csys_) {
+				csys_ = CoordinateSystem::CYLINDRICAL;
+			} else if (2 == p_node->csys_) {
+				csys_ = CoordinateSystem::SPHERICAL;
+			} else {
+				csys_ = CoordinateSystem::CARTESIAN;
+			}
 		}
 		//! Destructor.
 		~NodeBase() override {}

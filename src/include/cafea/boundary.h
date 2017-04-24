@@ -9,6 +9,7 @@
 
 #include "cafea/enum_lib.h"
 #include "cafea/base.h"
+#include "cafea/fortran_wrapper.h"
 
 namespace cafea {
 /**
@@ -35,6 +36,8 @@ class Boundary: public ObjectBase {
 		 */
 		Boundary(int id, BoundaryType bc, DofLabel dl, T val): bc_(bc), dl_(dl),
 			val_(val), ObjectBase {id, fmt::format("Boundary#{0}", id)} {}
+		Boundary(const wrapper_::bndy_f03 *p): ObjectBase {p->id_, fmt::format("Boundary#{}", p->id_)} {}
+		Boundary(const wrapper_::cdb_bc *p): ObjectBase {p->id, fmt::format("Boundary#{}", p->id)} {}
 		//! A destructor.
 		~Boundary() override {}
 		//! Set boundary type.

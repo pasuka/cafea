@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "cafea/cafea.h"
+#include "cafea/fortran_wrapper.h"
 
 namespace cafea {
 namespace wrapper_ {
@@ -14,7 +14,7 @@ namespace wrapper_ {
  *  \return Node instance of c++.
  */
 template <class T, class U>
-Node<T, U> AdapterF2Cpp<T, U>::cdb2node(const node_f *p_node) {
+Node<T, U> AdapterF2Cpp<T, U>::f2node(const node_f03 *p_node) {
 	Node<T, U> pt = {p_node->id_, p_node->xyz_[0], p_node->xyz_[1],
 		p_node->xyz_[2], p_node->rot_[0], p_node->rot_[1], p_node->rot_[2]};
 	switch (p_node->csys_) {
@@ -27,7 +27,7 @@ Node<T, U> AdapterF2Cpp<T, U>::cdb2node(const node_f *p_node) {
 		case 0:
 		default: pt.set_csys(CoordinateSystem::CARTESIAN);
 	}
-	return pt;
+	return std::move(pt);
 }
 /**
  *  \brief Convert Element from Fortran/C to C++
@@ -35,7 +35,7 @@ Node<T, U> AdapterF2Cpp<T, U>::cdb2node(const node_f *p_node) {
  *  \return Element instance of c++.
  */
 template <class T, class U>
-Element<U> AdapterF2Cpp<T, U>::cdb2elem(const elem_f *p_elem) {
+Element<U> AdapterF2Cpp<T, U>::f2elem(const elem_f03 *p_elem) {
 	Element<U> elem = {p_elem->id_, p_elem->prop_[0], p_elem->prop_[1]};
 	int nn{0};
 	switch (p_elem->etype_) {
@@ -83,7 +83,7 @@ Element<U> AdapterF2Cpp<T, U>::cdb2elem(const elem_f *p_elem) {
  *  \return Material instance of c++.
  */
 template <class T, class U>
-Material<T> AdapterF2Cpp<T, U>::cdb2matl(const matl_f *p_matl) {
+Material<T> AdapterF2Cpp<T, U>::cdb2matl(const matl_f03 *p_matl) {
 	Material<T> mp(p_matl->id_, MaterialType::LINEAR_ELASTIC);
 	mp.set_material_prop(MaterialProp::DENS, p_matl->val_[0]);
 	mp.set_material_prop(MaterialProp::EX, p_matl->val_[1]);

@@ -12,6 +12,7 @@
 
 #include "cafea/base.h"
 #include "cafea/enum_lib.h"
+#include "cafea/fortran_wrapper.h"
 
 namespace cafea {
 /**
@@ -52,6 +53,19 @@ class Material: public ObjectBase {
 			assert(vb.size() > 0 && vb.size() <= 10);
 			std::copy(va.begin(), va.end(), param_.begin());
 			std::copy(vb.begin(), vb.end(), param2_.begin());
+		}
+		/**
+		 *  \brief Initialize with fortran struct.
+		 */
+		Material(const wrapper_::matl_f03 *p): ObjectBase {p->id_, fmt::format("Material#{}", p->id_)} {
+			std::copy(std::begin(p->val_), std::begin(p->val_)+10, param_.begin());
+		}
+		/**
+		 *  \brief Initialize with fortran struc cdb_prop.
+		 */
+		Material(const wrapper_::cdb_prop *p): ObjectBase {p->id, fmt::format("Material#{}", p->id)} {
+			std::copy(std::begin(p->arrb), std::begin(p->arrb)+10, param_.begin());
+			std::copy(std::begin(p->arrb2), std::begin(p->arrb2)+10, param2_.begin());
 		}
 		//! Destructor.
 		~Material() override {}

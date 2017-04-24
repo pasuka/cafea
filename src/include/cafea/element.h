@@ -17,6 +17,7 @@
 #include "cafea/section.h"
 #include "cafea/material.h"
 #include "cafea/element_lib.h"
+#include "cafea/fortran_wrapper.h"
 
 namespace cafea {
 /**
@@ -56,7 +57,7 @@ class Element: public ObjectBase {
 			assert(sect_ > 0 && matl_ > 0);
 			assert(nodes.size() > 0);
 			// std::copy(nodes.begin(), nodes.end(), [nodes_](int x){if(x)nodes_.push_back(x);});
-			for (const auto& it: nodes) {
+			for (const auto &it: nodes) {
 				assert(it > 0);
 				nodes_.push_back(it);
 			}
@@ -69,7 +70,20 @@ class Element: public ObjectBase {
 		 */
 		Element(int id, int mp, int st): ObjectBase {id, fmt::format("Elem#{0}",
 			id)}, matl_(mp), sect_(st) { assert(sect_ > 0 && matl_ > 0);}
-
+		/**
+		  *  \brief Initialize with fortran struct.
+		  */
+		Element(const wrapper_::elem_f03 *p_elem): matl_(p_elem->prop_[0]), sect_(p_elem->prop_[1]),
+		 	ObjectBase {p_elem->id_, fmt::format("Elem#{}", p_elem->id_)} {
+			assert(0 < sect_);
+			assert(0 < matl_);
+			set_element_type(p_elem->etype_);
+			set_option(p_elem->opt_, 10);
+			for (const auto &it: p_elem->node_list_) {
+				if (0 > it) break;
+				nodes_.push_back(it);
+			}
+		}
 		//! Generate stifness mass matrix of element.
 		template <class U = REAL4>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*);

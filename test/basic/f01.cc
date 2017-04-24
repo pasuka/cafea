@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "cafea/mesh_reader.h"
+#include "cafea/timer.h"
 
 using cafea::CDBReader;
 
@@ -29,10 +30,13 @@ std::map<std::string, std::map<std::string, size_t>> examples {
     {"./ansys/nrc6645_1_1.cdb", {{"node", 69}, {"element", 67}, {"material", 6}, {"real_constant", 12}, {"BC", 21}}}};
 
 TEST_CASE("demo", "[CDBReader]") {
-    SECTION("case 01") {
+    SECTION("multi-cases") {
         CDBReader fp;
+        cafea::Timer tt;
         for (const auto &x: examples) {
+            tt.reset();
             fp.load_model(x.first);
+            std::cout << tt;
             auto info = fp.get_info();
             auto lib_ref = x.second;
             for (const auto &p: info) {

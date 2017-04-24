@@ -37,6 +37,7 @@ class FEModelContainer {
 			file_.clear();
 			if (!node_list_.empty()) node_list_.clear();
 			if (!elem_list_.empty()) elem_list_.clear();
+			// fmt::print("FEModelContainer Destructor.\n");
 		}
 		//! Get node list pointer.
 		const wrapper_::node_f03* get_node_ptr() const { return node_list_.data();}
@@ -96,6 +97,7 @@ class BCYReader: public FEModelContainer {
 				}
 				load_list_.clear();
 			}
+			// fmt::print("BCYReader Destructor.\n");
 		}
 		//! Load bcy file.
 		int load_model(const std::string fn);
@@ -176,6 +178,7 @@ class CDBReader: public FEModelContainer {
 			if (!matl_list_.empty()) matl_list_.clear();
 			if (!sect_list_.empty()) sect_list_.clear();
 			if (!bc_list_.empty()) bc_list_.clear();
+			// fmt::print("CDBReader Destructor.\n");
 		}
 		//! Load bcy file.
 		int load_model(const std::string fn);

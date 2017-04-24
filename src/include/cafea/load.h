@@ -11,6 +11,7 @@
 
 #include "cafea/base.h"
 #include "cafea/enum_lib.h"
+#include "cafea/fortran_wrapper.h"
 
 namespace cafea {
 /**
@@ -49,6 +50,7 @@ class LoadSet: public ObjectBase {
 		//! Constructor of load set.
 		LoadSet(int id, LoadDomain ld, T val): ld_(ld), val_(val),
 		 	ObjectBase {id, fmt::format("LoadSet#{}", id)} {}
+		LoadSet(const wrapper_::load_f03 *p): ObjectBase {p->id_, fmt::format("LoadSet#{}", p->id_)} {}
 		void add_load(LoadCell<T> tmp) { list_.push_back(tmp);}
 		//! Add single valued load.
 		int add_load(int, LoadType, DofLabel, T);

@@ -31,7 +31,7 @@ class Timer {
 		}
 		//! Print time cost.
 		friend std::ostream& operator<<(std::ostream& cout, const Timer &a) {
-			return cout << fmt::format("Time cost: %7.2f seconds.\n", a.elapsed());
+			return cout << fmt::format("Time cost: {:7.3f} seconds.\n", a.elapsed());
 		}
 
 	private:

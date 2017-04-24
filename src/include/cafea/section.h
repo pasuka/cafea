@@ -11,6 +11,7 @@
 
 #include "cafea/base.h"
 #include "cafea/enum_lib.h"
+#include "cafea/fortran_wrapper.h"
 
 namespace cafea {
 /**
@@ -64,6 +65,16 @@ class Section: public ObjectBase {
 			assert(0 < n && n <= 10);
 			param_.fill(Scalar(0));
 			for (int i = 0; i < n; i++) param_[i] = val[i];
+		}
+		/**
+		 *  \brief Initialize with fortran struct.
+		 */
+		Section(const wrapper_::sect_f03 *p): ObjectBase {p->id_, fmt::format("Section#{}", p->id_)} {
+			std::copy(std::begin(p->val_), std::begin(p->val_)+10, param_.begin());
+		}
+		Section(const wrapper_::cdb_prop *p): ObjectBase {p->id, fmt::format("Section#{}", p->id)} {
+			std::copy(std::begin(p->arrb), std::begin(p->arrb)+10, param_.begin());
+			std::copy(std::begin(p->arrb2), std::begin(p->arrb2)+10, param2_.begin());
 		}
 		//! Destructor.
 		~Section() override {}
