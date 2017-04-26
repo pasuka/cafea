@@ -8,7 +8,7 @@ using cafea::ObjectBase;
 TEST_CASE("init", "[ObjectBase]") {
     ObjectBase obj(42, "Basic Object");
     REQUIRE(obj.get_id() == 42);
-    REQUIRE(obj.get_name() == "Basic Object");
+    REQUIRE(obj.get_name() == "Basic Object#42");
     for (const auto &x: obj.get_group()) REQUIRE(x == 0);
     {
         ObjectBase obj;

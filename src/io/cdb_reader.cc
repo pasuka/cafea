@@ -32,14 +32,14 @@ int CDBReader::load_model(const std::string fn) {
         if (0 < p_elem->id_) this->elem_list_.push_back(*p_elem);
     }
     for (int i = 0; i < n3; i++, p_matl++) {
-        if (0 < p_matl->id) this->matl_list_.push_back(*p_matl);
+        if (0 < p_matl->id_) this->matl_list_.push_back(*p_matl);
     }
     for (int i = 0; i < n4; i++, p_rconst++) {
-        if (0 < p_rconst->id) this->sect_list_.push_back(*p_rconst);
+        if (0 < p_rconst->id_) this->sect_list_.push_back(*p_rconst);
     }
     for (int i = 0; i < n5; i++, p_bc++) {
-        if (0 < p_bc->id) {
-            if (std::any_of(std::begin(p_bc->dof_label), std::end(p_bc->dof_label), [] (int x) { return 0 < x;})) {
+        if (0 < p_bc->id_) {
+            if (std::any_of(std::begin(p_bc->dof_label_), std::end(p_bc->dof_label_), [] (int x) { return 0 < x;})) {
                 this->bc_list_.push_back(*p_bc);
             }
         }

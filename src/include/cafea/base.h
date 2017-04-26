@@ -26,10 +26,21 @@ namespace cafea {
 class ObjectBase {
 	public:
 		//! Constructor.
-		ObjectBase() { group_.fill(0);}
+		ObjectBase() {
+			group_.fill(0);
+		}
 		//! Another constructor.
-		ObjectBase(int id, std::string s): id_(id), name_(s) {
-			assert(id_ > 0);
+		ObjectBase(int id, const std::string s, const char delimeter = '#') {
+			assert(id > 0);
+			id_ = id;
+			name_ = fmt::format("{0}{1}{2}", s, delimeter, id);
+			group_.fill(0);
+		}
+		//! Another constructor.
+		ObjectBase(int id, const char* s, const char delimeter = '#') {
+			assert(id > 0);
+			id_ = id;
+			name_ = fmt::format("{0}{1}{2}", s, delimeter, id);
 			group_.fill(0);
 		}
 		//! Another constructor.

@@ -38,7 +38,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id.
 		 *  \param [in] id an integer must bigger than zero.
 		 */
-		explicit NodeBase(int id): ObjectBase {id, fmt::format("Node#{0}", id)},
+		explicit NodeBase(int id): ObjectBase {id, "Node"},
 			csys_(CoordinateSystem::CARTESIAN) {}
 		/**
 		 *  \brief Initialize with node's id and coordinate system.
@@ -52,8 +52,7 @@ class NodeBase: public ObjectBase {
 		 *  |Cylindrical|1       |
 		 *  |Spherical  |2       |
 		 */
-		NodeBase(int id, CoordinateSystem csys): csys_(csys),
-			ObjectBase {id, fmt::format("Node#{0}", id)} {}
+		NodeBase(int id, CoordinateSystem csys): csys_(csys), ObjectBase {id, "Node"} {}
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -64,7 +63,7 @@ class NodeBase: public ObjectBase {
 		 *  \details Default coordinate system Cartesian.
 		 */
 		NodeBase(int id, T x, T y, T z): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase {id, fmt::format("Node#{0}", id)} { xyz_ << x, y, z;}
+			ObjectBase {id, "Node"} { xyz_ << x, y, z;}
 		/**
 		 *  \brief Initialize with node's id coordinate system and values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -74,7 +73,7 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] u3 value of axis-3.
 		 */
 		NodeBase(int id, CoordinateSystem csys, T u1, T u2, T u3): csys_(csys),
-			ObjectBase {id, fmt::format("Node#{0}", id)} { xyz_ << u1, u2, u3;}
+			ObjectBase {id, "Node"} { xyz_ << u1, u2, u3;}
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
@@ -87,8 +86,8 @@ class NodeBase: public ObjectBase {
 		 *
 		 *  \details Euler angle must in degrees.
 		 */
-		NodeBase(int id, T x, T y, T z, T rx, T ry, T rz): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase {id, fmt::format("Node#{0}", id)} {
+		NodeBase(int id, T x, T y, T z, T rx, T ry, T rz):
+			ObjectBase {id, "Node"}, csys_(CoordinateSystem::CARTESIAN) {
 			xyz_ << x, y, z;
 			angle_ << rx, ry, rz;
 		}
@@ -104,7 +103,7 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] value of rotate 3-axis.
 		 */
 		NodeBase(int id, CoordinateSystem csys, T u1, T u2, T u3, T ur1, T ur2, T ur3):
-			csys_(csys), ObjectBase {id, fmt::format("Node#{0}", id)} {
+			csys_(csys), ObjectBase {id, "Node"} {
 			xyz_ << u1, u2, u3;
 			angle_ << ur1, ur2, ur3;
 		}
@@ -112,7 +111,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate system and values.
 		 */
 		NodeBase(int id, CoordinateSystem csys, init_list_<T> val):
-			ObjectBase {id, fmt::format("Node#{0}", id)}, csys_(csys) {
+			ObjectBase {id, "Node"}, csys_(csys) {
 			assert(val.size() == 3);
 			int i{0};
 			for (auto &it: val) xyz_(i++) = it;
@@ -121,7 +120,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate values.
 		 */
 		NodeBase(int id, init_list_<T> val): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase {id, fmt::format("Node#{0}", id)} {
+			ObjectBase {id, "Node"} {
 			assert(val.size() == 3);
 			int i{0};
 			for (auto it: val) xyz_[i++] = it;
@@ -130,7 +129,7 @@ class NodeBase: public ObjectBase {
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
 		NodeBase(int id, CoordinateSystem csys, init_list_<T> va, init_list_<T> vb):
-			csys_(csys), ObjectBase {id, fmt::format("Node#{0}", id)} {
+			csys_(csys), ObjectBase {id, "Node"} {
 			assert(va.size() == 3 && vb.size() == 3);
 			int i{0}, j{0};
 			for (auto it: va) xyz_(i++) = it;
@@ -139,8 +138,8 @@ class NodeBase: public ObjectBase {
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
-		NodeBase(int id, init_list_<T> va, init_list_<T> vb): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase {id, fmt::format("Node#{0}", id)} {
+		NodeBase(int id, init_list_<T> va, init_list_<T> vb):
+			csys_(CoordinateSystem::CARTESIAN), ObjectBase {id, "Node"} {
 			assert(va.size() == 3 && vb.size() == 3);
 			int i{0}, j{0};
 			for (auto &it: va) xyz_(i++) = it;
@@ -149,8 +148,7 @@ class NodeBase: public ObjectBase {
 		/**
 		 *  \brief Initialize with fortran struct.
 		 */
-		NodeBase(const wrapper_::node_f03 *p_node): ObjectBase {
-			p_node->id_, fmt::format("Node#{}", p_node->id_)} {
+		NodeBase(const wrapper_::node_f03 *p_node): ObjectBase {p_node->id_, "Node"} {
 			xyz_ << p_node->xyz_[0], p_node->xyz_[1], p_node->xyz_[2];
 			angle_ << p_node->rot_[0], p_node->rot_[1], p_node->rot_[2];
 			if (1 == p_node->csys_) {

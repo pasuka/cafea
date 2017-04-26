@@ -27,7 +27,7 @@ class Boundary: public ObjectBase {
 		 *  \param [in] dl dof label.
 		 */
 		Boundary(int id, BoundaryType bc, DofLabel dl): bc_(bc), dl_(dl),
-			ObjectBase {id, fmt::format("Boundary#{0}", id)} {}
+			ObjectBase {id, "Boundary"} {}
 		/**
 		 *  \brief Constructor with id boundary type values.
 		 *  \param [in] id boundary's id.
@@ -35,9 +35,9 @@ class Boundary: public ObjectBase {
 		 *  \param [in] value of boundary.
 		 */
 		Boundary(int id, BoundaryType bc, DofLabel dl, T val): bc_(bc), dl_(dl),
-			val_(val), ObjectBase {id, fmt::format("Boundary#{0}", id)} {}
-		Boundary(const wrapper_::bndy_f03 *p): ObjectBase {p->id_, fmt::format("Boundary#{}", p->id_)} {}
-		Boundary(const wrapper_::cdb_bc *p): ObjectBase {p->id, fmt::format("Boundary#{}", p->id)} {}
+			val_(val), ObjectBase {id, "Boundary"} {}
+		Boundary(const wrapper_::bndy_f03 *p): ObjectBase {p->id_, "Boundary"} {}
+		Boundary(const wrapper_::cdb_bc *p): ObjectBase {p->id_, "Boundary"} {}
 		//! A destructor.
 		~Boundary() override {}
 		//! Set boundary type.

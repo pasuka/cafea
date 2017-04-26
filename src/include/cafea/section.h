@@ -28,8 +28,7 @@ class Section: public ObjectBase {
 		 *  \param [in] id section's id.
 		 *  \param [in] sect section's type.
 		 */
-		Section(int id, SectionType sect): sect_(sect),
-			ObjectBase {id, fmt::format("Section#{0}", id)} {}
+		Section(int id, SectionType sect): sect_(sect), ObjectBase {id, "Section"} {}
 		/**
 		 *  \brief Initialize with section id type and parameters.
 		 *  \param [in] id section's id.
@@ -37,7 +36,7 @@ class Section: public ObjectBase {
 		 *  \param [in] val section's 1st parameter array.
 		 */
 		Section(int id, SectionType sect, init_list_<Scalar> val): sect_(sect),
-			ObjectBase {id, fmt::format("Section#{0}", id)} {
+			ObjectBase {id, "Section"} {
 			assert(val.size() > 0 && val.size() <= 10);
 			std::copy(val.begin(), val.end(), param_.begin());
 		}
@@ -48,8 +47,8 @@ class Section: public ObjectBase {
 		 *  \param [in] va section's 1st parameter array.
 		 *  \param [in] vb section's 2nd parameter array.
 		 */
-		Section(int id, SectionType sect, init_list_<Scalar> va, init_list_<Scalar> vb): sect_(sect),
-			ObjectBase {id, fmt::format("Section#{}", id)} {
+		Section(int id, SectionType sect, init_list_<Scalar> va, init_list_<Scalar> vb):
+			sect_(sect), ObjectBase {id, "Section"} {
 			assert(va.size() > 0 && va.size() <= 10);
 			assert(vb.size() > 0 && vb.size() <= 10);
 			std::copy(va.begin(), va.end(), param_.begin());
@@ -61,7 +60,7 @@ class Section: public ObjectBase {
 		 *  \param [in] val array of value.
 		 *  \param [in] n length of array.
 		 */
-		Section(int id, const Scalar val[], int n): ObjectBase {id, fmt::format("Section#{}", id)} {
+		Section(int id, const Scalar val[], int n): ObjectBase {id, "Section"} {
 			assert(0 < n && n <= 10);
 			param_.fill(Scalar(0));
 			for (int i = 0; i < n; i++) param_[i] = val[i];
@@ -69,12 +68,12 @@ class Section: public ObjectBase {
 		/**
 		 *  \brief Initialize with fortran struct.
 		 */
-		Section(const wrapper_::sect_f03 *p): ObjectBase {p->id_, fmt::format("Section#{}", p->id_)} {
+		Section(const wrapper_::sect_f03 *p): ObjectBase {p->id_, "Section"} {
 			std::copy(std::begin(p->val_), std::begin(p->val_)+10, param_.begin());
 		}
-		Section(const wrapper_::cdb_prop *p): ObjectBase {p->id, fmt::format("Section#{}", p->id)} {
-			std::copy(std::begin(p->arrb), std::begin(p->arrb)+10, param_.begin());
-			std::copy(std::begin(p->arrb2), std::begin(p->arrb2)+10, param2_.begin());
+		Section(const wrapper_::cdb_prop *p): ObjectBase {p->id_, "Section"} {
+			std::copy(std::begin(p->arrb_), std::begin(p->arrb_)+10, param_.begin());
+			std::copy(std::begin(p->arrb2_), std::begin(p->arrb2_)+10, param2_.begin());
 		}
 		//! Destructor.
 		~Section() override {}

@@ -52,8 +52,8 @@ class Element: public ObjectBase {
 		 *  \param [in] st number of section type.
 		 *  \param [in] nodes list of nodes id.
 		 */
-		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes): etype_(et),
-			ObjectBase {id, fmt::format("Elem#{0}", id)}, matl_(mp), sect_(st) {
+		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes):
+			etype_(et), ObjectBase {id, "Elem"}, matl_(mp), sect_(st) {
 			assert(sect_ > 0 && matl_ > 0);
 			assert(nodes.size() > 0);
 			// std::copy(nodes.begin(), nodes.end(), [nodes_](int x){if(x)nodes_.push_back(x);});
@@ -68,13 +68,13 @@ class Element: public ObjectBase {
 		 *  \param [in] mp number of material type.
 		 *  \param [in] st number of section type.
 		 */
-		Element(int id, int mp, int st): ObjectBase {id, fmt::format("Elem#{0}",
-			id)}, matl_(mp), sect_(st) { assert(sect_ > 0 && matl_ > 0);}
+		Element(int id, int mp, int st): ObjectBase {id, "Elem"}, matl_(mp),
+			sect_(st) { assert(sect_ > 0 && matl_ > 0);}
 		/**
 		  *  \brief Initialize with fortran struct.
 		  */
-		Element(const wrapper_::elem_f03 *p_elem): matl_(p_elem->prop_[0]), sect_(p_elem->prop_[1]),
-		 	ObjectBase {p_elem->id_, fmt::format("Elem#{}", p_elem->id_)} {
+		Element(const wrapper_::elem_f03 *p_elem): matl_(p_elem->prop_[0]),
+			sect_(p_elem->prop_[1]), ObjectBase {p_elem->id_, "Elem"} {
 			assert(0 < sect_);
 			assert(0 < matl_);
 			set_element_type(p_elem->etype_);

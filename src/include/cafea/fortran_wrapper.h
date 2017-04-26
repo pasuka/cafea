@@ -85,13 +85,13 @@ using cdb_node = node_f03;
 using cdb_elem = elem_f03;
 //! CDB material and real constants.
 struct cdb_prop {
-    int id{-1}, prop_type{-1};
-    REAL4 arrb[LEN_ARRAY_], arrb2[LEN_ARRAY_];
+    int id_{-1}, prop_type_{-1};
+    REAL4 arrb_[LEN_ARRAY_], arrb2_[LEN_ARRAY_];
 };
 //! CDB boundary.
 struct cdb_bc {
-    int id{-1}, dof_label[LEN_ARRAY_];
-    REAL4 val[LEN_ARRAY_], val2[LEN_ARRAY_];
+    int id_{-1}, dof_label_[LEN_ARRAY_];
+    REAL4 val_[LEN_ARRAY_], val2_[LEN_ARRAY_];
 };
 //! Clear CDB model container.
 void cdb_reader_init();
