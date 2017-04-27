@@ -24,7 +24,7 @@ class DofHandler {
 		//! Set number of DOF.
 		void set_num_dofs(size_t val);
 		//! Clear.
-		void clear() { if (!dofs_.empty()) { dofs_.clear();}}
+		void clear() { if (!dofs_.empty()) dofs_.clear();}
 		//! Get DOF vector.
 		std::vector<int> get_dofs() const { return dofs_;}
 		//! Apply constraint.

@@ -50,9 +50,18 @@ class ObjectBase {
 		}
 		//! A destructor.
 		virtual ~ObjectBase() {}
-		//! Set object's name.
+		// //! Set object's name.
+		// template <class T>
+		// void set_name(T val) { name_ = fmt::format("{}", val);}
+		//! Set object's name by id.
 		template <class T>
-		void set_name(T val) { name_ = fmt::format("{}", val);}
+		void set_name(T val, bool suffix_by_id = false, const char delimeter = '#') {
+			if (suffix_by_id) {
+				name_ = fmt::format("{0}{1}{2}", val, delimeter, id_);
+			} else {
+				name_ = fmt::format("{}", val);
+			}
+		}
 		/*
 		//! Set numeric number for object's name.
 		template <class T>
@@ -83,7 +92,7 @@ class ObjectBase {
 		}
 		//! Set object's group via C-style.
 		void set_group(const int y[], int n) {
-			assert(n <= 10);
+			assert(0 < n && n <= 10);
 			for (int i = 0; i < n; i++) group_[i] = y[i];
 		}
 		//! Get object's name.
