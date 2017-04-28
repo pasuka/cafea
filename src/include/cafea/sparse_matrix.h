@@ -81,7 +81,13 @@ class SparseMat {
 		//! Default constructor.
 		SparseMat() {}
 		//! Deconstructor.
-		~SparseMat() { clear();}
+		~SparseMat() {
+			if (!row_col_.empty()) row_col_.clear();
+			if (!aux_.empty()) aux_.clear();
+			if (!rhs_.empty()) rhs_.clear();
+			if (!stif_.empty()) stif_.clear();
+			if (!mass_.empty()) mass_.clear();
+		}
 		//! Initialize.
 		void clear() {
 			dim_ = nnz_ = 0;
