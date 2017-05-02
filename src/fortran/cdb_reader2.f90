@@ -50,6 +50,7 @@ type(prop_base), target, allocatable:: model_matl(:)
 type(prop_base), target, allocatable:: model_const(:)
 type(bc_base), target, allocatable:: model_bc(:)
 type(elem_type), allocatable:: model_etype(:)
+real(c_float), parameter:: ZERO = 0.0E0
 !!
 #ifndef PRINT_LEVEL
 #define PRINT_LEVEL 0
@@ -145,7 +146,7 @@ contains
 	character(len = 5):: keyword
 	integer:: fid, fid_stat, i, j, k, ii, jj, kk, n1, n2, n3, nvec(19)
 	real(c_float):: val_im, val_re, rot(3)
-	real(c_float), parameter:: ZERO = 0.0E0
+
 	! Open cdb file.
 	open(newunit = fid, file = trim(fn), status = 'old', iostat = fid_stat)
 	if (fid_stat /= 0) then

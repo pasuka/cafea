@@ -33,7 +33,7 @@ using COMPLEX8 = COMPLEX<REAL8>;
 #ifndef REAL_16_ON
 #define REAL_16_ON 0
 #endif
-#if REAL_16_ON
+#if (0 < REAL_16_ON)
 using REAL16 = long double;
 using COMPLEX16 = COMPLEX<REAL16>;
 #endif
