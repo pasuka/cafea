@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "cafea/cafea.h"
+#include "cafea/sparse_matrix.h"
 
 namespace cafea {
 /**

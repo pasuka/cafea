@@ -241,8 +241,8 @@ int BCYReader::parse_solution_blk() {
 	int num_param = std::stoi(line);
 
 	int antype{0};
-	int numfreq{0};
-	float damp{0.0f};
+	int numfreq{0}, num_mode{0}, sol_method{0};
+	float damp{0.0f}, low_freq{0.0f}, up_freq{0.0f};
 
 	for (int i = 0; i < num_param; i++) {
 		std::getline(this->fp_, line);
@@ -256,16 +256,27 @@ int BCYReader::parse_solution_blk() {
 		} else if (boost::starts_with(line, "$NUMFREQ")) {
 			numfreq = std::stoi(list[1]);
 			fmt::print("Num. Freq: {}\n", numfreq);
+        } else if (boost::starts_with(line, "$MODOPT")) {
+            num_mode = std::stoi(list[1]);
+            sol_method = std::stoi(list[2]);
+            low_freq = std::stof(list[3]);
+            up_freq = std::stof(list[4]);
 		} else {
 			//
 		}
 	}
-	for (int i = 0; i < numfreq; i++) {
-		this->parse_load_blk();
-	}
-
-	wrapper_::solu_f03 solu{antype, numfreq, {damp, -1.0f}};
-	this->solu_list_.push_back(std::move(solu));
+    wrapper_::solu_f03 solu;
+    if (2 == antype && 0 < numfreq) {
+        for (int i = 0; i < numfreq; i++) { this->parse_load_blk();}
+        wrapper_::solu_f03 solu_harmonic{antype, numfreq, -1, {damp, -1.0f}};
+        solu = solu_harmonic;
+    } else if (1 == antype) {
+        wrapper_::solu_f03 solu_modal{antype, num_mode, sol_method, {low_freq, up_freq}};
+        solu = solu_modal;
+    } else {
+        //
+    }
+    this->solu_list_.push_back(std::move(solu));
 	return 0;
 }
 /**

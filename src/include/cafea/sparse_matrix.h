@@ -13,6 +13,7 @@
 #include <memory>
 #include <algorithm>
 
+#include <Eigen/Eigen>
 #include "fmt/format.h"
 #include "matio/src/matio.h"
 
@@ -78,8 +79,6 @@ enum struct SpSym {
 template <class T = REAL8>
 class SparseMat {
 	public:
-		//! Default constructor.
-		SparseMat() {}
 		//! Deconstructor.
 		~SparseMat() {
 			if (!row_col_.empty()) row_col_.clear();
@@ -143,6 +142,9 @@ class SparseMat {
 		const SparseCell* get_coord_ptr() const { return row_col_.data();}
 		//! Get auxility pointer.
 		const size_t* get_aux_ptr() const { return aux_.data();}
+		//! Export Eigen sparse matrix.
+		Eigen::SparseMatrix<T> get_stif_eigen();
+		Eigen::SparseMatrix<T> get_mass_eigen();
 		//! Export MAT sparse.
 		std::unique_ptr<mat_sparse_t> get_stif_mat();
 		std::unique_ptr<mat_sparse_t> get_mass_mat();

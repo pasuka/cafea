@@ -70,6 +70,7 @@ struct load_f03 {
 struct solu_f03 {
 	int antype_{-1};
 	int num_step_{-1};
+	int solve_method_{-1};
 	REAL4 damp_[2]{0.0f, -1.0f};//!< Damp parameter.
 };
 //! CDB node.
