@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <type_traits>
 
 #include "cafea/node.h"
 #include "cafea/load.h"
@@ -25,6 +26,7 @@ namespace cafea {
  */
 template <class T = REAL8>
 class Element: public ObjectBase {
+	static_assert(std::is_floating_point<T>::value, "Element<T>: T must be floating number.");
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//* Default constructor.

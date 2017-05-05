@@ -11,6 +11,7 @@
 #include <tuple>
 #include <string>
 #include <vector>
+#include <type_traits>
 
 #include "cafea/node.h"
 #include "cafea/load.h"
@@ -26,6 +27,8 @@ using elem_out_5 = std::tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, std:
  */
 template <class T = REAL4, class U = REAL8>
 struct StructuralElement {
+	static_assert(std::is_floating_point<T>::value, "StructuralElement<T, U>: T must be floating number.");
+	static_assert(std::is_floating_point<U>::value, "StructuralElement<T, U>: U must be floating number.");
 	/**
 	 *  \brief 2-node straight pipe element.
 	 */
@@ -68,6 +71,7 @@ struct StructuralElement {
  */
 template <class T = REAL8>
 struct StructuralElementPost {
+	static_assert(std::is_floating_point<T>::value, "StructuralElementPost<T>: T must be floating number.");
 	/**
 	 *  \brief 2-node straight/elbow pipe element post process.
 	 */

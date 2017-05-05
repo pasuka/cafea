@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include <algorithm>
+#include <type_traits>
 
 #include <Eigen/Eigen>
 #include "fmt/format.h"
@@ -78,6 +79,8 @@ enum struct SpSym {
  */
 template <class T = REAL8>
 class SparseMat {
+	static_assert(std::is_floating_point<T>::value || std::is_class<T>::value,
+		"SparseMat<T>: T must be floating number.");
 	public:
 		//! Deconstructor.
 		~SparseMat() {

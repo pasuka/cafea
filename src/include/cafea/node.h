@@ -12,6 +12,7 @@
 #include <typeinfo>
 #include <typeindex>
 #include <functional>
+#include <type_traits>
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -30,6 +31,7 @@ namespace cafea {
  */
 template <class T = REAL4>
 class NodeBase: public ObjectBase {
+	static_assert(std::is_floating_point<T>::value, "NodeBase<T>: T must be floating number.");
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//! Default constructor.
@@ -269,6 +271,8 @@ class NodeBase: public ObjectBase {
  */
 template <class T = REAL4, class U = REAL8>
 class Node: public NodeBase<T> {
+	static_assert(std::is_floating_point<T>::value, "Node<T, U>: T must be floating number.");
+	static_assert(std::is_floating_point<U>::value, "Node<T, U>: U must be floating number.");
 	public:
 		using NodeBase<T>::NodeBase;//!< Inherit Base's constructors.
 		//! Default constructor.
@@ -355,6 +359,8 @@ template class Node<REAL8, REAL4>;
  */
 template <class T = REAL4, class U = REAL8>
 struct NodeFunc {
+	static_assert(std::is_floating_point<T>::value, "NodeFunc<T, U>: T must be floating number.");
+	static_assert(std::is_floating_point<U>::value, "NodeFunc<T, U>: U must be floating number.");
 	//! Coordinate transform for 2-node element.
 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*);
 	//! Coordinate transform for 2-node and up direction.

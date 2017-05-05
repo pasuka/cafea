@@ -8,6 +8,7 @@
 #define CAFEA_SECTION_H_
 
 #include <algorithm>
+#include <type_traits>
 
 #include "cafea/base.h"
 #include "cafea/enum_lib.h"
@@ -19,6 +20,7 @@ namespace cafea {
  */
 template <class Scalar = REAL4>
 class Section: public ObjectBase {
+	static_assert(std::is_floating_point<Scalar>::value, "Section<Scalar>: Scalar must be floating number.");
 	public:
 		using ObjectBase::ObjectBase;
 		//! Default constructor.

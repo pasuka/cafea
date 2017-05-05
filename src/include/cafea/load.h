@@ -8,6 +8,7 @@
 #define CAFEA_LOAD_H_
 
 #include <vector>
+#include <type_traits>
 
 #include "cafea/base.h"
 #include "cafea/enum_lib.h"
@@ -20,6 +21,7 @@ namespace cafea {
  */
 template <class T = REAL4>
 struct LoadCell {
+	static_assert(std::is_floating_point<T>::value, "LoadCell<T>: T must be floating number.");
 	int id_{-1};//!< id of load.
 	LoadType lt_{LoadType::UNKNOWN};//!< type of load.
 	DofLabel df_{DofLabel::UNKNOWN};//!< dof label of load.
@@ -44,6 +46,7 @@ template struct LoadCell<REAL8>;
  */
 template <class T = REAL4>
 class LoadSet: public ObjectBase {
+	static_assert(std::is_floating_point<T>::value, "LoadSet<T>: T must be floating number.");
 	public:
 		using ObjectBase::ObjectBase;
 		LoadSet() = delete;//!< Forbidden to build empty load set.

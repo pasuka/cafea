@@ -7,6 +7,10 @@
 #ifndef CAFEA_BOUNDARY_H_
 #define CAFEA_BOUNDARY_H_
 
+#include <type_traits>
+
+#include "fmt/format.h"
+
 #include "cafea/enum_lib.h"
 #include "cafea/base.h"
 #include "cafea/fortran_wrapper.h"
@@ -17,6 +21,7 @@ namespace cafea {
  */
 template <class T = REAL4>
 class Boundary: public ObjectBase {
+	static_assert(std::is_floating_point<T>::value, "Boundary<T>: T must be floating number.");
 	public:
 		using ObjectBase::ObjectBase;// Inherit Base's constructors.
 		Boundary() = delete;
