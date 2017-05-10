@@ -1,0 +1,106 @@
+/prep7
+
+out_dia = 28.575 ! Out Diameter
+wall_thk = 2.5 ! Wall Thickness
+scale_a = 1.0
+scale_b = 1.0
+R = 38.1
+
+out_rad = 0.5*out_dia ! Outer Radius
+in_rad = 0.5*out_dia - wall_thk ! Inner Radius
+hf_thick = 0.5*wall_thk ! Half Thickness
+midd = in_rad + hf_thick
+
+/com, Element Set
+/com, *************
+et, 1, shell281 ! SHELL281 element
+sectype, 1, shell ! Shell Section Definition
+secdata, wall_thk, 1, 0, 3
+
+/com, Material Properties
+/com, *********************
+mp, ex, 1, 1.17e5
+mp, nuxy, 1, 0.35
+mp, dens, 1, 8.8e-9
+
+/com, keypoints
+/com, **********
+
+k, 1, 0.0, 0.0, 0.0
+k, 2, -R, 0.0, 0.0
+k, 3, 0.0, R, 0.0
+k, 4, -R, -scale_a*out_dia, 0.0
+k, 5, scale_b*out_dia, R, 0.0
+
+k, 101, -R+midd, -scale_a*out_dia, 0.0
+k, 102, -R, -scale_a*out_dia, midd
+k, 103, -R-midd, -scale_a*out_dia, 0.0
+k, 104, -R, -scale_a*out_dia, -midd
+
+/com,  Lines
+/com,*************************
+larc, 101, 102, 4, midd
+larc, 102, 103, 4, midd
+larc, 103, 104, 4, midd
+larc, 104, 101, 4, midd
+
+lsel, s, line, , 1, 4, 1
+
+l, 4, 2, 4*scale_a                     ! form a line between 1 and 3, with no.of.divisions=8
+
+adrag, 1, 2, 3, 4,,, 5
+
+larc, 2, 3, 1, R
+
+adrag, 6, 9, 11, 13,,, 14
+
+l, 3, 5, 4*scale_b
+
+adrag, 18, 15, 22, 20,,,23
+lesize,all,,,16
+
+amap,1,6,7,101,102
+amap,2,7,8,102,103
+amap,3,8,9,103,104
+amap,4,6,9,101,104
+amap,5,6,7,11,10
+amap,6,7,8,11,12
+amap,7,8,9,12,13
+amap,8,6,9,10,13
+amap,9,11,12,14,15
+amap,10,12,13,15,16
+amap,11,10,13,16,17
+amap,12,10,11,14,17
+
+allsel,all
+
+asel,s,area,,1,12,1
+esla,s
+cm,needed,elem
+allsel,all
+
+asel,u,area,,1,12,1
+aclear,all
+allsel,all
+/com, Constraints
+/com,**********************
+
+nsel, s, loc, x, scale_b*out_dia
+nsel, a, loc, y, -scale_a*out_dia
+d,all,all,0
+allsel,all
+finish
+
+/com,
+/com, =========================
+/com,  Modal Solve
+/com, =========================
+/com,
+
+/solution
+antype, modal
+outres, all, all
+modopt, lanb, 15					! LANB mode extraction method
+mxpand, 15, , , yes					! Expand all 15 modes
+solve
+finish
