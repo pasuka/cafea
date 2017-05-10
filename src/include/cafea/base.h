@@ -11,7 +11,6 @@
 #include <array>
 #include <string>
 #include <ostream>
-#include <iterator>
 #include <algorithm>
 
 #include "fmt/format.h"
