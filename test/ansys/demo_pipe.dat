@@ -1,0 +1,118 @@
+/prep7
+
+out_dia = 28.575 ! Out Diameter
+wall_thk = 2.5 ! Wall Thickness
+scale_a = 2
+scale_b = 2
+R = 38.1
+
+et,1,pipe16						! Element 1 - PIPE16 (Straight Pipe Element)
+et,2,pipe18						! Element 2 - PIPE18 (Pipe Bend Element)
+
+/com, Real Constants
+/com, ****************
+r, 1, out_dia, wall_thk, 0.0, 0.0, 0.0, 0.0
+r, 2, out_dia, wall_thk, R, 0.0, 0.0, 0.0
+
+/com, Material Properties
+/com, *********************
+mp, ex, 1, 1.17e5
+mp, nuxy, 1, 0.35
+mp, dens, 1, 8.8e-9
+
+/com, keypoints
+/com, **********
+
+k, 1, 0.0, 0.0, 0.0
+k, 2, -R, 0.0, 0.0
+k, 3, 0.0, R, 0.0
+k, 4, -R, -scale_a*out_dia, 0.0
+k, 5, scale_b*out_dia, R, 0.0
+
+
+nkpt, 100, 1
+nkpt, 101, 2
+*AFUN,DEG
+n, 102,-R*COS(15),R*SIN(15),0.0
+n, 103,-R*COS(30),R*SIN(30),0.0
+n, 104,-R*COS(45),R*SIN(45),0.0
+n, 105,-R*COS(60),R*SIN(60),0.0
+n, 106,-R*COS(75),R*SIN(75),0.0
+nkpt, 107, 3
+
+
+l, 2, 4
+l, 3, 5
+
+larc, 2, 3, 1, R
+/com, Straight Pipe (Tangent Elements)
+/com,**********************************
+
+type,1
+mat,1
+real,1
+lsel,s,line,,1
+lesize,all,,,2*scale_a
+lmesh,all
+lsel,all
+
+lsel,s,line,,2
+lesize,all,,,2*scale_b
+lmesh,all
+allsel,all
+/com, Bend Pipe Elements
+/com,**********************************
+
+type,2
+mat,1
+real,2
+
+!e,101,102,100
+nsel,s,loc,x,-R
+nsel,a,loc,x,-R*COS(15)
+nsel,a,node,,100
+e,all
+e,102,103,100
+e,103,104,100
+e,104,105,100
+e,105,106,100
+e,106,107,100
+allsel,all
+
+/com, Constraints
+/com,*************
+nsel,s,loc,x,scale_b*out_dia
+d,all,all,0
+nsel,s,loc,y,-scale_a*out_dia
+d,all,ux,1.0
+d,all,uy,1.0
+
+allsel,all
+finish
+/solution
+outres,all,all
+solve
+finish
+
+/post1
+! get the max stress at the fixed end
+nsel,s,loc,x,0.5*scale_b*out_dia
+out_01 = 'pipe_node_up'
+out_02 = 'pipe_node_bottom'
+out_03 = 'pipe_node_fixed'
+/output, %out_01%, dat
+nlist, all
+prnsol, u, comp
+prnsol, s, prin
+/output, %out_02%, dat
+nsel,s,loc,x,0.5*scale_b*out_dia
+nlist, all
+prnsol, u, comp
+prnsol, s, prin
+/output, %out_03%, dat
+nsel, s, loc, y, -scale_a*out_dia
+nlist, all
+prnsol, u, comp
+prnsol, s, prin
+alls
+fini
