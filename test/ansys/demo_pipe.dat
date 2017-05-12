@@ -1,9 +1,11 @@
+/clear, nostart
+/title, PIPE16 AND PIPE18 CASE
 /prep7
 
 out_dia = 28.575 ! Out Diameter
 wall_thk = 2.5 ! Wall Thickness
-scale_a = 2
-scale_b = 2
+scale_a = 1
+scale_b = 1
 R = 38.1
 
 et,1,pipe16						! Element 1 - PIPE16 (Straight Pipe Element)
@@ -29,55 +31,62 @@ k, 3, 0.0, R, 0.0
 k, 4, -R, -scale_a*out_dia, 0.0
 k, 5, scale_b*out_dia, R, 0.0
 
+k, 11, -R, -0.5*scale_a*out_dia, 0.0
+k, 12, 0.5*scale_b*out_dia, R, 0.0
 
-nkpt, 100, 1
-nkpt, 101, 2
-*AFUN,DEG
-n, 102,-R*COS(15),R*SIN(15),0.0
-n, 103,-R*COS(30),R*SIN(30),0.0
-n, 104,-R*COS(45),R*SIN(45),0.0
-n, 105,-R*COS(60),R*SIN(60),0.0
-n, 106,-R*COS(75),R*SIN(75),0.0
-nkpt, 107, 3
+*AFUN, DEG
+k, 101, -R*COS(10), R*SIN(10), 0.0
+k, 102, -R*COS(20), R*SIN(20), 0.0
+k, 103, -R*COS(30), R*SIN(30), 0.0
+k, 104, -R*COS(40), R*SIN(40), 0.0
+k, 105, -R*COS(50), R*SIN(50), 0.0
+k, 106, -R*COS(60), R*SIN(60), 0.0
+k, 107, -R*COS(70), R*SIN(70), 0.0
+k, 108, -R*COS(80), R*SIN(80), 0.0
 
+l, 2, 11
+l, 11, 4
+l, 3, 12
+l, 12, 5
+l, 2, 101
+l, 101, 102
+l, 102, 103
+l, 103, 104
+l, 104, 105
+l, 105, 106
+l, 106, 107
+l, 107, 108
+l, 108, 3
 
-l, 2, 4
-l, 3, 5
-
-larc, 2, 3, 1, R
 /com, Straight Pipe (Tangent Elements)
 /com,**********************************
+type, 1
+mat, 1
+real, 2
+
+lsel, s, line, , 5, 13
+lesize, all,,,1
+lmesh, all
+allsel,all
 
 type,1
 mat,1
 real,1
-lsel,s,line,,1
-lesize,all,,,2*scale_a
-lmesh,all
-lsel,all
 
-lsel,s,line,,2
-lesize,all,,,2*scale_b
-lmesh,all
-allsel,all
-/com, Bend Pipe Elements
+lesize,1,,,2*scale_a
+lesize,2,,,2*scale_a
+lesize,3,,,2*scale_b
+lesize,4,,,2*scale_b
+lmesh,1,4
+
+/com, Convert to Bend Pipe Elements
 /com,**********************************
-
-type,2
-mat,1
-real,2
-
-!e,101,102,100
-nsel,s,loc,x,-R
-nsel,a,loc,x,-R*COS(15)
-nsel,a,node,,100
-e,all
-e,102,103,100
-e,103,104,100
-e,104,105,100
-e,105,106,100
-e,106,107,100
-allsel,all
+! Center Node of Arc
+nkpt, 201, 1
+esel, s, real, , 2
+emodify, all, -3, 201
+emodify, all, type, 2
+allsel, all
 
 /com, Constraints
 /com,*************

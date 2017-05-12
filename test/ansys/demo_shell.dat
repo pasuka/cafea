@@ -1,9 +1,12 @@
+/clear, nostart
+/title, Shell281 Demo Case
+
 /prep7
 
 out_dia = 28.575 ! Out Diameter
 wall_thk = 2.5 ! Wall Thickness
-scale_a = 2
-scale_b = 2
+scale_a = 1
+scale_b = 1
 R = 38.1
 
 out_rad = 0.5*out_dia ! Outer Radius
@@ -93,8 +96,6 @@ d,all,uy,1.0
 d,all,ux,1.0
 allsel,all
 finish
-
-
 
 /solution
 outres,all,all
