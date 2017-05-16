@@ -82,9 +82,9 @@ lmesh,1,4
 /com, Convert to Bend Pipe Elements
 /com,**********************************
 ! Center Node of Arc
-nkpt, 201, 1
+nkpt, 2001, 1
 esel, s, real, , 2
-emodify, all, -3, 201
+emodify, all, -3, 2001
 emodify, all, type, 2
 allsel, all
 
@@ -93,35 +93,51 @@ allsel, all
 nsel,s,loc,x,scale_b*out_dia
 d,all,all,0
 nsel,s,loc,y,-scale_a*out_dia
-d,all,ux,1.0
-d,all,uy,1.0
+d,all,uy,-1.0
 
 allsel,all
 finish
+
 /solution
 outres,all,all
 solve
 finish
 
 /post1
-! get the max stress at the fixed end
-nsel,s,loc,x,0.5*scale_b*out_dia
-out_01 = 'pipe_node_up'
-out_02 = 'pipe_node_bottom'
-out_03 = 'pipe_node_fixed'
+nsel,s,loc,x,0
+nsel,r,loc,y,R
+out_01 = 'pipe_B_begin'
 /output, %out_01%, dat
 nlist, all
 prnsol, u, comp
-prnsol, s, prin
-/output, %out_02%, dat
+prnsol, rot, comp
+esln,s, 0, all
+elist, all
+*do,i,5,80,5
+presol,nmisc,i
+*enddo
+
 nsel,s,loc,x,0.5*scale_b*out_dia
+out_02 = 'pipe_B_mid'
+/output, %out_02%, dat
 nlist, all
 prnsol, u, comp
-prnsol, s, prin
+prnsol, rot, comp
+esln,s, 0, all
+elist, all
+*do,i,5,80,5
+presol,nmisc,i
+*enddo
+nsel,s,loc,x,scale_b*out_dia
+out_03 = 'pipe_B_end'
 /output, %out_03%, dat
-nsel, s, loc, y, -scale_a*out_dia
 nlist, all
 prnsol, u, comp
-prnsol, s, prin
+prnsol, rot, comp
+esln,s, 0, all
+elist, all
+*do,i,5,80,5
+presol,nmisc,i
+*enddo
 alls
 fini

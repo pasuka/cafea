@@ -91,38 +91,52 @@ allsel,all
 nsel, s, loc, x, scale_b*out_dia
 d,all,all,0
 
-nsel, s, loc, y, -scale_a*out_dia
-d,all,uy,1.0
-d,all,ux,1.0
+!nsel, s, loc, y, -scale_a*out_dia
+!d,all,uy,1.0
+!d,all,ux,1.0
 allsel,all
 finish
 
+!/solution
+!outres,all,all
+!solve
+!finish
+!
+!/post1
+!! get the max stress at the fixed end
+!nsel,s,loc,x,0.5*scale_b*out_dia
+!nsel,r,loc,y,R+midd
+!out_01 = 'node_up'
+!out_02 = 'node_bottom'
+!out_03 = 'node_fixed'
+!/output, %out_01%, dat
+!nlist, all
+!prnsol, u, comp
+!prnsol, s, prin
+!/output, %out_02%, dat
+!nsel,s,loc,x,0.5*scale_b*out_dia
+!nsel,r,loc,y,R-midd
+!nlist, all
+!prnsol, u, comp
+!prnsol, s, prin
+!/output, %out_03%, dat
+!nsel, s, loc, y, -scale_a*out_dia
+!nlist, all
+!prnsol, u, comp
+!prnsol, s, prin
+!alls
+!fini
+
+/com,
+/com,=============
+/com,	Modal Solve
+/com,=============
+/com,
+
 /solution
+antype,modal
 outres,all,all
+modopt,lanb,10					! LANB mode extraction method
+!mxpand,10,,,yes					! Extract all 15 modes
 solve
 finish
-
-/post1
-! get the max stress at the fixed end
-nsel,s,loc,x,0.5*scale_b*out_dia
-nsel,r,loc,y,R+midd
-out_01 = 'node_up'
-out_02 = 'node_bottom'
-out_03 = 'node_fixed'
-/output, %out_01%, dat
-nlist, all
-prnsol, u, comp
-prnsol, s, prin
-/output, %out_02%, dat
-nsel,s,loc,x,0.5*scale_b*out_dia
-nsel,r,loc,y,R-midd
-nlist, all
-prnsol, u, comp
-prnsol, s, prin
-/output, %out_03%, dat
-nsel, s, loc, y, -scale_a*out_dia
-nlist, all
-prnsol, u, comp
-prnsol, s, prin
-alls
-fini
