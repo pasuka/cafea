@@ -215,7 +215,7 @@ template <class FileReader, class T, class U>
 void SolutionHarmonicFull<FileReader, T, U>::solve()
 {
 #ifndef SOLVER_SEL
-#define SOLVER_SEL 1
+#define SOLVER_SEL 0
 #endif
 #if (1 == SOLVER_SEL)
 	Eigen::SparseLU<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
@@ -285,6 +285,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 		}
 		auto disp = this->load_group_[i].get_load_by_type(LoadType::DISP);
 		if(!disp.empty()){
+			const auto Big_Number_ = 1.e20;
 			for(auto const &x: disp){
 				auto got = this->node_group_.find(x.get_id());
 				int dof_label = static_cast<int>(x.get_dof_label());
@@ -295,7 +296,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 					if(dof_label<va.size()){
 						auto index = va[dof_label];
 						if(0<=index){
-							mat_a.coeffRef(index, index) *= 1.e30;
+							mat_a.coeffRef(index, index) *= Big_Number_;
 							rhs(index) = disp_val*mat_a.coeff(index, index);
 						}
 					}
