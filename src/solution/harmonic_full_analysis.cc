@@ -223,9 +223,9 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 	// Eigen::SparseQR<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
 	// Eigen::SPQR<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 	// Eigen::UmfPackLU<Eigen::SparseMatrix<COMPLEX<U>>> solver;
-	Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::IncompleteLUT<COMPLEX<U>, int>> solver;
+	// Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::IncompleteLUT<COMPLEX<U>, int>> solver;
+	Eigen::LeastSquaresConjugateGradient<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 #endif
-	// Eigen::LeastSquaresConjugateGradient<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 	auto dim = this->mat_pair_.get_dim();
 	auto nnz = this->mat_pair_.get_nnz();
 

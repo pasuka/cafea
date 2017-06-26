@@ -295,9 +295,9 @@ template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL4>;
 template class SolutionModal<BcyReader<REAL4>, REAL4, REAL8>;
 template class SolutionModal<BcyReader<REAL4>, REAL4, REAL4>;
 template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL8>;
-template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL4>;
+// template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL4>;
 
-template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL4>;
+// template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL4>;
 template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL8>;
 }
 #endif

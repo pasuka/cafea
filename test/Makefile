@@ -16,7 +16,7 @@ else
 endif
 endif
 
-INCLUDE := -I../src/include -I../src/include/matio -I../matio/src -I../eigen
+INCLUDE := -I/mingw64/include -I../src/include -I../src/include/matio -I../matio/src -I/e/cpp_code/eigen/ #-I../eigen
 INCLUDE += -I../fmt -I../Catch/single_include
 CXXFLAGS += $(INCLUDE)
 
