@@ -213,7 +213,7 @@ void SolutionHarmonicFull<FileReader, Scalar, ResultScalar>::assembly()
  */
 template <class FileReader, class T, class U>
 void SolutionHarmonicFull<FileReader, T, U>::solve()
-{
+{	
 #ifndef SOLVER_SEL
 #define SOLVER_SEL 0
 #endif
@@ -223,8 +223,8 @@ void SolutionHarmonicFull<FileReader, T, U>::solve()
 	// Eigen::SparseQR<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::COLAMDOrdering<int>> solver;
 	// Eigen::SPQR<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 	// Eigen::UmfPackLU<Eigen::SparseMatrix<COMPLEX<U>>> solver;
-	// Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::IncompleteLUT<COMPLEX<U>, int>> solver;
-	Eigen::LeastSquaresConjugateGradient<Eigen::SparseMatrix<COMPLEX<U>>> solver;
+	Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::IncompleteLUT<COMPLEX<U>, int>> solver;
+	// Eigen::LeastSquaresConjugateGradient<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 #endif
 	auto dim = this->mat_pair_.get_dim();
 	auto nnz = this->mat_pair_.get_nnz();

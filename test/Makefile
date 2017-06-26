@@ -16,7 +16,7 @@ else
 endif
 endif
 
-INCLUDE := -I/mingw64/include -I../src/include -I../src/include/matio -I../matio/src -I/e/cpp_code/eigen/ #-I../eigen
+INCLUDE := -I/mingw64/include -I../src/include -I../src/include/matio -I../matio/src -I../eigen #-I/e/cpp_code/eigen/
 INCLUDE += -I../fmt -I../Catch/single_include
 CXXFLAGS += $(INCLUDE)
 
@@ -25,15 +25,15 @@ ASTERISK16 := $(ASTERISK4)$(ASTERISK4)$(ASTERISK4)$(ASTERISK4)
 ASTERISK := $(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)$(ASTERISK16)
 COMMENT = @echo -ne "\033[32m"$(ASTERISK)"\033[0m\n"
 
-SRC = ../fmt/fmt/format.o ../fmt/fmt/printf.o 
+SRC = ../fmt/fmt/format.o ../fmt/fmt/printf.o
 SRC += ../src/core/coord_tran.o ../src/core/integration.o
 SRC += ../src/core/sparse_matrix.o ../src/core/eigensolver.o
 SRC += ../src/base/material.o ../src/base/section.o ../src/base/node.o ../src/base/load.o
 SRC += ../src/base/dof_handler.o ../src/base/string_operation.o
 SRC += ../src/element/element_attr.o ../src/element/pipe.o
 SRC += ../src/element/additional.o ../src/element/element.o
-SRC += ../src/solution/static_analysis.o 
-SRC += ../src/solution/modal_analysis.o 
+SRC += ../src/solution/static_analysis.o
+SRC += ../src/solution/modal_analysis.o
 SRC += ../src/solution/harmonic_full_analysis.o
 SRC += ../src/io/simple_convert.o ../src/io/bcy_reader.o
 SRC += ../src/fortran/common_reader.o
@@ -56,14 +56,14 @@ test_node: $(SRC) ./node_basic_test.o
 	@echo "Begin node test"
 	$(COMMENT)
 	$(CXX) $(notdir $^) $(CXXFLAGS) -o test_node
-	
+
 test_cdb: ../src/fortran/cdb_reader.o ./ansys/cdb_file_test.o
-	$(COMMENT)	
+	$(COMMENT)
 	@echo "Begin cdb test in fortran"
 	$(COMMENT)
 	$(FC) $(notdir $^) -o test_cdb
 	ls ./ansys | sed 's:^:./ansys/:' | ./test_cdb
-	
+
 test_cdb_cpp: $(SRC) ./ansys/cdb_test_simple.o
 	$(COMMENT)
 	@echo "Begin cdb test in cpp"
@@ -103,7 +103,7 @@ test_static: $(SRC) ./solution_static_test.o
 	@echo -ne "\033[35m"Run test"\033[0m\n"
 	$(COMMENT)
 	./test_static
-	
+
 matio_lib:
 	@echo "MATIO Library"
 	$(MAKE) -f matio.mk libs
@@ -126,10 +126,10 @@ compile_harmonic: $(SRC) ./harmonic_main.o
 clean:
 	@echo "Clean files"
 	- $(RM) $(CLEAN) *.o *.mod *.mat test_*
-	
+
 all:
 	$(MAKE) test_node
 	./test_node
 	$(MAKE) clean
-	
+
 .PHONY: clean test_node test_cdb test_cdb_cpp test_solution test_modal matio_lib compile_modal compile_harmonic all
