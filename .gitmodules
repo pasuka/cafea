@@ -7,3 +7,6 @@
 [submodule "fmt"]
 	path = fmt
 	url = git://github.com/fmtlib/fmt.git
+[submodule "eigen"]
+	path = eigen
+	url = https://github.com/pasuka/eigen.git
