@@ -1,6 +1,6 @@
 [submodule "eigen"]
 	path = eigen
-	url = git://github.com/RLovelett/eigen.git
+	url = https://github.com/pasuka/eigen.git
 [submodule "Catch"]
 	path = Catch
 	url = git://github.com/philsquared/Catch.git
