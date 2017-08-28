@@ -8,10 +8,14 @@ CXXFLAGS := -lgfortran -lboost_system-mt -lboost_filesystem-mt -L./ -lmatio -O3
 # Check version of gcc.
 GCCVERSIONEQ5 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 5.0)
 GCCVERSIONEQ6 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 6.0)
+GCCVERSIONEQ7 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 7.0)
 ifeq "$(GCCVERSIONEQ6)" "0"
 ifeq "$(GCCVERSIONEQ5)" "1"
 CXXFLAGS += -std=c++14
 else
+ifeq "$(GCCVERSIONEQ7)" "1"
+CXXFLAGS += -std=c++1z
+endif
 endif
 endif
 # Include.

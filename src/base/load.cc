@@ -98,7 +98,8 @@ int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value
 template <class T>
 int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value_re, T value_im) {
 	LoadCell<T> tmp {id, load_type, dof_label, LoadDomain::FREQ};
-	tmp.val_cmplx_ = value_re + value_im*1i;
+	tmp.val_cmplx_.real(value_re);
+	tmp.val_cmplx_.imag(value_im);
 	this->list_.push_back(std::move(tmp));
 	return 0;
 }

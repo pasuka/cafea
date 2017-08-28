@@ -4,6 +4,12 @@ FC := gfortran
 CXX := g++
 # Compile options.
 CXXFLAGS := -O3# -g
+
+GCCVERSIONEQ7 := $(shell expr `gcc -dumpversion | cut -f1-2 -d.` \>= 7.0)
+ifeq "$(GCCVERSIONEQ7)" "1"
+CXXFLAGS += -std=c++1z
+endif
+
 FFLAGS := -cpp -DPRINT_LEVEL=1
 # Include.
 CXXFLAGS += -I../fmt -I../Catch/single_include -I../eigen -I../matio/src
