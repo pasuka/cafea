@@ -105,7 +105,7 @@ TEST_CASE("coord tran", "[NodeBase]") {
         REQUIRE(std::get<0>(rst) == Approx(1.f).epsilon(0.0001f));
         Node<> pr[2]{{7, {1.f, 1.f, 1.f}}, {11, {2.f, 1.f, 2.f}}};
         auto pqr = NodeFunc<float, double>::coord_tran(pr, &pr[1], 0.f, 1.f, 0.f);
-        REQUIRE(std::get<0>(pqr) == Approx(1.414f).epsilon(0.0001f));
+        REQUIRE(std::get<0>(pqr) == Approx(1.414f).epsilon(0.001f));
     }
     SECTION("03 triangle") {
         Node<> pt[3]{{3, {1.f, 0.f, 10.f}}, {5, {2.f, 0.f, 10.f}}, {7, {0.f, 2.5f, 10.f}}};
