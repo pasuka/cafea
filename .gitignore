@@ -40,3 +40,4 @@
 *.stackdump
 
 build*
+*vscode
