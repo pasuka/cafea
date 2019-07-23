@@ -4,29 +4,69 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
+#include <string>
+#include <iostream>
 #include "cafea/utils_ext.h"
 
 namespace cafea::utility {
-	template <size_t nPoints>
-	std::optional<std::pair<vecX_<REAL8>, vecX_<REAL8>>> gauss_quad() {
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<1, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<2, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<3, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<4, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<5, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<6, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<7, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<8, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<9, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<10, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<11, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<12, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<13, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<14, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<15, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<16, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<17, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<18, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<19, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<20, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<21, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<22, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<23, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<24, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<25, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<26, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<27, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<28, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<29, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<30, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<31, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<32, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<33, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<34, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<35, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<36, REAL8>();
+	// template std::pair<vecX_<>, vecX_<>> gauss_quad<37, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<38, REAL8>();
+    // template std::pair<vecX_<>, vecX_<>> gauss_quad<39, REAL8>();
+	template <size_t nPoints, class T>
+	constexpr std::pair<vecX_<T>, vecX_<T>> gauss_quad() {
 		assert(0 < nPoints);
+		vecX_<T> pt = vecX_<T>::Zero(nPoints), wt = pt;
 		if constexpr (1 == nPoints) {
-			vecX_<REAL8> pt=vecX_<REAL8>::Zero(nPoints), wt=pt;
-			pt << 0.0;
-			wt << 2.0;
-			return std::make_pair(pt, wt);
+			pt << T(0.0);
+			wt << T(2.0);
 		} else {
-			matrix_<REAL8> ma = matrix_<REAL8>::Zero(nPoints, nPoints);
-			vecX_<REAL8> subDiag = vecX_<REAL8>::Ones(nPoints-1);
-			subDiag *= 1.0/std::sqrt(4.0-1.0/std::pow(nPoints-1, 2.0));
+			matrix_<T> ma = matrix_<T>::Zero(nPoints, nPoints);
+			vecX_<T> subDiag = vecX_<T>::Ones(nPoints-1);
+			subDiag /= std::sqrt(4.0 - 1.0/T(nPoints-1)/T(nPoints-1));
 			ma.diagonal(-1) = subDiag;
-			Eigen::SelfAdjointEigenSolver<matrix_<REAL8>> eigenSolver(ma);
-			if ( eigenSolver.info()!=Eigen::ComputationInfo::Success) {
-				return std::nullopt;
-			} else {
-				return std::make_pair(eigenSolver.eigenvalues(), eigenSolver.eigenvectors().row(0).cwiseAbs2());
-			}
+			std::cout << ma << "\n";
+			Eigen::SelfAdjointEigenSolver<matrix_<T>> eigenSolver(ma);
+			assert(Eigen::ComputationInfo::Success == eigenSolver.info());
+			pt = eigenSolver.eigenvalues();
+			wt = T(2.0)*eigenSolver.eigenvectors().col(0).cwiseAbs2();
 		}
+		return std::make_pair(pt, wt);
 	}
 }
 // #include "cafea/cafea.h"

@@ -49,12 +49,8 @@ using varargout_6_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T
 //! Gauss integrate point and weight.
 // std::tuple<vecX_<>, vecX_<>> gauss_quad(int n = 2);
 inline namespace utility {
-    template <size_t nPoints=2>
-    std::optional<std::pair<vecX_<REAL8>, vecX_<REAL8>>> gauss_quad();
-    template std::optional<std::pair<vecX_<REAL8>, vecX_<REAL8>>> gauss_quad<1ull>();
-    template std::optional<std::pair<vecX_<REAL8>, vecX_<REAL8>>> gauss_quad<2ull>();
-    template std::optional<std::pair<vecX_<REAL8>, vecX_<REAL8>>> gauss_quad<3ull>();
-    template std::optional<std::pair<vecX_<REAL8>, vecX_<REAL8>>> gauss_quad<4ull>();
+    template <size_t nPoints=2, class T=REAL8>
+    constexpr std::pair<vecX_<T>, vecX_<T>> gauss_quad();
 }
 }  // namespace cafea
 #endif  // CAFEA_UTILS_EXT_H_
