@@ -20,8 +20,6 @@ using vec3_ = Eigen::Matrix<T, 3, 1>;
 //! Vector.
 template <class T = REAL8>
 using vecX_ = Eigen::Matrix<T, Eigen::Dynamic, 1>;
-template <size_t N=1, class T = REAL8>
-using vecN_ = Eigen::Matrix<T, N, 1>;
 //! Matirx.
 //! C++11's trick for template aliase.
 template <class U = REAL8>
@@ -46,9 +44,9 @@ using varargout_5_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T
 template <class T = REAL8>
 using varargout_6_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>>;
 
-//! Gauss integrate point and weight.
-// std::tuple<vecX_<>, vecX_<>> gauss_quad(int n = 2);
+
 inline namespace utility {
+    //! Gauss integrate point and weight.
     template <size_t nPoints=2, class T=REAL8>
     constexpr std::pair<vecX_<T>, vecX_<T>> gauss_quad();
 }

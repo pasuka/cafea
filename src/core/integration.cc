@@ -14,40 +14,46 @@ namespace cafea::utility {
     template std::pair<vecX_<>, vecX_<>> gauss_quad<3, REAL8>();
     template std::pair<vecX_<>, vecX_<>> gauss_quad<4, REAL8>();
 	template std::pair<vecX_<>, vecX_<>> gauss_quad<5, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<6, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<7, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<8, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<9, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<10, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<11, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<12, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<13, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<14, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<15, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<16, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<17, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<18, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<19, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<20, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<21, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<22, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<23, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<24, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<25, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<26, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<27, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<28, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<29, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<30, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<31, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<32, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<33, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<34, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<35, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<36, REAL8>();
-	// template std::pair<vecX_<>, vecX_<>> gauss_quad<37, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<38, REAL8>();
-    // template std::pair<vecX_<>, vecX_<>> gauss_quad<39, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<6, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<7, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<8, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<9, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<10, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<11, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<12, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<13, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<14, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<15, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<16, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<17, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<18, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<19, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<20, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<21, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<22, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<23, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<24, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<25, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<26, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<27, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<28, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<29, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<30, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<31, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<32, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<33, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<34, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<35, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<36, REAL8>();
+	template std::pair<vecX_<>, vecX_<>> gauss_quad<37, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<38, REAL8>();
+    template std::pair<vecX_<>, vecX_<>> gauss_quad<39, REAL8>();
+	/**
+	 * \brief Gauss-Legendre integrate point and weight.
+	 * \tparam nPoints number of points
+	 * \tparam T       numerical type, i.e. float, double, long double, et al.
+	 * \return integrate point and weight value
+	 */
 	template <size_t nPoints, class T>
 	constexpr std::pair<vecX_<T>, vecX_<T>> gauss_quad() {
 		assert(0 < nPoints);
@@ -57,14 +63,13 @@ namespace cafea::utility {
 			wt << T(2.0);
 		} else {
 			matrix_<T> ma = matrix_<T>::Zero(nPoints, nPoints);
-			vecX_<T> subDiag = vecX_<T>::Ones(nPoints-1);
-			subDiag /= std::sqrt(4.0 - 1.0/T(nPoints-1)/T(nPoints-1));
-			ma.diagonal(-1) = subDiag;
-			std::cout << ma << "\n";
+			vecX_<T> subDiag = vecX_<T>::LinSpaced(nPoints-1, 1, nPoints-1);
+			// Only low triangular part of matrix is required.
+			ma.diagonal(-1) = subDiag.unaryExpr([](T x){return x/std::sqrt(T(4.0)*x*x-T(1.0));});
 			Eigen::SelfAdjointEigenSolver<matrix_<T>> eigenSolver(ma);
 			assert(Eigen::ComputationInfo::Success == eigenSolver.info());
 			pt = eigenSolver.eigenvalues();
-			wt = T(2.0)*eigenSolver.eigenvectors().col(0).cwiseAbs2();
+			wt = T(2.0)*eigenSolver.eigenvectors().row(0).cwiseAbs2();
 		}
 		return std::make_pair(pt, wt);
 	}
