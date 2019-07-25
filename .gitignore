@@ -38,3 +38,6 @@
 
 # Make
 *.stackdump
+
+build*
+*vscode

@@ -1,3 +1,9 @@
+!!
+!! cafea --- A FEA library for dynamic analysis.
+!! Copyright (c) 2007-2017 T.Q.
+!! All rights reserved.
+!! Distributed under GPL v3 license.
+!!
 module header
 use, intrinsic:: iso_fortran_env
 use, intrinsic:: iso_c_binding
