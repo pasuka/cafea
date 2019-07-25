@@ -8,6 +8,9 @@
 #define CAFEA_NODE_EXT_HPP_
 /**
  *  \brief Set result data.
+ *  \tparam T type of input data.
+ *  \tparam U type of output data.
+ *  \tparam ResType type of result data.
  *  \param [in] sol type of solution.
  *  \param [in] lt type of load.
  *  \param [in] n i-th of result column.

@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_UTILS_H_
-#define CAFEA_UTILS_H_
+#ifndef CAFEA_UTILS_HPP_
+#define CAFEA_UTILS_HPP_
 
 #include <cmath>
 #include <tuple>
@@ -51,4 +51,4 @@ using init_list_ = std::initializer_list<T>;
 template <class T>
 using dict_ = std::unordered_map<int, T>;
 }  // namespace cafea
-#endif  // CAFEA_UTILS_H_
+#endif  // CAFEA_UTILS_HPP_

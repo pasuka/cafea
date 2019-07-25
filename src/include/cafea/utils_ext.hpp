@@ -4,14 +4,14 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_UTILS_EXT_H_
-#define CAFEA_UTILS_EXT_H_
+#ifndef CAFEA_UTILS_EXT_HPP_
+#define CAFEA_UTILS_EXT_HPP_
 
 #include <tuple>
 
 #include <Eigen/Dense>
 
-#include "cafea/utils.h"
+#include "cafea/utils.hpp"
 
 namespace cafea {
 //! Vector3.
@@ -49,6 +49,8 @@ inline namespace utility {
     //! Gauss integrate point and weight.
     template <size_t nPoints=2, class T=REAL8>
     constexpr std::pair<vecX_<T>, vecX_<T>> gauss_quad();
+
+    #include "gauss_legendre.hpp"
 }
 }  // namespace cafea
-#endif  // CAFEA_UTILS_EXT_H_
+#endif  // CAFEA_UTILS_EXT_HPP_
