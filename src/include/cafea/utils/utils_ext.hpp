@@ -11,7 +11,7 @@
 
 #include <Eigen/Dense>
 
-#include "cafea/utils.hpp"
+#include "cafea/utils/utils.hpp"
 
 namespace cafea {
 //! Vector3.

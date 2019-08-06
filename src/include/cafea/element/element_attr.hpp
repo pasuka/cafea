@@ -4,12 +4,12 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_ELEMENT_ATTR_H_
-#define CAFEA_ELEMENT_ATTR_H_
+#ifndef CAFEA_ELEMENT_ATTR_HPP_
+#define CAFEA_ELEMENT_ATTR_HPP_
 
 #include <cstddef>
 
-#include "cafea/enum_lib.h"
+#include "cafea/base/enum_lib.hpp"
 
 namespace cafea {
 /**
@@ -26,4 +26,4 @@ struct ElementAttr {
 	static size_t get_element_type_id(ElementType);
 };
 }  // namespace cafea
-#endif  // CAFEA_ELEMENT_ATTR_H_
+#endif  // CAFEA_ELEMENT_ATTR_HPP_

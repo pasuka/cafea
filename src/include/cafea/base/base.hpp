@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_BASE_H_
-#define CAFEA_BASE_H_
+#ifndef CAFEA_BASE_HPP_
+#define CAFEA_BASE_HPP_
 
 #include <cassert>
 #include <array>
@@ -15,7 +15,7 @@
 
 #include "fmt/format.h"
 
-#include "cafea/utils.h"
+#include "cafea/utils/utils.hpp"
 
 namespace cafea {
 /**
@@ -25,9 +25,7 @@ namespace cafea {
 class ObjectBase {
 	public:
 		//! Constructor.
-		ObjectBase() {
-			group_.fill(0);
-		}
+		ObjectBase() { group_.fill(0);}
 		//! Another constructor.
 		ObjectBase(int id, const std::string s, const char delimeter = '#') {
 			assert(id > 0);
@@ -111,4 +109,4 @@ class ObjectBase {
 		std::string name_{"Empty"};//!< Object's name.
 };
 }  // namespace cafea
-#endif  // CAFEA_BASE_H_
+#endif  // CAFEA_BASE_HPP_

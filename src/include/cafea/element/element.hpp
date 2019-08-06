@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_ELEMENT_H_
-#define CAFEA_ELEMENT_H_
+#ifndef CAFEA_ELEMENT_HPP_
+#define CAFEA_ELEMENT_HPP_
 
 #include <map>
 #include <vector>
@@ -13,12 +13,12 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "cafea/node.h"
-#include "cafea/load.h"
-#include "cafea/section.h"
-#include "cafea/material.h"
-#include "cafea/element_lib.h"
-#include "cafea/fortran_wrapper.h"
+#include "cafea/base/node.hpp"
+#include "cafea/base/load.hpp"
+#include "cafea/base/section.hpp"
+#include "cafea/base/material.hpp"
+#include "cafea/element/element_lib.hpp"
+#include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -242,8 +242,8 @@ class Element: public ObjectBase {
 #include "element_ext.hpp"
 #include "element_cmplx_ext.hpp"
 
-//! Specialization.
-template class Element<REAL8>;
-template class Element<REAL4>;
+// //! Specialization.
+// template class Element<REAL8>;
+// template class Element<REAL4>;
 }  // namespace cafea
-#endif  // CAFEA_ELEMENT_H_
+#endif  // CAFEA_ELEMENT_HPP_

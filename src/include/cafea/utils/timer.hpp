@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_TIMER_H_
-#define CAFEA_TIMER_H_
+#ifndef CAFEA_TIMER_HPP_
+#define CAFEA_TIMER_HPP_
 
 #include <chrono>
 #include <ostream>
@@ -40,4 +40,4 @@ class Timer {
 		std::chrono::time_point<clock_> beg_;//!< Begin clock.
 };
 }  // namespace cafea
-#endif  // CAFEA_TIMER_H_
+#endif  // CAFEA_TIMER_HPP_

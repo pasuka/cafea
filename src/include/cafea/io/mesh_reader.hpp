@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_MESH_READER_H_
-#define CAFEA_MESH_READER_H_
+#ifndef CAFEA_MESH_READER_HPP_
+#define CAFEA_MESH_READER_HPP_
 
 #include <map>
 #include <string>
@@ -16,15 +16,16 @@
 #include <iostream>
 #include <algorithm>
 #include <functional>
-// #include <experimental/filesystem>
-#include <boost/filesystem.hpp>
+#include <filesystem>
+// #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "fmt/format.h"
 
-#include "cafea/fortran_wrapper.h"
+#include "cafea/fortran/fortran_wrapper.hpp"
 
-namespace fs = boost::filesystem;//!< C++17 not ready yet.
+// namespace fs = boost::filesystem;//!< C++17 not ready yet.
+namespace fs = std::filesystem;
 
 namespace cafea {
 /**
@@ -217,4 +218,4 @@ class CDBReader: public FEModelContainer {
 		std::vector<wrapper_::cdb_bc> bc_list_;
 };
 }  // namespace cafea
-#endif  // CAFEA_MESH_READER_H_
+#endif  // CAFEA_MESH_READER_HPP_

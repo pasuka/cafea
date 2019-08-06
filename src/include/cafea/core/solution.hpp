@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_SOLUTION_H_
-#define CAFEA_SOLUTION_H_
+#ifndef CAFEA_SOLUTION_HPP_
+#define CAFEA_SOLUTION_HPP_
 
 #include <cstddef>
 #include <array>
@@ -20,14 +20,14 @@
 
 #include "fmt/format.h"
 
-#include "cafea/node.h"
-#include "cafea/element.h"
-#include "cafea/material.h"
-#include "cafea/section.h"
-#include "cafea/boundary.h"
-#include "cafea/sparse_matrix.h"
-#include "cafea/mesh_reader.h"
-#include "cafea/eigenpair.h"
+#include "cafea/base/node.hpp"
+#include "cafea/element/element.hpp"
+#include "cafea/base/material.hpp"
+#include "cafea/base/section.hpp"
+#include "cafea/base/boundary.hpp"
+#include "cafea/base/sparse_matrix.hpp"
+#include "cafea/io/mesh_reader.hpp"
+#include "cafea/base/eigenpair.hpp"
 
 namespace cafea {
 /**
@@ -275,22 +275,22 @@ class SolutionHarmonicFull: public SolutionStatic <FileReader, Scalar, ResultSca
 		matrix_<COMPLEX<ResultScalar>> rhs_cmplx_;
 		SolutionType sol_type_{SolutionType::HARMONIC_FULL};
 };
-//! Specialization with float type.
-template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL8>;
-template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL4>;
-template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL8>;
-template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL4>;
-template class SolutionHarmonicFull<AnsysCdbReader<REAL4>, REAL4, REAL8>;
-template class SolutionHarmonicFull<AnsysCdbReader<REAL4>, REAL4, REAL4>;
+// //! Specialization with float type.
+// template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL8>;
+// template class SolutionStatic<AnsysCdbReader<REAL4>, REAL4, REAL4>;
+// template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL8>;
+// template class SolutionModal<AnsysCdbReader<REAL4>, REAL4, REAL4>;
+// template class SolutionHarmonicFull<AnsysCdbReader<REAL4>, REAL4, REAL8>;
+// template class SolutionHarmonicFull<AnsysCdbReader<REAL4>, REAL4, REAL4>;
 
-template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL8>;
-template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL4>;
-template class SolutionModal<BcyReader<REAL4>, REAL4, REAL8>;
-template class SolutionModal<BcyReader<REAL4>, REAL4, REAL4>;
-template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL8>;
-template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL4>;
+// template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL8>;
+// template class SolutionStatic<BcyReader<REAL4>, REAL4, REAL4>;
+// template class SolutionModal<BcyReader<REAL4>, REAL4, REAL8>;
+// template class SolutionModal<BcyReader<REAL4>, REAL4, REAL4>;
+// template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL8>;
+// template class SolutionHarmonicFull<BcyReader<REAL4>, REAL4, REAL4>;
 
-template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL4>;
-template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL8>;
+// template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL4>;
+// template class SolutionHarmonicFull<FEModelReader<REAL4>, REAL4, REAL8>;
 }  // namespace cafea
-#endif  // CAFEA_SOLUTION_H_
+#endif  // CAFEA_SOLUTION_HPP_

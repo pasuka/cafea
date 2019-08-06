@@ -4,13 +4,13 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_DOF_HANDLER_H_
-#define CAFEA_DOF_HANDLER_H_
+#ifndef CAFEA_DOF_HANDLER_HPP_
+#define CAFEA_DOF_HANDLER_HPP_
 
 #include <vector>
 
-#include "cafea/base.h"
-#include "cafea/enum_lib.h"
+#include "cafea/base/base.hpp"
+#include "cafea/base/enum_lib.hpp"
 
 namespace cafea {
 /**
@@ -43,4 +43,4 @@ class DofHandler {
 		std::vector<int> dofs_;//!< Storage of dofs.
 };
 }  // namespace cafea
-#endif  // CAFEA_DOF_HANDLER_H_
+#endif  // CAFEA_DOF_HANDLER_HPP_

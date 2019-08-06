@@ -4,16 +4,16 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_BOUNDARY_H_
-#define CAFEA_BOUNDARY_H_
+#ifndef CAFEA_BOUNDARY_HPP_
+#define CAFEA_BOUNDARY_HPP_
 
 #include <type_traits>
 
 #include "fmt/format.h"
 
-#include "cafea/enum_lib.h"
-#include "cafea/base.h"
-#include "cafea/fortran_wrapper.h"
+#include "cafea/base/enum_lib.hpp"
+#include "cafea/base/base.hpp"
+#include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -68,7 +68,7 @@ class Boundary: public ObjectBase {
 		T val_ = T(0.0);//!< Value of boundary.
 };
 //! Specialization.
-template class Boundary<REAL4>;
-template class Boundary<REAL8>;
+//template class Boundary<REAL4>;
+//template class Boundary<REAL8>;
 }  // namespace cafea
-#endif  // CAFEA_BOUNDARY_H_
+#endif  // CAFEA_BOUNDARY_HPP_
