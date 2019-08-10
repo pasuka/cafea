@@ -160,10 +160,10 @@ class SparseMat {
 		std::vector<T> stif_, mass_;//!< Global mass and stiffness values.
 		std::vector<T> rhs_;//!< Global RHS values.
 };
-//!< Specialization
-template class SparseMat<REAL4>;
-template class SparseMat<REAL8>;
-template class SparseMat<COMPLEX4>;
-template class SparseMat<COMPLEX8>;
+// //!< Specialization
+// template class SparseMat<REAL4>;
+// template class SparseMat<REAL8>;
+// template class SparseMat<COMPLEX4>;
+// template class SparseMat<COMPLEX8>;
 }  // namespace cafea
 #endif  // CAFEA_SPARSE_MATRIX_H_

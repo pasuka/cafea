@@ -7,6 +7,7 @@
 #ifndef CAFEA_LOAD_HPP_
 #define CAFEA_LOAD_HPP_
 
+#include <variant>
 #include <vector>
 #include <type_traits>
 
@@ -21,16 +22,17 @@ namespace cafea {
  */
 template <class T = REAL4>
 struct LoadCell {
-	static_assert(std::is_floating_point<T>::value, "LoadCell<T>: T must be floating number.");
+	static_assert(std::is_floating_point<T>::value, "LoadCell<T>: T must be floating type.");
 	int id_{-1};//!< id of load.
 	LoadType lt_{LoadType::UNKNOWN};//!< type of load.
 	DofLabel df_{DofLabel::UNKNOWN};//!< dof label of load.
 	LoadDomain ld_{LoadDomain::TIME};//!< domain of load.
 	//! Value of load.
-	union {
-		T val_;
-		COMPLEX<T> val_cmplx_;
-	};
+	// union {
+	// 	T val_;
+	// 	COMPLEX<T> val_cmplx_;
+	// };
+	std::variant<T, COMPLEX<T>> val_;
 	//! Print info.
 	friend std::ostream& operator<<(std::ostream& cout, const LoadCell &a) {
 		return cout << fmt::format("LoadCell id:{} type:{} dof label:{} domain:{}\n",
@@ -46,7 +48,7 @@ struct LoadCell {
  */
 template <class T = REAL4>
 class LoadSet: public ObjectBase {
-	static_assert(std::is_floating_point<T>::value, "LoadSet<T>: T must be floating number.");
+	static_assert(std::is_floating_point<T>::value, "LoadSet<T>: T must be floating type.");
 	public:
 		using ObjectBase::ObjectBase;
 		LoadSet() = delete;//!< Forbidden to build empty load set.
@@ -60,7 +62,7 @@ class LoadSet: public ObjectBase {
 		//! Add doubly valued load.
 		int add_load(int, LoadType, DofLabel, T, T);
 		//! Add complex valued load.
-		int add_load(int, LoadType, DofLabel, COMPLEX<T>);
+		// int add_load(int, LoadType, DofLabel, COMPLEX<T>);
 		//! Clear load set.
 		void clear() { list_.clear();}
 		//! Get load subset by type.
