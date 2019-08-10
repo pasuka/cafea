@@ -215,6 +215,7 @@ void SolutionHarmonicFull<FileReader, T, U>::solve() {
 	// Eigen::UmfPackLU<Eigen::SparseMatrix<COMPLEX<U>>> solver;
 	Eigen::BiCGSTAB<Eigen::SparseMatrix<COMPLEX<U>>, Eigen::IncompleteLUT<COMPLEX<U>, int>> solver;
 	// Eigen::LeastSquaresConjugateGradient<Eigen::SparseMatrix<COMPLEX<U>>> solver;
+#endif
 	auto dim = this->mat_pair_.get_dim();
 	auto nnz = this->mat_pair_.get_nnz();
 
@@ -324,18 +325,10 @@ void SolutionHarmonicFull<FileReader, T, U>::load(const char* fn) {
 	if (0 == flag) {
 		fmt::print("load model success!\n");
 		auto info = this->file_parser_.print_info();
-		assert(0 < info["node"]);
-		assert(0 < info["element"]);
-		assert(0 < info["material"]);
-		assert(0 < info["section"]);
-		assert(0 < info["solution"]);
-		assert(0 < info["load"]);
-
 		auto p_node = this->file_parser_.get_node_ptr();
 		auto p_elem = this->file_parser_.get_element_ptr();
 		auto p_matl = this->file_parser_.get_material_ptr();
 		auto p_sect = this->file_parser_.get_section_ptr();
-		auto p_bc = this->file_parser_.get_boundary_ptr();
 		auto p_solu = this->file_parser_.get_solution_ptr();
 		auto p_load = this->file_parser_.get_load_ptr();
 

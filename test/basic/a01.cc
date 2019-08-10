@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "cafea/base.h"
+#include "cafea/base/base.hpp"
 
 using cafea::ObjectBase;
 
