@@ -20,7 +20,7 @@ namespace cafea {
  */
 template <class Scalar = REAL4>
 class Section: public ObjectBase {
-	static_assert(std::is_floating_point<Scalar>::value, "Section<Scalar>: Scalar must be floating number.");
+	static_assert(std::is_floating_point<Scalar>::value, "Section<Scalar>: Scalar must be floating type.");
 	public:
 		using ObjectBase::ObjectBase;
 		//! Default constructor.

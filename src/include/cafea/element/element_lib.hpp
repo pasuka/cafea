@@ -27,8 +27,8 @@ using elem_out_5 = std::tuple<matrix_<T>, matrix_<T>, matrix_<T>, vecX_<T>, std:
  */
 template <class T = REAL4, class U = REAL8>
 struct StructuralElement {
-	static_assert(std::is_floating_point<T>::value, "StructuralElement<T, U>: T must be floating number.");
-	static_assert(std::is_floating_point<U>::value, "StructuralElement<T, U>: U must be floating number.");
+	static_assert(std::is_floating_point<T>::value, "StructuralElement<T, U>: T must be floating type.");
+	static_assert(std::is_floating_point<U>::value, "StructuralElement<T, U>: U must be floating type.");
 	/**
 	 *  \brief 2-node straight pipe element.
 	 */
