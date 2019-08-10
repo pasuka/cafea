@@ -4,7 +4,7 @@
 #include <ostream>
 #include <algorithm>
 
-#include "cafea/load.h"
+#include "cafea/base/load.hpp"
 #include "func_random.hpp"
 
 using cafea::LoadSet;

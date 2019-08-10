@@ -4,14 +4,14 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_EIGENPAIR_H_
-#define CAFEA_EIGENPAIR_H_
+#ifndef CAFEA_EIGENPAIR_HPP_
+#define CAFEA_EIGENPAIR_HPP_
 
 #include <tuple>
 
 #include <Eigen/Eigen>
 
-#include "cafea/sparse_matrix.h"
+#include "cafea/base/sparse_matrix.hpp"
 
 namespace cafea {
 /**
@@ -113,20 +113,20 @@ class EigenSolver: public LinearSolver<T, Solver> {
 		matrix_<T> X_, lambda_;//!< Eigenvectors and eigenvalues.
 };
 
-//!< Specialization.
-template class LinearSolver<REAL4, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL4>>>;
-template class LinearSolver<REAL8, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL8>>>;
+// //!< Specialization.
+// template class LinearSolver<REAL4, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL4>>>;
+// template class LinearSolver<REAL8, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL8>>>;
 
-template class LinearSolver<REAL4, Eigen::SparseLU<Eigen::SparseMatrix<REAL4>>>;
-template class LinearSolver<REAL8, Eigen::SparseLU<Eigen::SparseMatrix<REAL8>>>;
+// template class LinearSolver<REAL4, Eigen::SparseLU<Eigen::SparseMatrix<REAL4>>>;
+// template class LinearSolver<REAL8, Eigen::SparseLU<Eigen::SparseMatrix<REAL8>>>;
 
-template class EigenSolver<REAL4, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL4>>>;
-template class EigenSolver<REAL8, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL8>>>;
+// template class EigenSolver<REAL4, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL4>>>;
+// template class EigenSolver<REAL8, Eigen::SimplicialLDLT<Eigen::SparseMatrix<REAL8>>>;
 
-template class EigenSolver<REAL4, Eigen::SparseLU<Eigen::SparseMatrix<REAL4>>>;
-template class EigenSolver<REAL8, Eigen::SparseLU<Eigen::SparseMatrix<REAL8>>>;
+// template class EigenSolver<REAL4, Eigen::SparseLU<Eigen::SparseMatrix<REAL4>>>;
+// template class EigenSolver<REAL8, Eigen::SparseLU<Eigen::SparseMatrix<REAL8>>>;
 
-template class EigenSolver<REAL4, Eigen::SparseQR<Eigen::SparseMatrix<REAL4>, Eigen::COLAMDOrdering<int>>>;
-template class EigenSolver<REAL8, Eigen::SparseQR<Eigen::SparseMatrix<REAL8>, Eigen::COLAMDOrdering<int>>>;
+// template class EigenSolver<REAL4, Eigen::SparseQR<Eigen::SparseMatrix<REAL4>, Eigen::COLAMDOrdering<int>>>;
+// template class EigenSolver<REAL8, Eigen::SparseQR<Eigen::SparseMatrix<REAL8>, Eigen::COLAMDOrdering<int>>>;
 }  // namespace cafea
-#endif  // CAFEA_EIGENPAIR_H_
+#endif  // CAFEA_EIGENPAIR_HPP_

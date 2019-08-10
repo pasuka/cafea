@@ -11,7 +11,7 @@
 
 #include <Eigen/Dense>
 
-#include "cafea/utils.hpp"
+#include "cafea/utils/utils.hpp"
 
 namespace cafea {
 //! Vector3.
@@ -43,14 +43,5 @@ using varargout_5_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T
 //! Matlab style varargout with 6 return.
 template <class T = REAL8>
 using varargout_6_ = std::tuple<T, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>, matrix_<T>>;
-
-
-inline namespace utility {
-    //! Gauss integrate point and weight.
-    template <size_t nPoints=2, class T=REAL8>
-    constexpr std::pair<vecX_<T>, vecX_<T>> gauss_quad();
-
-    #include "gauss_legendre.hpp"
-}
 }  // namespace cafea
 #endif  // CAFEA_UTILS_EXT_HPP_

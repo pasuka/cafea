@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_ELEMENT_LIB_H_
-#define CAFEA_ELEMENT_LIB_H_
+#ifndef CAFEA_ELEMENT_LIB_HPP_
+#define CAFEA_ELEMENT_LIB_HPP_
 
 #include <map>
 #include <tuple>
@@ -13,10 +13,10 @@
 #include <vector>
 #include <type_traits>
 
-#include "cafea/node.h"
-#include "cafea/load.h"
-#include "cafea/section.h"
-#include "cafea/material.h"
+#include "cafea/base/node.hpp"
+#include "cafea/base/load.hpp"
+#include "cafea/base/section.hpp"
+#include "cafea/base/material.hpp"
 
 namespace cafea {
 //! Define out variables.
@@ -85,13 +85,13 @@ struct StructuralElementPost {
 								  const cmatrix_<T> x, const cmatrix_<T> rhs,
 								  const cmatrix_<T> load, const std::map<std::string, T> attr);
 };
-//!< Specialization.
-template struct StructuralElement<REAL4, REAL4>;
-template struct StructuralElement<REAL4, REAL8>;
-template struct StructuralElement<REAL8, REAL4>;
-template struct StructuralElement<REAL8, REAL8>;
+// //!< Specialization.
+// template struct StructuralElement<REAL4, REAL4>;
+// template struct StructuralElement<REAL4, REAL8>;
+// template struct StructuralElement<REAL8, REAL4>;
+// template struct StructuralElement<REAL8, REAL8>;
 
-template struct StructuralElementPost<REAL4>;
-template struct StructuralElementPost<REAL8>;
+// template struct StructuralElementPost<REAL4>;
+// template struct StructuralElementPost<REAL8>;
 }  // namespace cafea
-#endif  // CAFEA_ELEMENT_LIB_H_
+#endif  // CAFEA_ELEMENT_LIB_HPP_

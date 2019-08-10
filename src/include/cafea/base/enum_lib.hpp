@@ -4,8 +4,8 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_ENUM_LIB_H_
-#define CAFEA_ENUM_LIB_H_
+#ifndef CAFEA_ENUM_LIB_HPP_
+#define CAFEA_ENUM_LIB_HPP_
 
 namespace cafea {
 /**
@@ -179,4 +179,4 @@ enum struct SolutionOption {
 	PRESSURE_INTERNAL,
 };
 }  // namespace cafea
-#endif  // CAFEA_ENUM_LIB_H_
+#endif  // CAFEA_ENUM_LIB_HPP_

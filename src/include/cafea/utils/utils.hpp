@@ -7,17 +7,23 @@
 #ifndef CAFEA_UTILS_HPP_
 #define CAFEA_UTILS_HPP_
 
+#include <complex>
 #include <cmath>
-#include <tuple>
-#include <vector>
 #include <limits>
 #include <string>
-#include <complex>
+#include <string_view>
+#include <tuple>
+#include <vector>
 #include <unordered_map>
+
 
 namespace cafea {
 //! Using i stands for imag part of complex.
-using namespace std::complex_literals;
+using namespace std::literals::complex_literals;
+//! Using s stands for string.
+using namespace std::literals::string_literals;
+//! Using sv stands for string view.
+using namespace std::literals::string_view_literals;
 //! REAL(kind=4) in Fortran iso_c_binding.
 using REAL4 = float;
 //! REAL(kind=8) in Fortran iso_c_binding.

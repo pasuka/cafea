@@ -4,15 +4,15 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_MATERIAL_H_
-#define CAFEA_MATERIAL_H_
+#ifndef CAFEA_MATERIAL_HPP_
+#define CAFEA_MATERIAL_HPP_
 
 #include <vector>
 #include <algorithm>
 
-#include "cafea/base.h"
-#include "cafea/enum_lib.h"
-#include "cafea/fortran_wrapper.h"
+#include "cafea/base/base.hpp"
+#include "cafea/base/enum_lib.hpp"
+#include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -91,8 +91,8 @@ class Material: public ObjectBase {
 		std::array<T, 10> param_;//!< 1st parameter array.
 		std::array<T, 10> param2_;//!< 2nd parameter array.
 };
-//! Specialization with float and double types.
-template class Material<REAL4>;
-template class Material<REAL8>;
+// //! Specialization with float and double types.
+// template class Material<REAL4>;
+// template class Material<REAL8>;
 }  // namespace cafea
-#endif  // CAFEA_MATERIAL_H_
+#endif  // CAFEA_MATERIAL_HPP_

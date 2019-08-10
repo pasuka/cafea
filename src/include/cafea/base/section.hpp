@@ -4,15 +4,15 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_SECTION_H_
-#define CAFEA_SECTION_H_
+#ifndef CAFEA_SECTION_HPP_
+#define CAFEA_SECTION_HPP_
 
 #include <algorithm>
 #include <type_traits>
 
-#include "cafea/base.h"
-#include "cafea/enum_lib.h"
-#include "cafea/fortran_wrapper.h"
+#include "cafea/base/base.hpp"
+#include "cafea/base/enum_lib.hpp"
+#include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -98,8 +98,8 @@ class Section: public ObjectBase {
 		std::array<Scalar, 10> param_;//!< 1st parameter array.
 		std::array<Scalar, 10> param2_;//!< 2nd parameter array.
 };
-//! Specialization with float and double types.
-template class Section<REAL4>;
-template class Section<REAL8>;
+// //! Specialization with float and double types.
+// template class Section<REAL4>;
+// template class Section<REAL8>;
 }  // namespace cafea
-#endif  // CAFEA_SECTION_H_
+#endif  // CAFEA_SECTION_HPP_

@@ -17,12 +17,12 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-#include "cafea/base.h"
-#include "cafea/boundary.h"
-#include "cafea/utils_ext.h"
-#include "cafea/dof_handler.h"
-#include "cafea/element_attr.h"
-#include "cafea/fortran_wrapper.h"
+#include "cafea/base/base.hpp"
+#include "cafea/base/boundary.hpp"
+#include "cafea/utils/utils_ext.hpp"
+#include "cafea/base/dof_handler.hpp"
+#include "cafea/element/element_attr.hpp"
+#include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -348,11 +348,11 @@ class Node: public NodeBase<T> {
 
 #include "node_ext.hpp"
 
-//! Specialization.
-template class Node<REAL4, REAL4>;
-template class Node<REAL4, REAL8>;
-template class Node<REAL8, REAL8>;
-template class Node<REAL8, REAL4>;
+// //! Specialization.
+// template class Node<REAL4, REAL4>;
+// template class Node<REAL4, REAL8>;
+// template class Node<REAL8, REAL8>;
+// template class Node<REAL8, REAL4>;
 
 /**
  *  \brief Coordinate transform uitiliy.
@@ -380,11 +380,11 @@ struct NodeFunc {
 	static varargout_3_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*, const NodeBase<T>*);
 };
 
-//! Specialization.
-template struct NodeFunc<REAL4, REAL4>;
-template struct NodeFunc<REAL4, REAL8>;
-template struct NodeFunc<REAL8, REAL4>;
-template struct NodeFunc<REAL8, REAL8>;
+// //! Specialization.
+// template struct NodeFunc<REAL4, REAL4>;
+// template struct NodeFunc<REAL4, REAL8>;
+// template struct NodeFunc<REAL8, REAL4>;
+// template struct NodeFunc<REAL8, REAL8>;
 //
 // /**
 //  * \brief Quadrilateral Area Coordinate Method.
@@ -399,4 +399,4 @@ template struct NodeFunc<REAL8, REAL8>;
 // template struct QACM<REAL4>;
 // template struct QACM<REAL8>;
 }  // namespace cafea
-#endif  // CAFEA_NODE_H_
+#endif  // CAFEA_NODE_HPP_

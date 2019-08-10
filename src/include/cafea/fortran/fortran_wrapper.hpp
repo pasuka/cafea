@@ -4,10 +4,10 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_FORTRAN_WRAPPER_H_
-#define CAFEA_FORTRAN_WRAPPER_H_
+#ifndef CAFEA_FORTRAN_WRAPPER_HPP_
+#define CAFEA_FORTRAN_WRAPPER_HPP_
 
-#include "cafea/utils.h"
+#include "cafea/utils/utils.hpp"
 
 namespace cafea {
 namespace wrapper_ {
@@ -107,4 +107,4 @@ void cdb_reader_ptr(cdb_node**, cdb_elem**, cdb_prop**, cdb_prop**, cdb_bc**, in
 #endif
 }  // namespace wrapper_
 }  // namespace cafea
-#endif  // CAFEA_FORTRAN_WRAPPER_H_
+#endif  // CAFEA_FORTRAN_WRAPPER_HPP_

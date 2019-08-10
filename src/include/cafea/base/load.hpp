@@ -4,15 +4,15 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#ifndef CAFEA_LOAD_H_
-#define CAFEA_LOAD_H_
+#ifndef CAFEA_LOAD_HPP_
+#define CAFEA_LOAD_HPP_
 
 #include <vector>
 #include <type_traits>
 
-#include "cafea/base.h"
-#include "cafea/enum_lib.h"
-#include "cafea/fortran_wrapper.h"
+#include "cafea/base/base.hpp"
+#include "cafea/base/enum_lib.hpp"
+#include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -37,9 +37,9 @@ struct LoadCell {
 			a.id_, static_cast<int>(a.lt_), static_cast<int>(a.df_), static_cast<int>(a.ld_));
 	}
 };
-//! Specialization of load cell.
-template struct LoadCell<REAL4>;
-template struct LoadCell<REAL8>;
+// //! Specialization of load cell.
+// template struct LoadCell<REAL4>;
+// template struct LoadCell<REAL8>;
 
 /**
  *  \brief Set of loads.
@@ -90,8 +90,8 @@ class LoadSet: public ObjectBase {
 		T val_;//!< Load set index value.
 		std::vector<LoadCell<T>> list_;//!< Load set container.
 };
-//! Specialization of load set.
-template class LoadSet<REAL4>;
-template class LoadSet<REAL8>;
+// //! Specialization of load set.
+// template class LoadSet<REAL4>;
+// template class LoadSet<REAL8>;
 }  // namespace cafea
-#endif  // CAFEA_LOAD_H_
+#endif  // CAFEA_LOAD_HPP_
