@@ -36,4 +36,5 @@ if(TARGET Eigen3::Eigen)
 else()
     message(STATUS "Cannot find Eigen3")
 endif()
-
+message("${Eigen3_SOURCE_DIR}, $ENV{Eigen3_BINARY_DIR}")
+message(STATUS "${Catch2_SOURCE_DIR} ${Catch2_BINARY_DIR}")
