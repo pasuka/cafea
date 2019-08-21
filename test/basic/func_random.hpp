@@ -1,7 +1,7 @@
 #include <chrono>
 #include <random>
 
-#include "cafea/enum_lib.h"
+#include "cafea/base/enum_lib.hpp"
 //! Generate random component.
 
 using cafea::LoadType;

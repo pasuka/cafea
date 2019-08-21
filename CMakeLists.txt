@@ -20,8 +20,6 @@ if(MSYS OR MINGW OR UNIX)
     enable_language(Fortran)
     message(STATUS "Add Fortran language")
 endif()
-# Set for OpenMP fmt Boost library
-add_subdirectory(extern)
 
 # Find OpenMP for Eigen3
 find_package(OpenMP REQUIRED)
@@ -34,17 +32,20 @@ endif()
 # Find Eigen3
 find_package(Eigen3 3.3 CONFIG)
 # find_package(Eigen3 3.3 CONFIG REQUIRED)
-if(TARGET Eigen3::Eigen)
-    message(STATUS "Find Eigen3")
-else()
-    message(STATUS "Cannot find Eigen3")
-endif()
 
 # Find fmt
 find_package(fmt 5.3 CONFIG)
 
 # Find Catch2
-find_package(Catch2 2.9.1 CONFIG)
+find_package(Catch2 2.9.2 CONFIG)
+# When some aformentioned libraries cannot found.
+# Then download source from web. 
+add_subdirectory(extern)
 
-message("${Eigen3_SOURCE_DIR}, $ENV{Eigen3_BINARY_DIR}")
 message(STATUS "${Catch2_SOURCE_DIR} ${Catch2_BINARY_DIR}")
+
+add_executable(a01 test/test_utility_01.cc)
+target_include_directories(a01 PUBLIC src/include ${Catch2_SOURCE_DIR}/include)
+target_link_libraries(a01 PRIVATE Eigen3::Eigen fmt::fmt )
+
+

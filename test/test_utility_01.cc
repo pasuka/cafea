@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "cafea/utils_ext.hpp"
+#include "cafea/utils/gauss_legendre.hpp"
 
 int main(int agrc, char **argv) {
         
