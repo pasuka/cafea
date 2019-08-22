@@ -25,10 +25,12 @@ TEST_CASE("init load cell", "[LoadCell]") {
     REQUIRE(pa.lt_ == LoadType::VEL);
     REQUIRE(pa.df_ == DofLabel::UZ);
     REQUIRE(pa.ld_ == LoadDomain::TIME);
-    REQUIRE(pa.val_ == Approx(1.655f).epsilon(0.0001f));
+    if(std::holds_alternative<float>(pa.val_)) {
+        float tmpVal = std::get<float>(pa.val_);
+        REQUIRE(tmpVal == Approx(1.655f).epsilon(0.0001f));
+    }
     LoadCell<double> pb{};
     REQUIRE(pb.id_ == -1);
-    std::cout << pa;
 }
 
 TEST_CASE("init load set", "[LoadSet]") {
@@ -42,7 +44,6 @@ TEST_CASE("init load set", "[LoadSet]") {
     REQUIRE(pa.get_load_domain() == LoadDomain::TIME);
     pa.set_value(2.9f);
     REQUIRE(pa.get_value() == Approx(2.9f).epsilon(0.0001f));
-    std::cout << pa;
 }
 
 TEST_CASE("add load cell 01", "[LoadSet]") {

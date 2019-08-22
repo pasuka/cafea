@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "cafea/dof_handler.h"
+#include "cafea/base/dof_handler.hpp"
 #include "func_random.hpp"
 
 using cafea::DofHandler;

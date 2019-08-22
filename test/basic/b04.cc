@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "cafea/mesh_reader.h"
+#include "cafea/io/mesh_reader.hpp"
 #include "func_random.hpp"
 
 using cafea::BCYReader;

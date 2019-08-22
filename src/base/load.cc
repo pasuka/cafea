@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "cafea/load.h"
+#include "cafea/base/load.hpp"
 
 namespace cafea {
 /**

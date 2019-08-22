@@ -44,8 +44,26 @@ add_subdirectory(extern)
 
 message(STATUS "${Catch2_SOURCE_DIR} ${Catch2_BINARY_DIR}")
 
-add_executable(a01 test/test_utility_01.cc)
-target_include_directories(a01 PUBLIC src/include ${Catch2_SOURCE_DIR}/include)
-target_link_libraries(a01 PRIVATE Eigen3::Eigen fmt::fmt )
+add_library(src OBJECT src/base/load.cc)
+target_include_directories(src PUBLIC src/include)
+target_link_libraries(src PUBLIC OpenMP::OpenMP_CXX Eigen3::Eigen fmt::fmt)
+
+add_executable(gauss test/test_utility_01.cc)
+target_include_directories(gauss PUBLIC src/include)
+target_link_libraries(gauss PUBLIC Eigen3::Eigen OpenMP::OpenMP_CXX fmt::fmt )
+
+enable_testing()
+
+foreach(loopVar RANGE 1 1)
+    set(tName a0${loopVar})
+    add_executable(${tName} test/basic/${tName}.cc)
+    target_include_directories(${tName} PUBLIC src/include ${Catch2_SOURCE_DIR}/single_include/catch2)
+    target_link_libraries(${tName} PRIVATE src)
+    add_test(NAME ${tName} COMMAND ${tName} --success)    
+endforeach()
+
+# add_executable(t01 test/basic/a01.cc)
+# target_include_directories(t01 PUBLIC  src/include ${Catch2_SOURCE_DIR}/single_include/catch2)
+# target_link_libraries(t01 PRIVATE Eigen3::Eigen fmt::fmt)
 
 

@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "cafea/boundary.h"
+#include "cafea/base/boundary.hpp"
 #include "func_random.hpp"
 
 using cafea::Boundary;

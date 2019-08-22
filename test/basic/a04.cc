@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "cafea/material.h"
+#include "cafea/base/material.hpp"
 #include "func_random.hpp"
 
 using cafea::Material;

@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "cafea/node.h"
+#include "cafea/base/node.hpp"
 #include "func_random.hpp"
 
 using cafea::CoordinateSystem;

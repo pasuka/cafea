@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "cafea/section.h"
+#include "cafea/base/section.hpp"
 #include "func_random.hpp"
 
 using cafea::Section;

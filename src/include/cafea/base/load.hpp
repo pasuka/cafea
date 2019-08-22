@@ -13,7 +13,7 @@
 
 #include "cafea/base/base.hpp"
 #include "cafea/base/enum_lib.hpp"
-#include "cafea/fortran/fortran_wrapper.hpp"
+// #include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -28,10 +28,6 @@ struct LoadCell {
 	DofLabel df_{DofLabel::UNKNOWN};//!< dof label of load.
 	LoadDomain ld_{LoadDomain::TIME};//!< domain of load.
 	//! Value of load.
-	// union {
-	// 	T val_;
-	// 	COMPLEX<T> val_cmplx_;
-	// };
 	std::variant<T, COMPLEX<T>> val_;
 	//! Print info.
 	friend std::ostream& operator<<(std::ostream& cout, const LoadCell &a) {
@@ -55,14 +51,14 @@ class LoadSet: public ObjectBase {
 		//! Constructor of load set.
 		LoadSet(int id, LoadDomain ld, T val): ld_(ld), val_(val),
 		 	ObjectBase {id, "LoadSet"} {}
-		LoadSet(const wrapper_::load_f03 *p): ObjectBase {p->id_, "LoadSet"} {}
+		// LoadSet(const wrapper_::load_f03 *p): ObjectBase {p->id_, "LoadSet"} {}
 		void add_load(LoadCell<T> tmp) { list_.push_back(tmp);}
 		//! Add single valued load.
 		int add_load(int, LoadType, DofLabel, T);
 		//! Add doubly valued load.
 		int add_load(int, LoadType, DofLabel, T, T);
 		//! Add complex valued load.
-		// int add_load(int, LoadType, DofLabel, COMPLEX<T>);
+		int add_load(int, LoadType, DofLabel, COMPLEX<T>);
 		//! Clear load set.
 		void clear() { list_.clear();}
 		//! Get load subset by type.
