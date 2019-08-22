@@ -1,0 +1,143 @@
+/clear, nostart
+/title, PIPE16 AND PIPE18 CASE
+/prep7
+
+out_dia = 28.575 ! Out Diameter
+wall_thk = 2.5 ! Wall Thickness
+scale_a = 1
+scale_b = 1
+R = 38.1
+
+et,1,pipe16						! Element 1 - PIPE16 (Straight Pipe Element)
+et,2,pipe18						! Element 2 - PIPE18 (Pipe Bend Element)
+
+/com, Real Constants
+/com, ****************
+r, 1, out_dia, wall_thk, 0.0, 0.0, 0.0, 0.0
+r, 2, out_dia, wall_thk, R, 0.0, 0.0, 0.0
+
+/com, Material Properties
+/com, *********************
+mp, ex, 1, 1.17e5
+mp, nuxy, 1, 0.35
+mp, dens, 1, 8.8e-9
+
+/com, keypoints
+/com, **********
+
+k, 1, 0.0, 0.0, 0.0
+k, 2, -R, 0.0, 0.0
+k, 3, 0.0, R, 0.0
+k, 4, -R, -scale_a*out_dia, 0.0
+k, 5, scale_b*out_dia, R, 0.0
+
+k, 11, -R, -0.5*scale_a*out_dia, 0.0
+k, 12, 0.5*scale_b*out_dia, R, 0.0
+
+*AFUN, DEG
+k, 101, -R*COS(10), R*SIN(10), 0.0
+k, 102, -R*COS(20), R*SIN(20), 0.0
+k, 103, -R*COS(30), R*SIN(30), 0.0
+k, 104, -R*COS(40), R*SIN(40), 0.0
+k, 105, -R*COS(50), R*SIN(50), 0.0
+k, 106, -R*COS(60), R*SIN(60), 0.0
+k, 107, -R*COS(70), R*SIN(70), 0.0
+k, 108, -R*COS(80), R*SIN(80), 0.0
+
+l, 2, 11
+l, 11, 4
+l, 3, 12
+l, 12, 5
+l, 2, 101
+l, 101, 102
+l, 102, 103
+l, 103, 104
+l, 104, 105
+l, 105, 106
+l, 106, 107
+l, 107, 108
+l, 108, 3
+
+/com, Straight Pipe (Tangent Elements)
+/com,**********************************
+type, 1
+mat, 1
+real, 2
+
+lsel, s, line, , 5, 13
+lesize, all,,,1
+lmesh, all
+allsel,all
+
+type,1
+mat,1
+real,1
+
+lesize,1,,,2*scale_a
+lesize,2,,,2*scale_a
+lesize,3,,,2*scale_b
+lesize,4,,,2*scale_b
+lmesh,1,4
+
+/com, Convert to Bend Pipe Elements
+/com,**********************************
+! Center Node of Arc
+nkpt, 2001, 1
+esel, s, real, , 2
+emodify, all, -3, 2001
+emodify, all, type, 2
+allsel, all
+
+/com, Constraints
+/com,*************
+nsel,s,loc,x,scale_b*out_dia
+d,all,all,0
+nsel,s,loc,y,-scale_a*out_dia
+d,all,uy,-1.0
+
+allsel,all
+finish
+
+/solution
+outres,all,all
+solve
+finish
+
+/post1
+nsel,s,loc,x,0
+nsel,r,loc,y,R
+out_01 = 'pipe_B_begin'
+/output, %out_01%, dat
+nlist, all
+prnsol, u, comp
+prnsol, rot, comp
+esln,s, 0, all
+elist, all
+*do,i,5,80,5
+presol,nmisc,i
+*enddo
+
+nsel,s,loc,x,0.5*scale_b*out_dia
+out_02 = 'pipe_B_mid'
+/output, %out_02%, dat
+nlist, all
+prnsol, u, comp
+prnsol, rot, comp
+esln,s, 0, all
+elist, all
+*do,i,5,80,5
+presol,nmisc,i
+*enddo
+nsel,s,loc,x,scale_b*out_dia
+out_03 = 'pipe_B_end'
+/output, %out_03%, dat
+nlist, all
+prnsol, u, comp
+prnsol, rot, comp
+esln,s, 0, all
+elist, all
+*do,i,5,80,5
+presol,nmisc,i
+*enddo
+alls
+fini
