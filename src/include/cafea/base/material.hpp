@@ -12,7 +12,7 @@
 
 #include "cafea/base/base.hpp"
 #include "cafea/base/enum_lib.hpp"
-#include "cafea/fortran/fortran_wrapper.hpp"
+// #include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -55,19 +55,19 @@ class Material: public ObjectBase {
 			std::copy(va.begin(), va.end(), param_.begin());
 			std::copy(vb.begin(), vb.end(), param2_.begin());
 		}
-		/**
-		 *  \brief Initialize with fortran struct.
-		 */
-		Material(const wrapper_::matl_f03 *p): ObjectBase {p->id_, "Material"} {
-			std::copy(std::begin(p->val_), std::begin(p->val_)+10, param_.begin());
-		}
-		/**
-		 *  \brief Initialize with fortran struc cdb_prop.
-		 */
-		Material(const wrapper_::cdb_prop *p): ObjectBase {p->id_, "Material"} {
-			std::copy(std::begin(p->arrb_), std::begin(p->arrb_)+10, param_.begin());
-			std::copy(std::begin(p->arrb2_), std::begin(p->arrb2_)+10, param2_.begin());
-		}
+		// /**
+		//  *  \brief Initialize with fortran struct.
+		//  */
+		// Material(const wrapper_::matl_f03 *p): ObjectBase {p->id_, "Material"} {
+		// 	std::copy(std::begin(p->val_), std::begin(p->val_)+10, param_.begin());
+		// }
+		// /**
+		//  *  \brief Initialize with fortran struc cdb_prop.
+		//  */
+		// Material(const wrapper_::cdb_prop *p): ObjectBase {p->id_, "Material"} {
+		// 	std::copy(std::begin(p->arrb_), std::begin(p->arrb_)+10, param_.begin());
+		// 	std::copy(std::begin(p->arrb2_), std::begin(p->arrb2_)+10, param2_.begin());
+		// }
 		//! Destructor.
 		~Material() override {}
 		//! Get type of material.
@@ -92,7 +92,7 @@ class Material: public ObjectBase {
 		std::array<T, 10> param2_;//!< 2nd parameter array.
 };
 // //! Specialization with float and double types.
-// template class Material<REAL4>;
-// template class Material<REAL8>;
+template class Material<REAL4>;
+template class Material<REAL8>;
 }  // namespace cafea
 #endif  // CAFEA_MATERIAL_HPP_

@@ -13,7 +13,7 @@
 
 #include "cafea/base/enum_lib.hpp"
 #include "cafea/base/base.hpp"
-#include "cafea/fortran/fortran_wrapper.hpp"
+// #include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -41,8 +41,8 @@ class Boundary: public ObjectBase {
 		 */
 		Boundary(int id, BoundaryType bc, DofLabel dl, T val): bc_(bc), dl_(dl),
 			val_(val), ObjectBase {id, "Boundary"} {}
-		Boundary(const wrapper_::bndy_f03 *p): ObjectBase {p->id_, "Boundary"} {}
-		Boundary(const wrapper_::cdb_bc *p): ObjectBase {p->id_, "Boundary"} {}
+		// Boundary(const wrapper_::bndy_f03 *p): ObjectBase {p->id_, "Boundary"} {}
+		// Boundary(const wrapper_::cdb_bc *p): ObjectBase {p->id_, "Boundary"} {}
 		//! A destructor.
 		~Boundary() override {}
 		//! Set boundary type.
@@ -68,7 +68,7 @@ class Boundary: public ObjectBase {
 		T val_ = T(0.0);//!< Value of boundary.
 };
 //! Specialization.
-//template class Boundary<REAL4>;
-//template class Boundary<REAL8>;
+template class Boundary<REAL4>;
+template class Boundary<REAL8>;
 }  // namespace cafea
 #endif  // CAFEA_BOUNDARY_HPP_

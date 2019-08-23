@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "cafea/element_attr.h"
+#include "cafea/element/element_attr.hpp"
 
 namespace cafea {
 /**

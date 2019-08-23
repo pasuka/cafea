@@ -6,6 +6,10 @@
  */
 #ifndef CAFEA_ELEMENT_CMPLX_EXT_HPP_
 #define CAFEA_ELEMENT_CMPLX_EXT_HPP_
+
+#include "cafea/element/element_ext.hpp"
+
+namespace cafea {
 /**
  *  \brief Form element matrix.
  */
@@ -165,5 +169,6 @@ matrix_<U> Element<T>::get_result() const {
 	} else {
 		return this->result_cmplx_;
 	}
+}
 }
 #endif  // CAFEA_ELEMENT_CMPLX_EXT_HPP_

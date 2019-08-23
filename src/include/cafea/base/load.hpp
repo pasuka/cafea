@@ -35,9 +35,6 @@ struct LoadCell {
 			a.id_, static_cast<int>(a.lt_), static_cast<int>(a.df_), static_cast<int>(a.ld_));
 	}
 };
-// //! Specialization of load cell.
-// template struct LoadCell<REAL4>;
-// template struct LoadCell<REAL8>;
 
 /**
  *  \brief Set of loads.
@@ -88,8 +85,9 @@ class LoadSet: public ObjectBase {
 		T val_;//!< Load set index value.
 		std::vector<LoadCell<T>> list_;//!< Load set container.
 };
-// //! Specialization of load set.
-// template class LoadSet<REAL4>;
-// template class LoadSet<REAL8>;
+template struct LoadCell<REAL4>;
+template struct LoadCell<REAL8>;
+template class LoadSet<REAL4>;
+template class LoadSet<REAL8>;
 }  // namespace cafea
 #endif  // CAFEA_LOAD_HPP_

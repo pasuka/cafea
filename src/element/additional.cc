@@ -7,7 +7,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-#include "cafea/element_lib.h"
+#include "cafea/element/element_lib.hpp"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

@@ -29,7 +29,7 @@ class DofHandler {
 		std::vector<int> get_dofs() const { return dofs_;}
 		//! Apply constraint.
 		void set_constraint(DofLabel, DofType);
-		//! Accumalte.
+		//! Accumulate.
 		void accum(int *ij, DofType mt = DofType::NORMAL);
 		//! Get constraint.
 		DofType get_constraint(DofLabel) const;
