@@ -6,6 +6,10 @@
  */
 #ifndef CAFEA_NODE_EXT_HPP_
 #define CAFEA_NODE_EXT_HPP_
+
+#include "cafea/base/node_base.hpp"
+
+namespace cafea {
 /**
  *  \brief Set result data.
  *  \tparam T type of input data.
@@ -94,5 +98,6 @@ matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) co
 		default: fmt::print("Unsupported solution type definition\n");
 	}
 	return tmp;
+}
 }
 #endif  // CAFEA_NODE_EXT_HPP_

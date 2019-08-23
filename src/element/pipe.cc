@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "cafea/element_lib.h"
+#include "cafea/element/element_lib.hpp"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "cafea/node.h"
+#include "cafea/base/node.hpp"
 
 using std::tuple;
 using std::make_tuple;
@@ -96,7 +96,7 @@ varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase
 /**
  *  \brief Coordinate transform for 3-node triangle element.
  *  \param [in] p1, p2, p3 point of triangle in anticlockwise direction.
- *  \return area loacal coordinate and transform matrix of element.
+ *  \return area local coordinate and transform matrix of element.
  */
 template <class T, class U>
 varargout_3_<U> NodeFunc<T, U>::coord_tran(

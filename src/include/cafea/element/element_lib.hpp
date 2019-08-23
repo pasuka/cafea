@@ -86,12 +86,12 @@ struct StructuralElementPost {
 								  const cmatrix_<T> load, const std::map<std::string, T> attr);
 };
 // //!< Specialization.
-// template struct StructuralElement<REAL4, REAL4>;
-// template struct StructuralElement<REAL4, REAL8>;
-// template struct StructuralElement<REAL8, REAL4>;
-// template struct StructuralElement<REAL8, REAL8>;
+template struct StructuralElement<REAL4, REAL4>;
+template struct StructuralElement<REAL4, REAL8>;
+template struct StructuralElement<REAL8, REAL4>;
+template struct StructuralElement<REAL8, REAL8>;
 
-// template struct StructuralElementPost<REAL4>;
-// template struct StructuralElementPost<REAL8>;
+template struct StructuralElementPost<REAL4>;
+template struct StructuralElementPost<REAL8>;
 }  // namespace cafea
 #endif  // CAFEA_ELEMENT_LIB_HPP_

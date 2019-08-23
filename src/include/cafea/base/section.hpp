@@ -12,7 +12,7 @@
 
 #include "cafea/base/base.hpp"
 #include "cafea/base/enum_lib.hpp"
-#include "cafea/fortran/fortran_wrapper.hpp"
+// #include "cafea/fortran/fortran_wrapper.hpp"
 
 namespace cafea {
 /**
@@ -67,16 +67,16 @@ class Section: public ObjectBase {
 			param_.fill(Scalar(0));
 			for (int i = 0; i < n; i++) param_[i] = val[i];
 		}
-		/**
-		 *  \brief Initialize with fortran struct.
-		 */
-		Section(const wrapper_::sect_f03 *p): ObjectBase {p->id_, "Section"} {
-			std::copy(std::begin(p->val_), std::begin(p->val_)+10, param_.begin());
-		}
-		Section(const wrapper_::cdb_prop *p): ObjectBase {p->id_, "Section"} {
-			std::copy(std::begin(p->arrb_), std::begin(p->arrb_)+10, param_.begin());
-			std::copy(std::begin(p->arrb2_), std::begin(p->arrb2_)+10, param2_.begin());
-		}
+		// /**
+		//  *  \brief Initialize with fortran struct.
+		//  */
+		// Section(const wrapper_::sect_f03 *p): ObjectBase {p->id_, "Section"} {
+		// 	std::copy(std::begin(p->val_), std::begin(p->val_)+10, param_.begin());
+		// }
+		// Section(const wrapper_::cdb_prop *p): ObjectBase {p->id_, "Section"} {
+		// 	std::copy(std::begin(p->arrb_), std::begin(p->arrb_)+10, param_.begin());
+		// 	std::copy(std::begin(p->arrb2_), std::begin(p->arrb2_)+10, param2_.begin());
+		// }
 		//! Destructor.
 		~Section() override {}
 		//! Get type of section.
@@ -99,7 +99,7 @@ class Section: public ObjectBase {
 		std::array<Scalar, 10> param2_;//!< 2nd parameter array.
 };
 // //! Specialization with float and double types.
-// template class Section<REAL4>;
-// template class Section<REAL8>;
+template class Section<REAL4>;
+template class Section<REAL8>;
 }  // namespace cafea
 #endif  // CAFEA_SECTION_HPP_

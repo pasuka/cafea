@@ -42,20 +42,35 @@ find_package(Catch2 2.9.2 CONFIG)
 # Then download source from web. 
 add_subdirectory(extern)
 
-message(STATUS "${Catch2_SOURCE_DIR} ${Catch2_BINARY_DIR}")
+# message(STATUS "${Catch2_SOURCE_DIR} ${Catch2_BINARY_DIR}")
 
-add_library(src OBJECT src/base/load.cc)
+add_library(src OBJECT 
+    src/base/load.cc
+    src/base/material.cc
+    src/base/section.cc
+    src/base/dof_handler.cc
+    src/base/node.cc
+    src/core/coord_tran.cc
+    src/element/element_attr.cc
+    src/element/element.cc
+    src/element/additional.cc
+    src/element/pipe.cc)
 target_include_directories(src PUBLIC src/include)
 target_link_libraries(src PUBLIC OpenMP::OpenMP_CXX Eigen3::Eigen fmt::fmt)
 
-add_executable(gauss test/test_utility_01.cc)
-target_include_directories(gauss PUBLIC src/include)
-target_link_libraries(gauss PUBLIC Eigen3::Eigen OpenMP::OpenMP_CXX fmt::fmt )
+# add_executable(gauss test/test_utility_01.cc)
+# target_include_directories(gauss PUBLIC src/include)
+# target_link_libraries(gauss PUBLIC Eigen3::Eigen OpenMP::OpenMP_CXX fmt::fmt )
 
 enable_testing()
 
-foreach(loopVar RANGE 1 1)
-    set(tName a0${loopVar})
+foreach(loopVar RANGE 1 9)
+    if(${loopVar} GREATER 9)
+        set(tName a${loopVar})
+    else()
+        set(tName a0${loopVar})
+    endif()
+    message(STATUS "**** Add test: ${tName}")
     add_executable(${tName} test/basic/${tName}.cc)
     target_include_directories(${tName} PUBLIC src/include ${Catch2_SOURCE_DIR}/single_include/catch2)
     target_link_libraries(${tName} PRIVATE src)

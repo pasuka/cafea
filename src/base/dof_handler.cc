@@ -4,7 +4,7 @@
  *  All rights reserved.
  *  Distributed under GPL v3 license.
  */
-#include "cafea/dof_handler.h"
+#include "cafea/base/dof_handler.hpp"
 
 namespace cafea {
 /**

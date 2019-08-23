@@ -1,7 +1,7 @@
 #ifndef CAFEA_GAUSS_LEGENDRE_HPP_
 #define CAFEA_GAUSS_LEGENDRE_HPP_
 
-#include "cafea/utils/utils_ext.hpp"
+#include "cafea/utils/utils.hpp"
 
 namespace cafea {
 inline namespace utility {

@@ -6,6 +6,10 @@
  */
 #ifndef CAFEA_ELEMENT_EXT_HPP
 #define CAFEA_ELEMENT_EXT_HPP
+
+#include "cafea/element/element_base.hpp"
+
+namespace cafea {
 /**
  *  \brief Form element matrix.
  *  \param [in] p array of nodes.
@@ -94,5 +98,6 @@ void Element<ResT>::form_matrix(const std::vector<Node<U, ResT>> pt, const Mater
 		case ElementType::UNKNOWN:
 		default: fmt::print("Unsupported element type\n");
 	}
+}
 }
 #endif  // CAFEA_ELEMENT_EXT_HPP

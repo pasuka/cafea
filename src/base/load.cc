@@ -16,7 +16,7 @@ template <class T>
 std::vector<LoadCell<T>> LoadSet<T>::get_load_by_type(LoadType lt) {
 	std::vector<LoadCell<T>> tmp;
 	if (this->list_.size() < 512) {
-		for (auto &x: this->list_) { if (x.lt_ == lt) {tmp.push_back(x);}}
+		for (auto &x: this->list_) { if (x.lt_ == lt) { tmp.push_back(x);}}
 	} else {
 		std::sort(this->list_.begin(), this->list_.end(),
 			[] (auto a, auto b) { return a.lt_ < b.lt_;});
@@ -77,9 +77,9 @@ std::vector<LoadCell<T>> LoadSet<T>::get_load_by_dof(DofLabel df) {
  */
 template <class T>
 int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value) {
-	LoadCell<T> tmp {id, load_type, dof_label, ld_};
+	LoadCell<T> tmp { id, load_type, dof_label, ld_};
 	if (ld_ == LoadDomain::FREQ) {
-		tmp.val_cmplx_ = COMPLEX<T>(value, 0.0);
+		tmp.val_ = COMPLEX<T>(value, 0.0);
 	} else {
 		tmp.val_ = value;
 	}
@@ -97,9 +97,8 @@ int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value
  */
 template <class T>
 int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value_re, T value_im) {
-	LoadCell<T> tmp {id, load_type, dof_label, LoadDomain::FREQ};
-	tmp.val_cmplx_.real(value_re);
-	tmp.val_cmplx_.imag(value_im);
+	LoadCell<T> tmp { id, load_type, dof_label, LoadDomain::FREQ};
+	tmp.val_ = COMPLEX<T>(value_re, value_im);
 	this->list_.push_back(std::move(tmp));
 	return 0;
 }
@@ -114,7 +113,7 @@ int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value
 template <class T>
 int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, COMPLEX<T> value) {
 	LoadCell<T> tmp {id, load_type, dof_label, LoadDomain::FREQ};
-	tmp.val_cmplx_ = value;
+	tmp.val_ = value;
 	this->list_.push_back(std::move(tmp));
 	return 0;
 }
