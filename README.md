@@ -3,7 +3,7 @@
 
 ## TODO
 
-+ [ ] Use CMAKE instead of Makefile
++ [x] Use CMAKE instead of Makefile
 + [ ] Update Framework
 + [ ] Implement C++17 new features
 + [ ] Add new type of element

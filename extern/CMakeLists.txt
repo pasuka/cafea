@@ -9,7 +9,7 @@ else()
     message(STATUS "${EXT_HEAD}Try to download Eigen3 from github")
     FetchContent_Declare(
         Eigen3
-        GIT_REPOSITORY https:github.com/eigenteam/eigen-git-mirror.git
+        GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
         GIT_TAG 3.3.7
     )
     FetchContent_MakeAvailable(Eigen3)
