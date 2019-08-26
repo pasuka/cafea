@@ -84,7 +84,7 @@ endif()
 
 enable_testing()
 
-foreach(loopVar RANGE 1 9)
+foreach(loopVar RANGE 1 10)
     if(${loopVar} GREATER 9)
         set(tName a${loopVar})
     else()

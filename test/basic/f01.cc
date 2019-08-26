@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 
-#include "cafea/io/mesh_reader.hpp
+#include "cafea/io/mesh_reader.hpp"
 #include "cafea/utils/timer.hpp"
 
 using cafea::CDBReader;

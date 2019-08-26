@@ -77,8 +77,8 @@ DofType DofHandler::get_constraint(DofLabel ml) const {
 	}
 }
 /**
- *  \brief Accumalte dof number by dof type.
- *  \param[in] jj dof statrt number.
+ *  \brief Accumulate dof number by dof type.
+ *  \param[in] jj dof start number.
  *  \param[in] mt dof type.
  */
 void DofHandler::accum(int *jj, DofType mt) {
