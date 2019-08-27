@@ -28,7 +28,7 @@ else()
     FetchContent_MakeAvailable(fmt)
 endif()
 
-if(Catch2_FOUND)
+if(TARGET Catch2::Catch2)
     message(STATUS "Find Catch2")
 else()
     message(STATUS "${EXT_HEAD}Try to download Catch2 from github")

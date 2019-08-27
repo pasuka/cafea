@@ -54,7 +54,6 @@ add_library(src OBJECT
     src/element/additional.cc
     src/element/pipe.cc)
 
-
 if(MSVC)
     if(TARGET Eigen3::Eigen)
         message(STATUS "Eigen3 intsalled")
@@ -66,7 +65,7 @@ if(MSVC)
     else()
         message(STATUS "${fmt_SOURCE_DIR} ${fmt_BINARY_DIR}")
     endif()
-    if(TARGET Catch2::Catch)
+    if(TARGET Catch2::Catch2)
         message(STATUS "Catch2 installed")
     else()
         message(STATUS "${Catch2_SOURCE_DIR} ${Catch2_BINARY_DIR}")
@@ -83,6 +82,9 @@ endif()
 # target_link_libraries(gauss PUBLIC Eigen3::Eigen OpenMP::OpenMP_CXX fmt::fmt )
 
 enable_testing()
+# include(CTest)
+set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/contrib ${CMAKE_MODULE_PATH})
+include(Catch)
 
 foreach(loopVar RANGE 1 10)
     if(${loopVar} GREATER 9)
@@ -94,7 +96,9 @@ foreach(loopVar RANGE 1 10)
     add_executable(${tName} test/basic/${tName}.cc)
     target_include_directories(${tName} PUBLIC src/include ${Catch2_SOURCE_DIR}/single_include/catch2)
     target_link_libraries(${tName} PRIVATE src)
-    add_test(NAME ${tName} COMMAND ${tName} --success)    
+    # target_link_libraries(${tName} PRIVATE src PUBLIC Catch2::Catch2)
+    # add_test(NAME ${tName} COMMAND ${tName} --success)    
+    catch_discover_tests(${tName})
 endforeach()
 
 
