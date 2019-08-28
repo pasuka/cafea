@@ -29,15 +29,15 @@ class Material: public ObjectBase {
 		 *  \param [in] id material's id.
 		 *  \param [in] mtype material type.
 		 */
-		Material(int id, MaterialType mtype): mtype_(mtype), ObjectBase {id, "Material"} {}
+		Material(int id, MaterialType mtype): ObjectBase {id, "Material"}, mtype_(mtype) {}
 		/**
 		 *  \brief Initialize with material id type section and parameters.
 		 *  \param [in] id material's id.
 		 *  \param [in] mtype material type.
 		 *  \param [in] val material's 1st parameter array.
 		 */
-		Material(int id, MaterialType mtype, init_list_<T> val):
-			mtype_(mtype), ObjectBase {id, "Material"} {
+		Material(int id, MaterialType mtype, init_list_<T> val): ObjectBase {id, "Material"},
+			mtype_(mtype) {
 			assert(val.size() > 0 && val.size() <= 10);
 			std::copy(val.begin(), val.end(), param_.begin());
 		}
@@ -49,7 +49,7 @@ class Material: public ObjectBase {
 		 *  \param [in] val2 material's 2nd parameter array.
 		 */
 		Material(int id, MaterialType mtype, init_list_<T> va, init_list_<T> vb):
-			mtype_(mtype), ObjectBase {id, "Material"} {
+			ObjectBase {id, "Material"}, mtype_(mtype) {
 			assert(va.size() > 0 && va.size() <= 10);
 			assert(vb.size() > 0 && vb.size() <= 10);
 			std::copy(va.begin(), va.end(), param_.begin());
@@ -87,7 +87,7 @@ class Material: public ObjectBase {
 		}
 
 	private:
-		MaterialType mtype_{MaterialType::UNKNOWN};//!< Material type.
+		MaterialType mtype_;//!< Material type.
 		std::array<T, 10> param_;//!< 1st parameter array.
 		std::array<T, 10> param2_;//!< 2nd parameter array.
 };

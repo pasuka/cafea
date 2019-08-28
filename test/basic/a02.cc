@@ -15,7 +15,7 @@ LoadCell<T> gen_random_cell() {
     int id = random_value(1, 10000000);
     LoadCell<T> tmp {id, gen_load_type(), gen_dof_label(), gen_load_domain()};
     // std::cout << tmp;
-    return std::move(tmp);
+    return tmp;
 }
 
 TEST_CASE("init load cell", "[LoadCell]") {
@@ -55,7 +55,6 @@ TEST_CASE("add load cell 01", "[LoadSet]") {
         for (auto x: {LoadType::FORCE, LoadType::DISP, LoadType::VEL, LoadType::PRES,
             LoadType::ACCEL, LoadType::STRESS, LoadType::UNKNOWN,}) {
             auto rst = pa.get_load_by_type(x);
-            REQUIRE(rst.size() >= 0);
             if (rst.empty()) fmt::print("Total num:{} load type:{} is empty!\n", num, static_cast<int>(x));
             total -= rst.size();
         }
@@ -64,7 +63,6 @@ TEST_CASE("add load cell 01", "[LoadSet]") {
         for (auto x: {DofLabel::UX, DofLabel::UY, DofLabel::UZ, DofLabel::URX, DofLabel::URY, DofLabel::URZ,
             DofLabel::WARP, DofLabel::U_ALL, DofLabel::UR_ALL, DofLabel::ALL, DofLabel::UNKNOWN,}) {
             auto rst = pa.get_load_by_dof(x);
-            REQUIRE(rst.size() >= 0);
             if (rst.empty()) fmt::print("Total num:{} dof label:{} is empty!\n", num, static_cast<int>(x));
             total -= rst.size();
         }
@@ -86,7 +84,6 @@ TEST_CASE("add load cell 02", "[LoadSet]") {
         for (auto x: {LoadType::FORCE, LoadType::DISP, LoadType::VEL, LoadType::PRES,
             LoadType::ACCEL, LoadType::STRESS, LoadType::UNKNOWN,}) {
             auto rst = pa.get_load_by_type(x);
-            REQUIRE(rst.size() >= 0);
             total -= rst.size();
         }
         REQUIRE(total == 0);
@@ -94,7 +91,6 @@ TEST_CASE("add load cell 02", "[LoadSet]") {
         for (auto x: {DofLabel::UX, DofLabel::UY, DofLabel::UZ, DofLabel::URX, DofLabel::URY, DofLabel::URZ,
             DofLabel::WARP, DofLabel::U_ALL, DofLabel::UR_ALL, DofLabel::ALL, DofLabel::UNKNOWN,}) {
             auto rst = pa.get_load_by_dof(x);
-            REQUIRE(rst.size() >= 0);
             total -= rst.size();
         }
         REQUIRE(total == 0);
@@ -122,7 +118,6 @@ TEST_CASE("add load cell 03", "[LoadSet]") {
         for (auto x: {LoadType::FORCE, LoadType::DISP, LoadType::VEL, LoadType::PRES,
             LoadType::ACCEL, LoadType::STRESS, LoadType::UNKNOWN,}) {
             auto rst = pa.get_load_by_type(x);
-            REQUIRE(rst.size() >= 0);
             total -= rst.size();
         }
         REQUIRE(total == 0);
@@ -130,7 +125,6 @@ TEST_CASE("add load cell 03", "[LoadSet]") {
         for (auto x: {DofLabel::UX, DofLabel::UY, DofLabel::UZ, DofLabel::URX, DofLabel::URY, DofLabel::URZ,
             DofLabel::WARP, DofLabel::U_ALL, DofLabel::UR_ALL, DofLabel::ALL, DofLabel::UNKNOWN,}) {
             auto rst = pa.get_load_by_dof(x);
-            REQUIRE(rst.size() >= 0);
             total -= rst.size();
         }
         REQUIRE(total == 0);

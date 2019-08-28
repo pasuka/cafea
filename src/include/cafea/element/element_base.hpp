@@ -55,7 +55,7 @@ class Element: public ObjectBase {
 		 *  \param [in] nodes list of nodes id.
 		 */
 		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes):
-			etype_(et), ObjectBase {id, "Elem"}, matl_(mp), sect_(st) {
+			ObjectBase {id, "Elem"}, etype_(et), matl_(mp), sect_(st) {
 			assert(sect_ > 0 && matl_ > 0);
 			assert(nodes.size() > 0);
 			// std::copy(nodes.begin(), nodes.end(), [nodes_](int x){if(x)nodes_.push_back(x);});

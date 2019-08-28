@@ -31,16 +31,16 @@ class Boundary: public ObjectBase {
 		 *  \param [in] bc boundary's type.
 		 *  \param [in] dl dof label.
 		 */
-		Boundary(int id, BoundaryType bc, DofLabel dl): bc_(bc), dl_(dl),
-			ObjectBase {id, "Boundary"} {}
+		Boundary(int id, BoundaryType bc, DofLabel dl): ObjectBase {id, "Boundary"},
+			bc_(bc), dl_(dl) {}
 		/**
 		 *  \brief Constructor with id boundary type values.
 		 *  \param [in] id boundary's id.
 		 *  \param [in] type boundary's type.
 		 *  \param [in] value of boundary.
 		 */
-		Boundary(int id, BoundaryType bc, DofLabel dl, T val): bc_(bc), dl_(dl),
-			val_(val), ObjectBase {id, "Boundary"} {}
+		Boundary(int id, BoundaryType bc, DofLabel dl, T val): ObjectBase {id, "Boundary"},
+			bc_(bc), dl_(dl), val_(val) {}
 		// Boundary(const wrapper_::bndy_f03 *p): ObjectBase {p->id_, "Boundary"} {}
 		// Boundary(const wrapper_::cdb_bc *p): ObjectBase {p->id_, "Boundary"} {}
 		//! A destructor.
@@ -63,8 +63,8 @@ class Boundary: public ObjectBase {
 		}
 
 	private:
-		BoundaryType bc_ = BoundaryType::UNKNOWN;//!< Enumerate of boundary.
-		DofLabel dl_ = DofLabel::UNKNOWN;//!< Enumerate of dof label.
+		BoundaryType bc_;//!< Enumerate of boundary.
+		DofLabel dl_;//!< Enumerate of dof label.
 		T val_ = T(0.0);//!< Value of boundary.
 };
 //! Specialization.

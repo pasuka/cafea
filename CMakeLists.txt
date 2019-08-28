@@ -81,6 +81,12 @@ endif()
 # target_include_directories(gauss PUBLIC src/include)
 # target_link_libraries(gauss PUBLIC Eigen3::Eigen OpenMP::OpenMP_CXX fmt::fmt )
 
+if(MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -Werror -pedantic $<$<CONFIG:RELEASE>:-O3>)
+endif()
+
 enable_testing()
 # include(CTest)
 set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/contrib ${CMAKE_MODULE_PATH})

@@ -31,7 +31,7 @@ TEST_CASE("set dof type", "[dof handler]") {
     DofHandler pp;
     pp.set_num_dofs(7);
     REQUIRE(7 == pp.get_num_dofs());
-    for (int x: {10, 100, 1000, 10000, 100000, 1000000,}) {
+    {
         auto df = gen_dof_label(random_value(0, 6));
         auto dt = gen_dof_type();
         pp.set_constraint(df, dt);
