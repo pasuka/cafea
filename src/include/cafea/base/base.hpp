@@ -92,6 +92,26 @@ class ObjectBase {
 			assert(0 < n && n <= 10);
 			for (int i = 0; i < n; i++) group_[i] = y[i];
 		}
+		//! Set object's tags.
+		template <class T>
+		void set_tags(init_list_<T> vals) {
+			assert(0 < n && n <= 10);
+			std::transform(vals.begin(), vals.end(), tags_.begin(),
+				[] (T a)->std::string { return fmt::format("{}", a);});
+		}
+		//! Set object's tag by index.
+		template <class T>
+		void set_tag_by_index(T val, int indx=0) {
+			assert(0 <= indx && indx <=9);
+			tags_[indx] = fmt::format("{}", val);
+		}
+		//! Get object's tags.
+		std::array<std::string, 10> get_tags() const { return tags_;}
+		//! Get object's tag by index.
+		std::string get_tag_by_index(int indx=0) {
+			assert(0 <= indx && indx <= 9);
+			return tags_[indx];
+		}
 		//! Get object's name.
 		std::string get_name() const { return name_;}
 		//! Get object's id.
@@ -106,6 +126,7 @@ class ObjectBase {
 	protected:
 		int id_{-1};//!< Object's id.
 		std::array<int, 10> group_;//!< Object's group array.
+		std::array<std::string, 10> tags_;//!< Object's tags array.
 		std::string name_{"Empty"};//!< Object's name.
 };
 }  // namespace cafea
