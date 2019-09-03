@@ -95,7 +95,7 @@ class ObjectBase {
 		//! Set object's tags.
 		template <class T>
 		void set_tags(init_list_<T> vals) {
-			assert(0 < n && n <= 10);
+			assert(0 < vals.size() && vals.size() <= 10);
 			std::transform(vals.begin(), vals.end(), tags_.begin(),
 				[] (T a)->std::string { return fmt::format("{}", a);});
 		}
