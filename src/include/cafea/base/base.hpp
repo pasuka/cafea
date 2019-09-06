@@ -93,11 +93,19 @@ class ObjectBase {
 			for (int i = 0; i < n; i++) group_[i] = y[i];
 		}
 		//! Set object's tags.
-		template <class T>
-		void set_tags(init_list_<T> vals) {
-			assert(0 < vals.size() && vals.size() <= 10);
-			std::transform(vals.begin(), vals.end(), tags_.begin(),
+		template <class T, std::size_t N>
+		void set_tags(const T(&vals)[N]) {
+			static_assert(0 < N && N <= 10);
+			std::transform(std::begin(vals), std::end(vals), tags_.begin(),
 				[] (T a)->std::string { return fmt::format("{}", a);});
+		}
+		//! Set object's tags.
+		template <class ...Args>
+		void set_tags(Args&&... args) {
+			static_assert(10 >= sizeof...(args));
+			std::vector<std::string> tempVec;
+			(tempVec.emplace_back(fmt::format("{}", std::forward<Args>(args))), ...);
+			std::copy(tempVec.begin(), tempVec.end(), tags_.begin());
 		}
 		//! Set object's tag by index.
 		template <class T>

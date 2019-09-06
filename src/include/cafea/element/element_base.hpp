@@ -149,9 +149,10 @@ class Element: public ObjectBase {
 			// for(const auto& it: a)nodes_.push_back(it);
 		}
 		//! Set element option.
-		void set_option(init_list_<int> a) {
-			assert(0 < a.size() && a.size() <= 10);
-			std::copy(a.begin(), a.end(), keyopt_.begin());
+		template<std::size_t N>
+		void set_option(const int(&a)[N]) {
+			static_assert(0 < N && N <= 10);
+			std::copy(std::begin(a), std::end(a), keyopt_.begin());
 		}
 		//! Set element option.
 		void set_option(const int a[], int m) {

@@ -69,4 +69,8 @@ TEST_CASE("tags", "[ObjectBase]") {
     for(auto x: {"apple"s, "pear"s, "banana"s, "peach"s, "grape"s}) REQUIRE(x == newTags[i++]);
     obj.set_tag_by_index("Pineapple", 3);
     REQUIRE("Pineapple"s == obj.get_tag_by_index(3));
+    obj.set_tags("abc", 1, 3, 5, "This is another one", 3.1415926);
+    i = 0;
+    auto newTags2 = obj.get_tags();
+    for(auto&& x:{"abc"s, "1"s, "3"s, "5"s, "This is another one"s, "3.14159"s}) REQUIRE(x == newTags2[i++]);
 }
