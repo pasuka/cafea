@@ -30,15 +30,15 @@ class Section: public ObjectBase {
 		 *  \param [in] id section's id.
 		 *  \param [in] sect section's type.
 		 */
-		Section(int id, SectionType sect): sect_(sect), ObjectBase {id, "Section"} {}
+		Section(int id, SectionType sect): ObjectBase {id, "Section"}, sect_(sect) {}
 		/**
 		 *  \brief Initialize with section id type and parameters.
 		 *  \param [in] id section's id.
 		 *  \param [in] sect section's type.
 		 *  \param [in] val section's 1st parameter array.
 		 */
-		Section(int id, SectionType sect, init_list_<Scalar> val): sect_(sect),
-			ObjectBase {id, "Section"} {
+		Section(int id, SectionType sect, init_list_<Scalar> val):
+			ObjectBase {id, "Section"}, sect_(sect) {
 			assert(val.size() > 0 && val.size() <= 10);
 			std::copy(val.begin(), val.end(), param_.begin());
 		}
@@ -50,7 +50,7 @@ class Section: public ObjectBase {
 		 *  \param [in] vb section's 2nd parameter array.
 		 */
 		Section(int id, SectionType sect, init_list_<Scalar> va, init_list_<Scalar> vb):
-			sect_(sect), ObjectBase {id, "Section"} {
+			ObjectBase {id, "Section"}, sect_(sect) {
 			assert(va.size() > 0 && va.size() <= 10);
 			assert(vb.size() > 0 && vb.size() <= 10);
 			std::copy(va.begin(), va.end(), param_.begin());

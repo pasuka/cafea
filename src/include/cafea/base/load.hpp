@@ -23,6 +23,9 @@ namespace cafea {
 template <class T = REAL4>
 struct LoadCell {
 	static_assert(std::is_floating_point<T>::value, "LoadCell<T>: T must be floating type.");
+	LoadCell() {}
+	LoadCell(int id, LoadType lt, DofLabel df, LoadDomain ld):
+		id_(id), lt_(lt), df_(df), ld_(ld) {}
 	int id_{-1};//!< id of load.
 	LoadType lt_{LoadType::UNKNOWN};//!< type of load.
 	DofLabel df_{DofLabel::UNKNOWN};//!< dof label of load.
@@ -46,8 +49,7 @@ class LoadSet: public ObjectBase {
 		using ObjectBase::ObjectBase;
 		LoadSet() = delete;//!< Forbidden to build empty load set.
 		//! Constructor of load set.
-		LoadSet(int id, LoadDomain ld, T val): ld_(ld), val_(val),
-		 	ObjectBase {id, "LoadSet"} {}
+		LoadSet(int id, LoadDomain ld, T val): ObjectBase {id, "LoadSet"}, ld_(ld), val_(val) {}
 		// LoadSet(const wrapper_::load_f03 *p): ObjectBase {p->id_, "LoadSet"} {}
 		void add_load(LoadCell<T> tmp) { list_.push_back(tmp);}
 		//! Add single valued load.

@@ -55,7 +55,7 @@ class Element: public ObjectBase {
 		 *  \param [in] nodes list of nodes id.
 		 */
 		Element(int id, ElementType et, int mp, int st, init_list_<int> nodes):
-			etype_(et), ObjectBase {id, "Elem"}, matl_(mp), sect_(st) {
+			ObjectBase {id, "Elem"}, etype_(et), matl_(mp), sect_(st) {
 			assert(sect_ > 0 && matl_ > 0);
 			assert(nodes.size() > 0);
 			// std::copy(nodes.begin(), nodes.end(), [nodes_](int x){if(x)nodes_.push_back(x);});
@@ -149,9 +149,10 @@ class Element: public ObjectBase {
 			// for(const auto& it: a)nodes_.push_back(it);
 		}
 		//! Set element option.
-		void set_option(init_list_<int> a) {
-			assert(0 < a.size() && a.size() <= 10);
-			std::copy(a.begin(), a.end(), keyopt_.begin());
+		template<std::size_t N>
+		void set_option(const int(&a)[N]) {
+			static_assert(0 < N && N <= 10);
+			std::copy(std::begin(a), std::end(a), keyopt_.begin());
 		}
 		//! Set element option.
 		void set_option(const int a[], int m) {

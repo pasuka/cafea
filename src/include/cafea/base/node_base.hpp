@@ -54,7 +54,7 @@ class NodeBase: public ObjectBase {
 		 *  |Cylindrical|1       |
 		 *  |Spherical  |2       |
 		 */
-		NodeBase(int id, CoordinateSystem csys): csys_(csys), ObjectBase {id, "Node"} {}
+		NodeBase(int id, CoordinateSystem csys): ObjectBase {id, "Node"}, csys_(csys) {}
 		/**
 		 *  \brief Initialize with node's id and x y z coordinate values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -64,8 +64,8 @@ class NodeBase: public ObjectBase {
 		 *
 		 *  \details Default coordinate system Cartesian.
 		 */
-		NodeBase(int id, T x, T y, T z): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase {id, "Node"} { xyz_ << x, y, z;}
+		NodeBase(int id, T x, T y, T z): ObjectBase {id, "Node"},
+			csys_(CoordinateSystem::CARTESIAN) { xyz_ << x, y, z;}
 		/**
 		 *  \brief Initialize with node's id coordinate system and values.
 		 *  \param [in] id an integer must bigger than zero.
@@ -74,8 +74,8 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] u2 value of axis-2.
 		 *  \param [in] u3 value of axis-3.
 		 */
-		NodeBase(int id, CoordinateSystem csys, T u1, T u2, T u3): csys_(csys),
-			ObjectBase {id, "Node"} { xyz_ << u1, u2, u3;}
+		NodeBase(int id, CoordinateSystem csys, T u1, T u2, T u3):
+			ObjectBase {id, "Node"},  csys_(csys) { xyz_ << u1, u2, u3;}
 		/**
 		 *  \brief Initialize with node's id coordinate values and Euler angles.
 		 *  \param [in] id an integer must bigger than zero.
@@ -105,47 +105,47 @@ class NodeBase: public ObjectBase {
 		 *  \param [in] value of rotate 3-axis.
 		 */
 		NodeBase(int id, CoordinateSystem csys, T u1, T u2, T u3, T ur1, T ur2, T ur3):
-			csys_(csys), ObjectBase {id, "Node"} {
+			ObjectBase {id, "Node"}, csys_(csys) {
 			xyz_ << u1, u2, u3;
 			angle_ << ur1, ur2, ur3;
 		}
 		/**
 		 *  \brief Initialize with node's id and coordinate system and values.
 		 */
-		NodeBase(int id, CoordinateSystem csys, init_list_<T> val):
+		template<std::size_t N>
+		NodeBase(int id, CoordinateSystem csys, const T(&val)[N]):
 			ObjectBase {id, "Node"}, csys_(csys) {
-			assert(val.size() == 3);
+			static_assert(N == 3);
 			int i{0};
-			for (auto &it: val) xyz_(i++) = it;
+			for (auto &&it: val) xyz_(i++) = it;
 		}
 		/**
 		 *  \brief Initialize with node's id and coordinate values.
 		 */
-		NodeBase(int id, init_list_<T> val): csys_(CoordinateSystem::CARTESIAN),
-			ObjectBase {id, "Node"} {
-			assert(val.size() == 3);
-			int i{0};
-			for (auto it: val) xyz_[i++] = it;
+		template<std::size_t N>
+		NodeBase(int id, const T(&val)[N]): ObjectBase {id, "Node"}, csys_(CoordinateSystem::CARTESIAN) {
+			static_assert(N == 3);
+			xyz_ << val[0], val[1], val[2];
 		}
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
-		NodeBase(int id, CoordinateSystem csys, init_list_<T> va, init_list_<T> vb):
-			csys_(csys), ObjectBase {id, "Node"} {
-			assert(va.size() == 3 && vb.size() == 3);
-			int i{0}, j{0};
-			for (auto it: va) xyz_(i++) = it;
-			for( auto it: vb) angle_(j++) = it;
+		template<std::size_t N>
+		NodeBase(int id, CoordinateSystem csys, const T(&va)[N], const T(&vb)[N]):
+			ObjectBase {id, "Node"}, csys_(csys) {
+			static_assert(N == 3);
+			xyz_ << va[0], va[1], va[2];
+			angle_ << vb[0], vb[1], vb[2];
 		}
 		/**
 		 *  \brief Initialize with node's id and coordinate and Euler angles.
 		 */
-		NodeBase(int id, init_list_<T> va, init_list_<T> vb):
-			csys_(CoordinateSystem::CARTESIAN), ObjectBase {id, "Node"} {
-			assert(va.size() == 3 && vb.size() == 3);
-			int i{0}, j{0};
-			for (auto &it: va) xyz_(i++) = it;
-			for (auto &it: vb) angle_(j++) = it;
+		template<std::size_t N>
+		NodeBase(int id, const T(&va)[N], const T(&vb)[N]):
+			ObjectBase {id, "Node"}, csys_(CoordinateSystem::CARTESIAN) {
+			static_assert(N == 3);
+			xyz_ << va[0], va[1], va[2];
+			angle_ << vb[0], vb[1], vb[2];
 		}
 		// /**
 		//  *  \brief Initialize with fortran struct.
@@ -182,8 +182,9 @@ class NodeBase: public ObjectBase {
 		//! Set xyz values with 1d array.
 		void set_xyz(T val[3]) { xyz_ << val[0], val[1], val[2];}
 		//! Set xyz values with list.
-		void set_xyz(init_list_<T> val) {
-			assert(val.size() == 3);
+		template<std::size_t N>
+		void set_xyz(const T(&val)[N]) {
+			static_assert(N == 3);
 			xyz_ << val[0], val[1], val[2];
 		}
 		//! Set x value.
@@ -198,8 +199,9 @@ class NodeBase: public ObjectBase {
 		//! Set Euler angle values with 1d array.
 		void set_angle(T val[3]) { angle_ << val[0], val[1], val[2];}
 		//! Set Euler angle values with list.
-		void set_angle(init_list_<T> val) {
-			assert(val.size() == 3);
+		template<std::size_t N>
+		void set_angle(const T(&val)[N]) {
+			static_assert(N == 3);
 			angle_ << val[0], val[1], val[2];
 		}
 		//! Get Euler angle values.

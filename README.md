@@ -3,7 +3,8 @@
 
 ## TODO
 
-+ [ ] Use CMAKE instead of Makefile
++ [x] Use CMake instead of Makefile
++ [ ] Choose a continuous integration solution (appveyor or travis CI ???)
 + [ ] Update Framework
 + [ ] Implement C++17 new features
 + [ ] Add new type of element
