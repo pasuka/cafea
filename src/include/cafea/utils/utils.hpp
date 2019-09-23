@@ -15,6 +15,7 @@
 #include <tuple>
 #include <vector>
 #include <unordered_map>
+#include <utility>
 
 #include <Eigen/Dense>
 
@@ -49,7 +50,7 @@ template<class T = REAL8>
 constexpr T EPS() { return std::numeric_limits<T>::epsilon();}
 //! M_PI.
 template<class T = REAL8>
-constexpr T PI() { return T(std::atan(1.0)*4.0);}
+constexpr T PI() { return std::atan(std::forward<T>(1.0))*std::forward<T>(4.0);}
 
 //! Initializer list.
 template <class T>
