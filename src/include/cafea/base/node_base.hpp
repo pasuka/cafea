@@ -29,9 +29,8 @@ namespace cafea {
  *  \class Base definition of node.
  *  Basic node object definition.
  */
-template <class T = REAL4>
+template <class T = REAL4, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 class NodeBase: public ObjectBase {
-	static_assert(std::is_floating_point<T>::value, "NodeBase<T>: T must be floating type.");
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//! Default constructor.
@@ -271,10 +270,8 @@ class NodeBase: public ObjectBase {
  *  \class Node definition.
  *  Node object definition.
  */
-template <class T = REAL4, class U = REAL8>
+template <class T = REAL4, class U = REAL8, typename = std::enable_if_t<std::is_floating_point_v<T>&&std::is_floating_point_v<U>>>
 class Node: public NodeBase<T> {
-	static_assert(std::is_floating_point<T>::value, "Node<T, U>: T must be floating type.");
-	static_assert(std::is_floating_point<U>::value, "Node<T, U>: U must be floating type.");
 	public:
 		using NodeBase<T>::NodeBase;//!< Inherit Base's constructors.
 		//! Default constructor.
@@ -359,10 +356,9 @@ template class Node<REAL8, REAL4>;
 /**
  *  \brief Coordinate transform utility.
  */
-template <class T = REAL4, class U = REAL8>
+template <class T = REAL4, class U = REAL8,
+	typename = std::enable_if_t<std::is_floating_point_v<T>&&std::is_floating_point_v<U>>>
 struct NodeFunc {
-	static_assert(std::is_floating_point<T>::value, "NodeFunc<T, U>: T must be floating type.");
-	static_assert(std::is_floating_point<U>::value, "NodeFunc<T, U>: U must be floating type.");
 	//! Coordinate transform for 2-node element.
 	static varargout_2_<U> coord_tran(const NodeBase<T>*, const NodeBase<T>*);
 	//! Coordinate transform for 2-node and up direction.

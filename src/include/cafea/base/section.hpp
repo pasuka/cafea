@@ -18,7 +18,7 @@ namespace cafea {
 /**
  *  \class Section definition.
  */
-template <class Scalar = REAL4>
+template <class Scalar = REAL4, typename = std::enable_if_t<std::is_floating_point_v<Scalar>>>
 class Section: public ObjectBase {
 	static_assert(std::is_floating_point<Scalar>::value, "Section<Scalar>: Scalar must be floating type.");
 	public:

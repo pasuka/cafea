@@ -11,7 +11,7 @@ inline namespace utility {
  	 * \tparam T       numerical type, i.e. float, double, long double, et al.
 	 * \return integrate point and weight value
  	*/
-	template <size_t nPoints = 2, class T = REAL8>
+	template <size_t nPoints = 2, class T = REAL8, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 	constexpr std::pair<vecX_<T>, vecX_<T>> gauss_quad() {
 		assert(0 < nPoints);
 		vecX_<T> pt = vecX_<T>::Zero(nPoints), wt = pt;

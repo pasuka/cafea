@@ -24,9 +24,8 @@ namespace cafea {
 /**
  *  Element object definition.
  */
-template <class T = REAL8>
+template <class T = REAL8, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 class Element: public ObjectBase {
-	static_assert(std::is_floating_point<T>::value, "Element<T>: T must be floating type.");
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.
 		//* Default constructor.
@@ -87,16 +86,16 @@ class Element: public ObjectBase {
 		// 	}
 		// }
 		//! Generate stiffness mass matrix of element.
-		template <class U = REAL4>
+		template <class U = REAL4, typename = std::enable_if_t<std::is_floating_point_v<U>>>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*);
 
-		template <class U = REAL4>
+		template <class U = REAL4, typename = std::enable_if_t<std::is_floating_point_v<U>>>
 		void form_matrix(const std::vector<Node<U, T>>, const Material<U>*, const Section<U>*);
 
-		template <class U = REAL4>
+		template <class U = REAL4, typename = std::enable_if_t<std::is_floating_point_v<U>>>
 		void form_matrix(const Node<U, T>[], const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 
-		template <class U = REAL4>
+		template <class U = REAL4, typename = std::enable_if_t<std::is_floating_point_v<U>>>
 		void form_matrix(const std::vector<Node<U, T>>, const Material<U>*, const Section<U>*, const std::vector<LoadCell<U>>);
 
 		//! Get stiffness matrix.

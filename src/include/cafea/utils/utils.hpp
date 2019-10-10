@@ -13,9 +13,10 @@
 #include <string>
 #include <string_view>
 #include <tuple>
-#include <vector>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <Eigen/Dense>
 
@@ -46,10 +47,10 @@ using REAL16 = long double;
 using COMPLEX16 = COMPLEX<REAL16>;
 #endif
 //! Precision of machine via different types.
-template<class T = REAL8>
+template<class T = REAL8, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 constexpr T EPS() { return std::numeric_limits<T>::epsilon();}
 //! M_PI.
-template<class T = REAL8>
+template<class T = REAL8, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 constexpr T PI() { return std::atan(std::forward<T>(1.0))*std::forward<T>(4.0);}
 
 //! Initializer list.

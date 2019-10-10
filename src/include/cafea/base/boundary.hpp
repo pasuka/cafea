@@ -19,7 +19,7 @@ namespace cafea {
 /**
  *  \class Boundary definition.
  */
-template <class T = REAL4>
+template <class T = REAL4, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 class Boundary: public ObjectBase {
 	static_assert(std::is_floating_point<T>::value, "Boundary<T>: T must be floating type.");
 	public:

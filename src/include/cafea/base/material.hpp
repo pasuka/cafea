@@ -18,7 +18,7 @@ namespace cafea {
 /**
  *  \class Material definition.
  */
-template <class T = REAL4>
+template <class T = REAL4, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 class Material: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;

@@ -20,9 +20,8 @@ namespace cafea {
  *  \struct Load cell.
  *  \brief Cell of Load.
  */
-template <class T = REAL4>
+template <class T = REAL4, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 struct LoadCell {
-	static_assert(std::is_floating_point<T>::value, "LoadCell<T>: T must be floating type.");
 	LoadCell() {}
 	LoadCell(int id, LoadType lt, DofLabel df, LoadDomain ld):
 		id_(id), lt_(lt), df_(df), ld_(ld) {}
@@ -42,9 +41,8 @@ struct LoadCell {
 /**
  *  \brief Set of loads.
  */
-template <class T = REAL4>
+template <class T = REAL4, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 class LoadSet: public ObjectBase {
-	static_assert(std::is_floating_point<T>::value, "LoadSet<T>: T must be floating type.");
 	public:
 		using ObjectBase::ObjectBase;
 		LoadSet() = delete;//!< Forbidden to build empty load set.
