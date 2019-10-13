@@ -20,9 +20,9 @@ namespace cafea {
  *  \param [in] n i-th of result column.
  *  \param [in] rst result matrix of vector.
  */
-template <class T, class U>
+template <class T, class U, typename W>
 template <class ResType>
-void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResType> rst) {
+void Node<T, U, W>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResType> rst) {
 	if (!this->is_activated()) return;
 	if (std::type_index(typeid(ResType)) == std::type_index(typeid(U))) {
 		return this->set_result(sol, lt, n, rst);
@@ -63,9 +63,9 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<ResTyp
  *  \param [in] n reqired i-th result columns.
  *  \return matrix or vector of result.
  */
-template <class T, class U>
+template <class T, class U, typename W>
 template <class ResType>
-matrix_<ResType> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const {
+matrix_<ResType> Node<T, U, W>::get_result(SolutionType sol, LoadType lt, int n) const {
 	matrix_<ResType> tmp;
 	if (!this->is_activated()) return tmp;
 	if (std::type_index(typeid(ResType)) == std::type_index(typeid(U))) {

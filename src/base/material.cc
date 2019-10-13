@@ -12,8 +12,8 @@ namespace cafea {
  *  \param[in] mp material property enum.
  *  \param[in] val value of material property.
  */
-template <class Scalar>
-void Material<Scalar>::set_material_prop(MaterialProp mp, Scalar val) {
+template <class Scalar, typename U>
+void Material<Scalar, U>::set_material_prop(MaterialProp mp, Scalar val) {
 	switch (mp) {
 		case(MaterialProp::DENS): this->param_[0] = val; break;
 		case(MaterialProp::YOUNG):
@@ -42,8 +42,8 @@ void Material<Scalar>::set_material_prop(MaterialProp mp, Scalar val) {
  *  \param[in] mp material property enum.
  *  \return value of material property.
  */
-template <class Scalar>
-Scalar Material<Scalar>::get_material_prop(MaterialProp mp) const {
+template <class Scalar, typename U>
+Scalar Material<Scalar, U>::get_material_prop(MaterialProp mp) const {
 	Scalar val{0};
 	switch (mp) {
 		case(MaterialProp::DENS): val = this->param_[0]; break;
@@ -71,8 +71,8 @@ Scalar Material<Scalar>::get_material_prop(MaterialProp mp) const {
 /**
  *  \brief
  */
-template <class Scalar>
-std::vector<Scalar> Material<Scalar>::get_material_prop_vec() const {
+template <class Scalar, typename U>
+std::vector<Scalar> Material<Scalar, U>::get_material_prop_vec() const {
 	std::vector<Scalar> tmp;
 	switch (this->mtype_) {
 		case MaterialType::SPRING_STIFFNESS:

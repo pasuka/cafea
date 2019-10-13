@@ -13,9 +13,9 @@ namespace cafea {
 /**
  *  \brief Form element matrix.
  */
-template <class T>
-template <class U>
-void Element<T>::form_matrix(const Node<U, T> p[], const Material<U> *matl,
+template <class T, typename W>
+template <class U, typename V>
+void Element<T, W>::form_matrix(const Node<U, T> p[], const Material<U> *matl,
 							 const Section<U> *sect, const std::vector<LoadCell<U>> load) {
 	this->form_matrix<U>(p, matl, sect);
 
@@ -61,9 +61,9 @@ void Element<T>::form_matrix(const Node<U, T> p[], const Material<U> *matl,
 /**
  *  \brief Form element matrix.
  */
-template <class T>
-template <class U>
-void Element<T>::form_matrix(const std::vector<Node<U, T>> pt, const Material<U> *mp,
+template <class T, typename W>
+template <class U, typename V>
+void Element<T, W>::form_matrix(const std::vector<Node<U, T>> pt, const Material<U> *mp,
 							 const Section<U> *sect, const std::vector<LoadCell<U>> load) {
 	this->form_matrix<U>(pt, mp, sect);
 
@@ -110,9 +110,9 @@ void Element<T>::form_matrix(const std::vector<Node<U, T>> pt, const Material<U>
 /**
  *  \brief Form element matrix.
  */
-template <class T>
+template <class T, typename W>
 template <class U>
-void Element<T>::post_stress(const matrix_<U> x) {
+void Element<T, W>::post_stress(const matrix_<U> x) {
 	if (std::type_index(typeid(T)) == std::type_index(typeid(U))) {
 		return this->post_stress(x);
 	}
@@ -148,9 +148,9 @@ void Element<T>::post_stress(const matrix_<U> x) {
 /**
  *
  */
-template <class T>
+template <class T, typename W>
 template <class U>
-matrix_<U> Element<T>::get_rhs() const {
+matrix_<U> Element<T, W>::get_rhs() const {
 	if (std::type_index(typeid(T)) == std::type_index(typeid(U))) {
 		return this->get_rhs();
 	} else {
@@ -161,9 +161,9 @@ matrix_<U> Element<T>::get_rhs() const {
 /**
  *
  */
-template <class T>
+template <class T, typename W>
 template <class U>
-matrix_<U> Element<T>::get_result() const {
+matrix_<U> Element<T, W>::get_result() const {
 	if (std::type_index(typeid(T)) == std::type_index(typeid(U))) {
 		return this->get_result();
 	} else {

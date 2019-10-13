@@ -12,8 +12,8 @@ namespace cafea {
  *  \param[in] sp property enum.
  *  \param val property value.
  */
-template <class Scalar>
-void Section<Scalar>::set_sect_prop(SectionProp sp, Scalar val) {
+template <class Scalar, typename U>
+void Section<Scalar, U>::set_sect_prop(SectionProp sp, Scalar val) {
 	switch (sp) {
 		case(SectionProp::OD):
 		case(SectionProp::ADDONMASS):
@@ -31,8 +31,8 @@ void Section<Scalar>::set_sect_prop(SectionProp sp, Scalar val) {
  *  \param[in] sp property enum.
  *  \return property value.
  */
-template <class Scalar>
-Scalar Section<Scalar>::get_sect_prop(SectionProp sp) const {
+template <class Scalar, typename U>
+Scalar Section<Scalar, U>::get_sect_prop(SectionProp sp) const {
 	Scalar val{0};
 	switch (sp) {
 		case(SectionProp::OD):

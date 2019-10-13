@@ -29,7 +29,7 @@ namespace cafea {
  *  \class Base definition of node.
  *  Basic node object definition.
  */
-template <class T = REAL4, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+template <class T = REAL4>
 class NodeBase: public ObjectBase {
 	public:
 		using ObjectBase::ObjectBase;//!< Inherit Base's constructors.

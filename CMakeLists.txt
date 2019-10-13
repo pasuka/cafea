@@ -84,7 +84,7 @@ endif()
 if(MSVC)
     add_compile_options(/W4 /WX)
 else()
-    add_compile_options(-Wall -Wextra -Werror -pedantic $<$<CONFIG:Release>:-O3>)
+    add_compile_options(-Wall -Wextra -Werror -pedantic -O3)
 endif()
 
 enable_testing()

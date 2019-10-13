@@ -14,7 +14,8 @@
 
 namespace cafea {
 /**
- *  \class Timer object.
+ * @brief 
+ * 
  */
 class Timer {
 	public:

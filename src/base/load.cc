@@ -12,8 +12,8 @@ namespace cafea {
  *  \param[in] lt load type.
  *  \return vector of load by selected load type.
  */
-template <class T>
-std::vector<LoadCell<T>> LoadSet<T>::get_load_by_type(LoadType lt) {
+template <class T, typename U>
+std::vector<LoadCell<T>> LoadSet<T, U>::get_load_by_type(LoadType lt) {
 	std::vector<LoadCell<T>> tmp;
 	if (this->list_.size() < 512) {
 		for (auto &x: this->list_) { if (x.lt_ == lt) { tmp.push_back(x);}}
@@ -40,15 +40,16 @@ std::vector<LoadCell<T>> LoadSet<T>::get_load_by_type(LoadType lt) {
 		}
 	}
 	// fmt::print("Total find :{} cells.\n", tmp.size());
-	return std::move(tmp);
+	// return std::move(tmp);
+	return tmp;
 }
 /**
  *  \brief Get load by dof.
  *  \param[in] df dof label.
  *  \return vector of load by selected dof label.
  */
-template <class T>
-std::vector<LoadCell<T>> LoadSet<T>::get_load_by_dof(DofLabel df) {
+template <class T, typename U>
+std::vector<LoadCell<T>> LoadSet<T, U>::get_load_by_dof(DofLabel df) {
 	std::vector<LoadCell<T>> tmp;
 	if (this->list_.size() < 512) {
 		for (auto &x: this->list_) { if (x.df_ == df) { tmp.push_back(x);}}
@@ -75,8 +76,8 @@ std::vector<LoadCell<T>> LoadSet<T>::get_load_by_dof(DofLabel df) {
  * \param[in] value     values of load.
  * \return 0 means okay.
  */
-template <class T>
-int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value) {
+template <class T, typename U>
+int LoadSet<T, U>::add_load(int id, LoadType load_type, DofLabel dof_label, T value) {
 	LoadCell<T> tmp { id, load_type, dof_label, ld_};
 	if (ld_ == LoadDomain::FREQ) {
 		tmp.val_ = COMPLEX<T>(value, 0.0);
@@ -95,8 +96,8 @@ int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value
  * \param[in] value_im  imag part or 2nd value of load.
  * \return 0 means okay.
  */
-template <class T>
-int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value_re, T value_im) {
+template <class T, typename U>
+int LoadSet<T, U>::add_load(int id, LoadType load_type, DofLabel dof_label, T value_re, T value_im) {
 	LoadCell<T> tmp { id, load_type, dof_label, LoadDomain::FREQ};
 	tmp.val_ = COMPLEX<T>(value_re, value_im);
 	this->list_.push_back(std::move(tmp));
@@ -110,8 +111,8 @@ int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, T value
  * \param[in] value     complex load value.
  * \return 0 means okay.
  */
-template <class T>
-int LoadSet<T>::add_load(int id, LoadType load_type, DofLabel dof_label, COMPLEX<T> value) {
+template <class T, typename U>
+int LoadSet<T, U>::add_load(int id, LoadType load_type, DofLabel dof_label, COMPLEX<T> value) {
 	LoadCell<T> tmp {id, load_type, dof_label, LoadDomain::FREQ};
 	tmp.val_ = value;
 	this->list_.push_back(std::move(tmp));

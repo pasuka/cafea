@@ -11,8 +11,8 @@ namespace cafea {
  *  \brief Init dof container.
  *  \param[in] et element type enum.
  */
-template <class Scalar, class ResultScalar>
-void Node<Scalar, ResultScalar>::dof_init(ElementType et) {
+template <class Scalar, class ResultScalar, typename U>
+void Node<Scalar, ResultScalar, U>::dof_init(ElementType et) {
 	auto num = ElementAttr::get_dofs_per_node(et);
 	this->dof_mgr_.set_num_dofs(num);
 }
@@ -20,8 +20,8 @@ void Node<Scalar, ResultScalar>::dof_init(ElementType et) {
  *  \brief Apply boundary.
  *  \param[in] bc boundary type.
  */
-template <class Scalar, class ResultScalar>
-void Node<Scalar, ResultScalar>::dof_apply(Boundary<Scalar> bc) {
+template <class Scalar, class ResultScalar, typename U>
+void Node<Scalar, ResultScalar, U>::dof_apply(Boundary<Scalar> bc) {
 	switch (bc.get_boundary_type()) {
 		case BoundaryType::FIXED:
 			this->dof_mgr_.set_constraint(bc.get_dof_label(), DofType::ELIMINATE);
@@ -38,8 +38,8 @@ void Node<Scalar, ResultScalar>::dof_apply(Boundary<Scalar> bc) {
  *  \param [in] sol type of solution.
  *  \param [in] n i-th column of result.
  */
-template <class T, class U>
-void Node<T, U>::init_result(SolutionType sol, int n) {
+template <class T, class U, typename W>
+void Node<T, U, W>::init_result(SolutionType sol, int n) {
 	if (!this->is_activated()) return;
 	auto m = this->dof_mgr_.get_num_dofs();
 	switch (sol) {
@@ -64,8 +64,8 @@ void Node<T, U>::init_result(SolutionType sol, int n) {
  *  \param [in] n i-th column of result.
  *  \param [in] rst result matrix.
  */
-template <class T, class U>
-void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<U> rst) {
+template <class T, class U, typename W>
+void Node<T, U, W>::set_result(SolutionType sol, LoadType lt, int n, matrix_<U> rst) {
 	if (!this->is_activated()) return;
 
 	switch (sol) {
@@ -93,8 +93,8 @@ void Node<T, U>::set_result(SolutionType sol, LoadType lt, int n, matrix_<U> rst
  *  \param [in] n i-th column of result.
  *  \return result matrix or vector.
  */
-template <class T, class U>
-matrix_<U> Node<T, U>::get_result(SolutionType sol, LoadType lt, int n) const {
+template <class T, class U, typename W>
+matrix_<U> Node<T, U, W>::get_result(SolutionType sol, LoadType lt, int n) const {
 	matrix_<U> tmp;
 
 	if (!this->is_activated()) return tmp;

@@ -17,8 +17,8 @@ namespace cafea {
  *  \return length and transform matrix of element.
  *  \note default up direction is y-axis [0, 1, 0].
  */
-template <class T, class U>
-varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2) {
+template <class T, class U, typename W>
+varargout_2_<U> NodeFunc<T, U, W>::coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2) {
 	matrix_<U> tran = matrix_<U>::Zero(3, 3);
 	vec3_<T> vxx, vxy, vyy, vzz;
 
@@ -50,8 +50,8 @@ varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase
  *  \param [in] up vector of up-axis.
  *  \return length and transform matrix of element.
  */
-template <class T, class U>
-varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const T up[]) {
+template <class T, class U, class W>
+varargout_2_<U> NodeFunc<T, U, W>::coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, const T up[]) {
 	matrix_<U> tran = matrix_<U>::Zero(3, 3);
 	vec3_<T> vxx, vyy, vzz, vxy;
 
@@ -86,8 +86,8 @@ varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase
  *  \param [in] up vector of up-axis.
  *  \return length and transform matrix of element.
  */
-template <class T, class U>
-varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, init_list_<T> up) {
+template <class T, class U, typename W>
+varargout_2_<U> NodeFunc<T, U, W>::coord_tran(const NodeBase<T> *p1, const NodeBase<T> *p2, init_list_<T> up) {
 	assert(3 == up.size());
 	T up_vec[3];
 	std::copy(up.begin(), up.end(), std::begin(up_vec));
@@ -98,8 +98,8 @@ varargout_2_<U> NodeFunc<T, U>::coord_tran(const NodeBase<T> *p1, const NodeBase
  *  \param [in] p1, p2, p3 point of triangle in anticlockwise direction.
  *  \return area local coordinate and transform matrix of element.
  */
-template <class T, class U>
-varargout_3_<U> NodeFunc<T, U>::coord_tran(
+template <class T, class U, typename W>
+varargout_3_<U> NodeFunc<T, U, W>::coord_tran(
 	const NodeBase<T> *p1,
 	const NodeBase<T> *p2,
 	const NodeBase<T> *p3) {
@@ -149,8 +149,8 @@ varargout_3_<U> NodeFunc<T, U>::coord_tran(
  *  \param [in] p1, p2, p3, p4 pointers of quadrangle in anticlockwise direction.
  *  \return are loacal coordinate and transform matrix of element.
  */
-template <class T, class U>
-varargout_3_<U> NodeFunc<T, U>::coord_tran(
+template <class T, class U, typename W>
+varargout_3_<U> NodeFunc<T, U, W>::coord_tran(
 	const NodeBase<T> *p1,
 	const NodeBase<T> *p2,
 	const NodeBase<T> *p3,

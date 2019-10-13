@@ -16,9 +16,9 @@ namespace cafea {
  *  \param [in] matl material struct.
  *  \param [in] sect section struct.
  */
-template <class ResT>
-template <class U>
-void Element<ResT>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl, const Section<U> *sect) {
+template <class ResT, typename W>
+template <class U, typename V>
+void Element<ResT, W>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl, const Section<U> *sect) {
 	auto opt = this->get_option();
 	switch (this->etype_) {
 		case ElementType::PIPE16:
@@ -59,9 +59,9 @@ void Element<ResT>::form_matrix(const Node<U, ResT> p[], const Material<U> *matl
 /**
  *  \brief Form element matrix.
  */
-template <class ResT>
-template <class U>
-void Element<ResT>::form_matrix(const std::vector<Node<U, ResT>> pt, const Material<U> *mp, const Section<U> *sect) {
+template <class ResT, typename W>
+template <class U, typename V>
+void Element<ResT, W>::form_matrix(const std::vector<Node<U, ResT>> pt, const Material<U> *mp, const Section<U> *sect) {
 	auto opt = this->get_option();
 	switch (this->etype_) {
 		case ElementType::PIPE16:
